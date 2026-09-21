@@ -48,3 +48,7 @@ next-env.d.ts
 # prototype reference material (audit artifact — contains hardcoded values, never shipped)
 tools/prototype-app.js
 !.env.example
+
+# crash dumps — never commit
+core
+core.*
