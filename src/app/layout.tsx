@@ -43,6 +43,13 @@ export const metadata: Metadata = {
     url: siteUrl,
   },
   twitter: { card: 'summary_large_image' },
+  icons: {
+    icon: [
+      { url: '/brand/favicon.svg', type: 'image/svg+xml' },
+    ],
+    apple: '/brand/icon-dark.svg',
+  },
+  manifest: '/manifest.webmanifest',
   robots: {
     index: true, follow: true,
     googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 },
