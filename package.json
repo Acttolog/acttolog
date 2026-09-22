@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
     "db:push": "prisma db push",
-    "db:seed": "node tools/extract-seed.mjs",
+    "db:seed": "node prisma/seed.mjs",
     "test": "npm run typecheck && npm run lint && npm run build",
     "build:lowmem": "ACTTOLOG_LOWMEM=1 next build --webpack"
   },
@@ -38,5 +38,8 @@
     "sharp": "^0.35.4",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.mjs"
   }
 }
