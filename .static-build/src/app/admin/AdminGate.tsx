@@ -3,12 +3,17 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from '@/lib/session';
-import { AdminNav } from '../AdminNav';
+import { AdminNav } from './AdminNav';
+import { usePathname } from 'next/navigation';
 
 export function AdminGate({ children }: { children: React.ReactNode }) {
   const { user, loading } = useSession();
   const router = useRouter();
+  const pathname = usePathname();
   const staff = Boolean(user && (user.role === 'Owner' || user.role === 'Admin'));
+
+  // the login page renders without the gated shell
+  if (pathname.startsWith('/admin/login')) return <>{children}</>;
 
   useEffect(() => {
     if (!loading && !user) router.replace('/admin/login');

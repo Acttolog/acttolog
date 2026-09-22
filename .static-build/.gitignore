@@ -58,3 +58,6 @@ STATUS.md
 
 # QA screenshots (local artifacts)
 qa-shots/
+
+# vercel link artifacts
+.vercel
