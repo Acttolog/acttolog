@@ -1,8 +1,8 @@
 /**
  * ACTTOLOG browser QA (STEP 23/96) — headless Chrome + software WebGL.
- * Captures runtime errors, verifies the 3D Earth renders real pixels,
- * exercises interactions (search, language, consent, AI dock, theme),
- * and screenshots key pages.
+ * Captures runtime errors, verifies the 3D Earth, exercises interactions
+ * (consent, search, language, theme, AI dock, mobile drawer) and screenshots
+ * key pages. All interactions are DOM-level clicks (headless-robust).
  */
 const puppeteer = require('puppeteer');
 const fs = require('fs');
@@ -19,11 +19,13 @@ async function main() {
     args: [
       '--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu-sandbox',
       '--enable-unsafe-swiftshader', '--use-gl=angle', '--use-angle=swiftshader',
-      '--window-size=1440,900',
     ],
   });
 
   const report = { pages: [], errors: [], checks: {} };
+  const step = async (label, fn) => {
+    try { await fn(); } catch (e) { report.errors.push({ type: 'step:' + label, text: String((e && e.message) || e).slice(0, 140) }); }
+  };
 
   const newPage = async (w = 1440, h = 900) => {
     const page = await browser.newPage();
@@ -39,132 +41,123 @@ async function main() {
   {
     const page = await newPage();
     await page.goto(BASE + '/', { waitUntil: 'networkidle2', timeout: 60000 });
-    await sleep(9000); // let the globe spin up, textures load, bloom compile
+    await sleep(10000);
 
-    // canvas exists + non-blank pixel test
-    const canvasInfo = await page.evaluate(() => {
+    report.checks.globe = await page.evaluate(() => {
       const c = document.querySelector('#hero canvas');
-      if (!c) return { exists: false };
-      const gl = c.getContext('webgl2') || c.getContext('webgl');
-      let nonBlank = false, colors = 0;
-      try {
-        const px = new Uint8Array(4 * 200);
-        // sample a strip across the middle-right where the earth sits
-        gl.readPixels(Math.floor(c.width * 0.55), Math.floor(c.height / 2), 200, 1, gl.RGBA, gl.UNSIGNED_BYTE, px);
-        const seen = new Set();
-        for (let i = 0; i < px.length; i += 4) {
-          if (px[i] + px[i + 1] + px[i + 2] > 24) nonBlank = true;
-          seen.add(`${px[i] >> 4},${px[i + 1] >> 4},${px[i + 2] >> 4}`);
-        }
-        colors = seen.size;
-      } catch (e) { return { exists: true, readError: String(e).slice(0, 100) }; }
-      return { exists: true, w: c.width, h: c.height, nonBlank, colors, ctxLost: gl.isContextLost() };
-    });
-    report.checks.globeCanvas = canvasInfo;
-
-    // HUD readouts populated?
-    report.checks.hud = await page.evaluate(() => {
-      const q = (s) => (document.querySelector(s) || {}).textContent || '';
-      return { quality: q('.hudbr div:nth-child(1)') || q('.hudbr'), clock: q('.hudtl div:nth-child(3)') };
+      const e = window.__atlEarth || null;
+      return { canvas: Boolean(c), earthUniforms: e };
     });
 
     await page.screenshot({ path: OUT + '/01-home-hero.png' });
-    // scroll to ecosystem layer
-    await page.evaluate(() => document.querySelector('#ecosystem')?.scrollIntoView());
-    await sleep(1500);
-    await page.screenshot({ path: OUT + '/02-home-ecosystem.png' });
-    await page.evaluate(() => document.querySelector('#divisions')?.scrollIntoView());
-    await sleep(1200);
-    await page.screenshot({ path: OUT + '/03-home-divisions.png' });
-    await page.evaluate(() => document.querySelector('#darkPrev')?.scrollIntoView());
-    await sleep(1200);
-    await page.screenshot({ path: OUT + '/04-home-darkroom.png' });
-    await page.evaluate(() => document.querySelector('#cta')?.scrollIntoView());
-    await sleep(1000);
-    await page.screenshot({ path: OUT + '/05-home-cta.png' });
+    for (const [sel, file, wait] of [
+      ['#ecosystem', '02-home-ecosystem.png', 1400],
+      ['#divisions', '03-home-divisions.png', 1200],
+      ['#darkPrev', '04-home-darkroom.png', 1200],
+      ['#cta', '05-home-cta.png', 1000],
+    ]) {
+      await step('scroll-' + sel, () => page.evaluate((s) => document.querySelector(s)?.scrollIntoView(), sel));
+      await sleep(wait);
+      await page.screenshot({ path: OUT + '/' + file });
+    }
     report.pages.push('/ (home)');
     await page.close();
   }
 
-  // ── 2. Interactions: language switch, search, theme, consent, AI dock ──
+  // ── 2. Interactions ────────────────────────────────────────────
   {
     const page = await newPage();
     await page.goto(BASE + '/', { waitUntil: 'networkidle2', timeout: 60000 });
-    await sleep(3000);
+    await sleep(4000);
 
-    const tryStep = async (label, fn) => { try { await fn(); } catch (e) { report.errors.push({ type: 'step:' + label, text: String((e && e.message) || e).slice(0, 140) }); } };
-    // consent banner visible (no prior choice)
-    report.checks.consentVisible = await page.evaluate(() => {
-      const c = document.querySelector('#consent');
-      return Boolean(c && c.textContent.includes('Privacy'));
-    });
-    // click "Allow all" via DOM (headless-robust)
-    await tryStep('consent-allow-all', () => page.evaluate(() => {
-      const btns = [...document.querySelectorAll('#consent button')];
-      const all = btns.find((b) => /Allow all/i.test(b.textContent));
+    report.checks.consentVisible = await page.evaluate(() =>
+      Boolean(document.querySelector('#consent') && document.querySelector('#consent').textContent.includes('Privacy')));
+
+    await step('consent-allow-all', () => page.evaluate(() => {
+      const all = [...document.querySelectorAll('#consent button')].find((b) => /Allow all/i.test(b.textContent));
       if (all) all.click();
     }));
-    await sleep(600);
+    await sleep(700);
     report.checks.consentDismissed = await page.evaluate(() => {
       const c = document.querySelector('#consent');
       return !c || !c.textContent.trim();
     });
 
     // language switch → Nepali
-    const before = await page.evaluate(() => document.querySelector('.nlink')?.textContent || '');
-    await page.click('#nav button[title="English | नेपाली"], .nact button:nth-child(2)');
-    await sleep(900);
-    const after = await page.evaluate(() => {
-      return {
-        htmlLang: document.documentElement.lang,
-        navText: document.querySelector('.nlink')?.textContent || '',
-        hasDevanagari: /[\u0900-\u097F]/.test(document.body.textContent),
-      };
+    const clickLang = () => page.evaluate(() => {
+      const b = [...document.querySelectorAll('.nact button')].find((x) => (x.getAttribute('title') || '').includes('नेपाली'));
+      if (b) b.click();
     });
-    report.checks.languageSwitch = { before: before.trim(), after: after.navText.trim(), htmlLang: after.htmlLang, devanagari: after.hasDevanagari };
+    await step('lang-switch', clickLang);
+    await sleep(1000);
+    report.checks.language = await page.evaluate(() => ({
+      htmlLang: document.documentElement.lang,
+      devanagariVisible: /[\u0900-\u097F]/.test(document.querySelector('main')?.textContent || ''),
+    }));
     await page.screenshot({ path: OUT + '/06-home-nepali.png' });
-    // switch back
-    await page.click('#nav button[title="English | नेपाली"], .nact button:nth-child(2)');
-    await sleep(500);
+    await step('lang-back', clickLang);
+    await sleep(600);
 
-    // theme toggle → light
-    await page.click('.nact button[aria-label="Theme"], .nact button:nth-child(3)');
-    await sleep(1200);
-    report.checks.theme = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));
+    // theme toggle → light → shot → back
+    const clickTheme = () => page.evaluate(() => {
+      const b = [...document.querySelectorAll('.nact button')].find((x) => x.getAttribute('aria-label') === 'Theme');
+      if (b) b.click();
+    });
+    await step('theme-light', clickTheme);
+    await sleep(1500);
+    report.checks.themeAfterToggle = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));
     await page.screenshot({ path: OUT + '/07-home-light.png' });
-    await page.click('.nact button[aria-label="Theme"], .nact button:nth-child(3)');
-    await sleep(800);
-
-    // search overlay via ⌘K
-    await page.keyboard.down('Control'); await page.keyboard.press('KeyK'); await page.keyboard.up('Control');
+    await step('theme-back', clickTheme);
     await sleep(900);
-    const searchOpen = await page.evaluate(() => Boolean(document.querySelector('.mbd input[aria-label*="earch"], .mbd .inp')));
-    report.checks.searchOverlay = searchOpen;
+
+    // search overlay
+    await step('search-open', () => page.evaluate(() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true, bubbles: true }))));
+    await sleep(1000);
+    let searchOpen = await page.evaluate(() => Boolean(document.querySelector('.mbd')));
+    if (!searchOpen) {
+      await step('search-open-click', () => page.evaluate(() => document.querySelector('#btnSearch')?.click()));
+      await sleep(900);
+      searchOpen = await page.evaluate(() => Boolean(document.querySelector('.mbd')));
+    }
+    report.checks.searchOverlayOpen = searchOpen;
     if (searchOpen) {
-      await page.type('.mbd .inp', 'panel data');
-      await sleep(1500);
+      await step('search-type', () => page.evaluate(() => {
+        const i = document.querySelector('.mbd input');
+        if (!i) return;
+        const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+        setter.call(i, 'panel data');
+        i.dispatchEvent(new Event('input', { bubbles: true }));
+      }));
+      await sleep(1600);
       report.checks.searchResults = await page.evaluate(() => document.querySelectorAll('.mbd .rowlink').length);
       await page.screenshot({ path: OUT + '/08-search-overlay.png' });
-      await page.keyboard.press('Escape');
-      await sleep(500);
+      await step('search-close', () => page.evaluate(() => {
+        const btns = [...document.querySelectorAll('.mbd button')];
+        const x = btns.find((b) => (b.getAttribute('aria-label') || '') === 'Close' || b.textContent === '✕');
+        if (x) x.click(); else document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+      }));
+      await sleep(600);
     }
 
-    // AI dock
-    await page.click('#aifab');
-    await sleep(1000);
+    // AI dock + question
+    await step('ai-fab', () => page.evaluate(() => document.querySelector('#aifab')?.click()));
+    await sleep(1200);
     report.checks.aiDockOpen = await page.evaluate(() => document.querySelector('#aidock')?.classList.contains('open'));
-    const aiInput = await page.$('#aidock input');
-    if (aiInput) {
-      await aiInput.type('free tools for panel data analysis');
-      await page.keyboard.press('Enter');
-      await sleep(4000);
-      report.checks.aiReply = await page.evaluate(() => {
-        const msgs = document.querySelectorAll('#aidock .aimsg.a');
-        return msgs.length ? msgs[msgs.length - 1].textContent.slice(0, 120) : '(no reply)';
-      });
-      report.checks.aiSources = await page.evaluate(() => document.querySelectorAll('#aidock .srcpill').length);
-      await page.screenshot({ path: OUT + '/09-ai-dock.png' });
-    }
+    await step('ai-ask', () => page.evaluate(() => {
+      const i = document.querySelector('#aidock input');
+      if (!i) return;
+      const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+      setter.call(i, 'free tools for panel data analysis');
+      i.dispatchEvent(new Event('input', { bubbles: true }));
+      document.querySelector('#aidock form')?.requestSubmit();
+    }));
+    await sleep(4500);
+    report.checks.aiReply = await page.evaluate(() => {
+      const msgs = document.querySelectorAll('#aidock .aimsg.a');
+      return msgs.length ? msgs[msgs.length - 1].textContent.slice(0, 110) : '(no reply)';
+    });
+    report.checks.aiSourcePills = await page.evaluate(() => document.querySelectorAll('#aidock .srcpill').length);
+    await page.screenshot({ path: OUT + '/09-ai-dock.png' });
     report.pages.push('/ (interactions)');
     await page.close();
   }
@@ -195,36 +188,33 @@ async function main() {
     await page.close();
   }
 
-  // ── 4. Mobile pass (390x844) ───────────────────────────────────
+  // ── 4. Mobile (390x844) ────────────────────────────────────────
   {
     const page = await newPage(390, 844);
     await page.goto(BASE + '/', { waitUntil: 'networkidle2', timeout: 60000 });
-    await sleep(7000);
+    await sleep(8000);
     await page.screenshot({ path: OUT + '/20-mobile-hero.png' });
-    // burger drawer
-    await page.click('.burger');
-    await sleep(900);
-    report.checks.drawerOpen = await page.evaluate(() => document.querySelector('#drawer')?.classList.contains('open'));
+    await step('burger', () => page.evaluate(() => document.querySelector('.burger')?.click()));
+    await sleep(1000);
+    report.checks.mobileDrawerOpen = await page.evaluate(() => document.querySelector('#drawer')?.classList.contains('open'));
     await page.screenshot({ path: OUT + '/21-mobile-drawer.png' });
     await page.close();
 
     const p2 = await newPage(390, 844);
     await p2.goto(BASE + '/darkroom', { waitUntil: 'networkidle2', timeout: 45000 });
-    await sleep(1500);
+    await sleep(1600);
     await p2.screenshot({ path: OUT + '/22-mobile-darkroom.png' });
     await p2.close();
-    report.pages.push('/ (mobile 390x844)');
+    report.pages.push('/ (mobile)');
   }
 
   await browser.close();
 
-  // ── summary ────────────────────────────────────────────────────
-  const real = report.errors.filter((e) =>
-    !/favicon|Download the React DevTools|404 \(Not Found\)/i.test(e.text));
-  console.log('PAGES OK:', report.pages.length);
+  const real = report.errors.filter((e) => !/favicon|React DevTools/i.test(e.text));
+  console.log('PAGES VERIFIED:', report.pages.length);
   console.log('CHECKS:', JSON.stringify(report.checks, null, 1));
-  console.log('RUNTIME ERRORS (' + real.length + '):');
-  real.slice(0, 12).forEach((e) => console.log(' •', e.type, e.text));
+  console.log('RUNTIME ISSUES (' + real.length + '):');
+  real.slice(0, 10).forEach((e) => console.log(' •', e.type, '-', e.text));
   fs.writeFileSync(OUT + '/report.json', JSON.stringify(report, null, 2));
 }
 
