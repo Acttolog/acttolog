@@ -112,7 +112,7 @@ export function Footer() {
 
         <hr className="hr my-8" />
         <div className="flex flex-wrap gap-4 items-center justify-between">
-          <p className="dim text-[12.2px] mono">© {new Date().getFullYear()} {s.org} — https://www.acttolog.com</p>
+          <p className="dim text-[12.2px] mono">© {new Date().getFullYear()} {s.org} — {process.env.NEXT_PUBLIC_SITE_URL || 'https://www.acttolog.com.np'}</p>
           <p className="dim text-[12.2px] mono flex items-center gap-2">
             <span className="dot" /> {L(s.footerNote)}
           </p>
