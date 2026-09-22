@@ -7,10 +7,9 @@ export const metadata: Metadata = {
 };
 
 /**
- * Admin shell. Authorization is enforced in three layers:
- *  1. proxy middleware (SSR deployments) redirects unauthenticated traffic
- *  2. this client gate renders nothing but the login/forbidden state
- *  3. every /api/admin/* route re-verifies the session server-side (real authz)
+ * Admin shell (no route groups — Vercel output-safe).
+ * Authorization layers: proxy middleware (SSR) → this client gate →
+ * every /api/admin/* route re-verifies the session server-side.
  */
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return <AdminGate>{children}</AdminGate>;
