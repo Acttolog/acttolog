@@ -1,0 +1,550 @@
+// ACTTOLOG production schema (spec §75) — PostgreSQL (Supabase-compatible)
+// Timestamps are stored in UTC; the Owner dashboard displays Asia/Kathmandu (§54, §67).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Identity & access ─────────────────────────────────────────────
+
+model User {
+  id           String   @id @default(cuid())
+  providerId   String   @unique // Google `sub`
+  email        String   @unique
+  name         String
+  picture      String?
+  role         Role     @default(MEMBER)
+  status       String   @default("Active") // Active | Suspended
+  personalization Boolean @default(false)  // AI personalization opt-in (§61)
+  createdAt    DateTime @default(now())
+  lastLoginAt  DateTime?
+  deletionRequestedAt DateTime? // account deletion request (§50)
+
+  saved        SavedItem[]
+  recent       RecentItem[]
+  conversations AiConversation[]
+  notifications Notification[]
+  submissions  DarkroomSubmission[]
+  gameScores   GameScore[]
+  gameProgress GameProgress[]
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  EDITOR      // future (§52)
+  CONTRIBUTOR // future (§52)
+  MEMBER
+}
+
+// ─── CMS core ──────────────────────────────────────────────────────
+
+model SiteSettings {
+  id       String @id @default("global")
+  data     Json // bilingual settings document (brand, purpose, vision, mission, values, contact, social, rates)
+  updatedBy String?
+  updatedAt DateTime @updatedAt
+}
+
+model NavigationItem {
+  id      String  @id @default(cuid())
+  label   Json // Bi {en,ne}
+  route   String
+  order   Int     @default(0)
+  visible Boolean @default(true)
+}
+
+model Division {
+  id      String  @id @default(cuid())
+  slug    String  @unique
+  name    Json // Bi
+  sub     Json // Bi
+  desc    Json // Bi
+  route   String
+  color   String  @default("#35e0ff")
+  icon    String  @default("spark")
+  art     String  @default("nebula")
+  order   Int     @default(0)
+  visible Boolean @default(true)
+  status  String  @default("published")
+}
+
+model Page {
+  id       String  @id @default(cuid())
+  route    String  @unique
+  data     Json // page copy + section blocks
+  status   String  @default("published")
+  revision Int     @default(1)
+  updatedAt DateTime @updatedAt
+}
+
+model HomeSection {
+  id      String  @id // intro | eco | divisions | featured | latest | academy | darkroom | offers | about | cta
+  title   Json // Bi
+  body    Json // Bi
+  visible Boolean @default(true)
+  order   Int     @default(0)
+}
+
+// ─── Thesyn Research ───────────────────────────────────────────────
+
+model ResearchService {
+  id      String  @id @default(cuid())
+  title   Json // Bi
+  summary Json // Bi
+  icon    String  @default("spark")
+  order   Int     @default(0)
+  status  String  @default("published")
+  access  String  @default("public") // public | members
+  visible Boolean @default(true)
+}
+
+model ResearchProgram {
+  id     String @id @default(cuid())
+  code   String
+  name   Json // Bi
+  note   Json // Bi
+  status String @default("published")
+  order  Int    @default(0)
+}
+
+model ResearchPackage {
+  id       String  @id @default(cuid())
+  name     String // Silver | Gold | Diamond
+  tagline  Json // Bi
+  npr      Int     @default(0)
+  usd      Int     @default(0)
+  interval Json // Bi
+  desc     Json // Bi
+  features Json // Bi[]
+  mode     String  @default("inquiry") // inquiry | purchase | both (§41)
+  accent   String  @default("#35e0ff")
+  status   String  @default("published")
+  order    Int     @default(0)
+}
+
+// ─── Entertainment ─────────────────────────────────────────────────
+
+model EntertainmentItem {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  title     Json // Bi
+  desc      Json // Bi
+  body      Json? // Bi — full protected content
+  thumb     String?
+  media     String? // MediaAsset id or URL
+  category  String
+  tags      String[]
+  date      DateTime @default(now())
+  audience  String   @default("global") // global | nepal | international | members (§93)
+  access    String   @default("public") // public | members
+  status    String   @default("draft")
+  publishAt DateTime? // scheduled publishing (§54)
+  featured  Boolean  @default(false)
+  visible   Boolean  @default(true)
+  views     Int      @default(0)
+}
+
+// ─── Academy ───────────────────────────────────────────────────────
+
+model AcademyCourse {
+  id       String  @id @default(cuid())
+  slug     String  @unique
+  title    Json // Bi
+  level    String  @default("Beginner")
+  summary  Json // Bi
+  image    String?
+  access   String  @default("members") // Academy is protected (§30)
+  status   String  @default("draft")
+  featured Boolean @default(false)
+  visible  Boolean @default(true)
+  order    Int     @default(0)
+  modules  AcademyModule[]
+}
+
+model AcademyModule {
+  id       String @id @default(cuid())
+  courseId String
+  course   AcademyCourse @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  title    Json // Bi
+  order    Int    @default(0)
+  lessons  AcademyLesson[]
+}
+
+model AcademyLesson {
+  id       String @id @default(cuid())
+  moduleId String
+  module   AcademyModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  title    Json // Bi
+  body     Json? // Bi
+  mediaId  String?
+  order    Int    @default(0)
+}
+
+// ─── Games ─────────────────────────────────────────────────────────
+
+model Game {
+  id       String  @id @default(cuid())
+  slug     String  @unique
+  title    Json // Bi
+  desc     Json // Bi
+  thumb    String?
+  url      String? // embedded game bundle URL
+  category String  @default("Arcade")
+  launch   String  @default("embedded") // embedded | external | soon
+  access   String  @default("members") // playing requires Google (§31)
+  status   String  @default("draft")
+  featured Boolean @default(false)
+  visible  Boolean @default(true)
+  release  DateTime @default(now())
+  scores     GameScore[]
+  progress   GameProgress[]
+}
+
+model GameScore {
+  id        String   @id @default(cuid())
+  gameId    String
+  userId    String
+  game      Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  score     Int
+  createdAt DateTime @default(now())
+
+  @@index([gameId, score])
+}
+
+model GameProgress {
+  id        String   @id @default(cuid())
+  gameId    String
+  userId    String
+  game      Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  data      Json
+  updatedAt DateTime @updatedAt
+
+  @@unique([gameId, userId])
+}
+
+// ─── Darkroom (§32–39) ─────────────────────────────────────────────
+
+model DarkroomResource {
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  name         String
+  url          String
+  category     String
+  subcategory  String?
+  tags         String[]
+  type         String?
+  pricing      String   @default("Free") // Free | Freemium | Paid
+  official     Boolean  @default(false)
+  verification String   @default("needs-review") // verified | needs-review | broken | suspicious
+  region       String   @default("Global")
+  audience     String   @default("Everyone")
+  language     String   @default("en")
+  featured     Boolean  @default(false)
+  reviewDate   DateTime @default(now())
+  status       String   @default("draft")
+  presentation String   @default("link") // profile | link (§36)
+  short        Json // Bi
+  full         Json // Bi
+  adminNotes   String?
+  // usage stays private — never exposed publicly (§33, §35)
+  usage        Int      @default(0)
+  visible      Boolean  @default(true)
+  collectionIds String[]
+}
+
+model DarkroomCategory {
+  id      String  @id @default(cuid())
+  slug    String  @unique
+  name    Json // Bi
+  subs    String[]
+  order   Int     @default(0)
+  visible Boolean @default(true)
+}
+
+model DarkroomCollection {
+  id     String @id @default(cuid())
+  name   Json // Bi
+  desc   Json // Bi
+  items  String[] // resource slugs
+  status String @default("published")
+}
+
+model DarkroomSubmission {
+  id       String   @id @default(cuid())
+  name     String
+  url      String
+  category String
+  desc     String
+  why      String
+  tags     String[]
+  byUserId String?
+  byEmail  String?  // private — admin queue only (§38: users see only "Submission received")
+  user     User?    @relation(fields: [byUserId], references: [id], onDelete: SetNull)
+  status   String   @default("pending") // pending | needs-review | published | rejected
+  checks   String   @default("pending") // automated pre-check report (§37)
+  createdAt DateTime @default(now())
+  reviewedAt DateTime?
+  reviewedBy String?
+}
+
+model DarkroomSettings {
+  id       String @id @default("global")
+  weights  Json // {relevance, official, verification, freshness, usage} (§35)
+  aiRules  Json // {autoPublish:false, suggestAdmin, showUser, trusted[]} (§62)
+}
+
+// ─── Blog (§40) ────────────────────────────────────────────────────
+
+model BlogPost {
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  title        Json // Bi
+  excerpt      Json // Bi
+  content      Json // Bi (markdown)
+  cover        String?
+  author       String   @default("Acttolog Editorial")
+  categoryId   String?
+  category     BlogCategory? @relation(fields: [categoryId], references: [id])
+  tags         BlogTag[]
+  status       String   @default("draft") // draft|in_review|approved|published|scheduled|archived|rejected (§53)
+  publishAt    DateTime? // scheduled (§54)
+  access       String   @default("public") // public | members
+  audience     String   @default("global")
+  featured     Boolean  @default(false)
+  seoTitle     String?
+  seoDescription String?
+  socialImage  String?
+  revision     Int      @default(1)
+  publishedAt  DateTime?
+  updatedAt    DateTime @updatedAt
+  views        Int      @default(0)
+}
+
+model BlogCategory {
+  id    String @id @default(cuid())
+  name  String @unique
+  posts BlogPost[]
+}
+
+model BlogTag {
+  id    String @id @default(cuid())
+  name  String
+  slug  String @unique
+  posts BlogPost[]
+}
+
+// ─── Offers & commerce (§41–43) ────────────────────────────────────
+
+model Offer {
+  id         String   @id @default(cuid())
+  slug       String   @unique
+  division   String
+  title      Json // Bi
+  short      Json // Bi
+  desc       Json // Bi
+  npr        Int      @default(0)
+  usd        Int      @default(0)
+  discount   String?
+  mode       String   @default("inquiry") // inquiry | purchase | both
+  features   Json // Bi[]
+  terms      Json // Bi
+  validUntil DateTime?
+  accent     String   @default("#35e0ff")
+  art        String   @default("offers")
+  status     String   @default("published")
+  access     String   @default("public")
+  audience   String   @default("global")
+  featured   Boolean  @default(false)
+  visible    Boolean  @default(true)
+  orders     Order[]
+}
+
+model Order {
+  id        String   @id @default(cuid())
+  offerId   String
+  offer     Offer    @relation(fields: [offerId], references: [id])
+  email     String
+  name      String?
+  phone     String?
+  currency  String   @default("NPR")
+  amount    Int
+  mode      String   @default("inquiry")
+  status    String   @default("inquiry") // inquiry | pending | verified | failed (§42: never claim success without provider verification)
+  providerRef String?
+  note      String?
+  createdAt DateTime @default(now())
+}
+
+model Payment {
+  id           String   @id @default(cuid())
+  orderId      String
+  provider     String // modular gateway adapter (§42)
+  providerRef  String?  @unique
+  amount       Int
+  currency     String
+  status       String // initiated | verified | failed | refunded
+  verifiedAt   DateTime?
+  createdAt    DateTime @default(now())
+}
+
+// ─── Media (§76) ───────────────────────────────────────────────────
+
+model MediaAsset {
+  id        String   @id @default(cuid())
+  name      String
+  src       String // object-storage URL or path
+  type      String
+  size      Int      @default(0)
+  width     Int?
+  height    Int?
+  note      String?
+  usedBy    String?
+  createdAt DateTime @default(now())
+}
+
+// ─── Communication ─────────────────────────────────────────────────
+
+model ContactMessage {
+  id         String   @id @default(cuid())
+  name       String
+  email      String
+  phone      String?
+  subject    String
+  division   String?
+  message    String
+  attachment String? // MediaAsset id
+  status     String   @default("new") // new | read | replied | archived
+  createdAt  DateTime @default(now())
+}
+
+model NewsletterSubscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  consent   Boolean  @default(true)
+  status    String   @default("subscribed")
+  createdAt DateTime @default(now())
+}
+
+model Notification {
+  id     String  @id @default(cuid())
+  userId String
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title  String
+  body   String
+  kind   String  @default("info")
+  route  String?
+  read   Boolean @default(false)
+  at     DateTime @default(now())
+
+  @@index([userId, read])
+}
+
+// ─── AI (§56–62) ───────────────────────────────────────────────────
+
+model AiConversation {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  mode      String   @default("act") // act | actweb
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  messages  AiMessage[]
+
+  @@index([userId, updatedAt])
+}
+
+model AiMessage {
+  id             String   @id @default(cuid())
+  conversationId String
+  conversation   AiConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role           String // user | assistant
+  text           String
+  sources        Json? // labelled source cards: ACTTOLOG SOURCE / EXTERNAL WEB SOURCE (§58)
+  at             DateTime @default(now())
+}
+
+// ─── SEO / analytics / system ──────────────────────────────────────
+
+model SEOSettings {
+  id    String @id @default("global")
+  pages Json // per-route {title, desc, canon, titleNe, descNe}
+  robots String @default("User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /my")
+  updatedAt DateTime @updatedAt
+}
+
+model AnalyticsEvent {
+  id     String   @id @default(cuid())
+  t      String // event type
+  path   String
+  div    String? // division bucket
+  sid    String // anonymous session id
+  src    String  @default("internal")
+  dev    String?
+  geo    String?
+  q      String? // search query where applicable
+  meta   Json?
+  ts     DateTime @default(now()) // stored UTC (§67)
+
+  @@index([ts])
+  @@index([t, ts])
+  @@index([div, ts])
+}
+
+model AnalyticsIntegration {
+  id        String @id @default("ga4")
+  provider  String @default("ga4")
+  propertyId String?
+  enabled   Boolean @default(false)
+  note      String?
+}
+
+model BackupRecord {
+  id         String   @id @default(cuid())
+  kind       String // database | cms | configuration | recovery-safety (§80)
+  provider   String   @default("google_drive")
+  location   String // Drive path — private (§77–78)
+  size       Int?
+  status     String   @default("ok") // ok | failed
+  note       String?
+  createdAt  DateTime @default(now())
+  // retention is indefinite — records are never auto-deleted (§79)
+}
+
+// ─── My Acttolog (§48–49): private by default, no public profiles ──
+
+model SavedItem {
+  id     String   @id @default(cuid())
+  userId String
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind   String // post | resource | game | course | offer | entertainment
+  refId  String
+  title  String
+  route  String?
+  at     DateTime @default(now())
+
+  @@unique([userId, kind, refId])
+  @@index([userId, at])
+}
+
+model RecentItem {
+  id     String   @id @default(cuid())
+  userId String
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind   String
+  refId  String
+  title  String
+  route  String?
+  at     DateTime @default(now())
+
+  @@unique([userId, kind, refId])
+  @@index([userId, at])
+}
