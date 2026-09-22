@@ -1,4 +1,3 @@
-import 'server-only';
 import { getDB, pub } from '@/lib/content';
 import { L as resolveBi } from '@/lib/content';
 

@@ -31,10 +31,14 @@ export function Footer() {
     const v = email.trim();
     if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(v)) { setEmailErr(true); toast(locale === 'ne' ? 'मान्य इमेल ठेगाना राख्नुहोस्।' : 'Enter a valid email address.', 'err'); return; }
     setEmailErr(false);
-    const res = await fetch('/api/newsletter', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: v }) });
-    const data = await res.json().catch(() => ({}));
-    if (res.ok) { track('newsletter_subscribe'); toast(data.note || (locale === 'ne' ? 'सदस्यता दर्ता भयो।' : 'Subscribed.'), 'ok'); setEmail(''); }
-    else toast(data.error || 'Subscription failed.', 'err');
+    try {
+      const res = await fetch('/api/newsletter', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: v }) });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) { track('newsletter_subscribe'); toast(data.note || (locale === 'ne' ? 'सदस्यता दर्ता भयो।' : 'Subscribed.'), 'ok'); setEmail(''); }
+      else toast(data.error || 'Subscription failed.', 'err');
+    } catch {
+      toast(locale === 'ne' ? 'यस पूर्वदर्शनमा सदस्यता उपलब्ध छैन — पूरा उत्पादनमा चाँडै।' : 'Signups activate on the full production deployment.', 'info', 5000);
+    }
   };
 
   return (

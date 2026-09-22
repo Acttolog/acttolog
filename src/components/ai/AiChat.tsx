@@ -6,6 +6,7 @@ import { Icon } from '@/components/ui/Icon';
 import { useI18n } from '@/lib/i18n';
 import { useSession } from '@/lib/session';
 import { track } from '@/lib/analytics';
+import { clientAiAnswer } from '@/lib/ai-core';
 
 interface Msg { role: 'user' | 'ai'; text: string; sources?: AiSource[] }
 export interface AiSource { title: string; route: string; meta: string; origin: 'acttolog' | 'web' }
@@ -68,6 +69,7 @@ export function AiChat({ variant, prefill, openSignal }: {
     setMessages((prev) => [...prev, { role: 'user', text: q }]);
     setBusy(true);
     track('search', { q, mode: 'ai' });
+    let replied = true;
     try {
       const res = await fetch('/api/ai', {
         method: 'POST',
@@ -78,15 +80,23 @@ export function AiChat({ variant, prefill, openSignal }: {
       if (!res.ok) throw new Error(data.error || 'ai_failed');
       setMessages((prev) => [...prev, { role: 'ai', text: data.answer, sources: data.sources || [] }]);
     } catch {
+      // Static host or API unavailable → identical Acttolog-first index, run locally
+      replied = false;
+      try {
+        const local = clientAiAnswer(q, locale, mode);
+        setMessages((prev) => [...prev, { role: 'ai', text: local.answer, sources: local.sources }]);
+        replied = true;
+      } catch { /* apology below */ }
+    }
+    if (!replied) {
       setMessages((prev) => [...prev, {
         role: 'ai',
         text: locale === 'ne'
           ? 'माफ गर्नुहोस् — जवाफ तयार गर्न सकिएन। कृपया फेरि प्रयास गर्नुहोस्।'
           : 'Sorry — I could not produce an answer right now. Please try again.',
       }]);
-    } finally {
-      setBusy(false);
     }
+    setBusy(false);
   }
 
   const suggestions = SUGGESTIONS[locale] || SUGGESTIONS.en;

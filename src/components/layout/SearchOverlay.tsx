@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Icon } from '@/components/ui/Icon';
 import { useI18n } from '@/lib/i18n';
 import { track } from '@/lib/analytics';
+import { searchAnywhere } from '@/lib/search-client';
 
 interface Result {
   k: string; title: string; sub: string; route: string; ext?: boolean; mem?: boolean;
