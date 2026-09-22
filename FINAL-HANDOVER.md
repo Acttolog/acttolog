@@ -10,7 +10,7 @@
 |---|---|---|
 | **Production (SSR)** | **https://acttolog.vercel.app** | Full app: server sessions, admin console, APIs, analytics ingestion, 3D Earth, bilingual, consent |
 | **Static mirror** | **https://acttolog.github.io** | Same public experience from Next static export; search + AI run from bundled index |
-| **Canonical (pending domain purchase)** | **https://www.acttolog.com** | Already attached to the Vercel project (apex→www 301, SSL auto). Goes live the moment the domain is registered + 2 DNS records added |
+| **Canonical (pending free .com.np registration)** | **https://www.acttolog.com.np** | Canonical switched product-wide (metadata, OG, sitemap, robots, JSON-LD, footer, admin SEO). Domains attached on Vercel (apex→www 301, SSL auto). Goes live the moment the free .com.np registration completes + 2 DNS records added |
 
 ## 2. GitHub
 
@@ -42,13 +42,18 @@ Owner role resolves from encrypted `OWNER_EMAIL` env — never rendered publicly
 - **QA**: tsc 0 errors · ESLint 0 errors · builds green · §101 smoke suite **45/45 on both live deployments** · browser QA (desktop+mobile, 0 runtime errors) · security scans clean
 
 ## 6. Remaining (genuine, in order)
-1. **Register `acttolog.com`** — registry (Verisign RDAP) currently returns 404: the domain is unregistered. Purchase at any registrar (~$10/yr; Cloudflare/Porkbun/Namecheap), then add:
+1. **Register `acttolog.com.np` — FREE** at the official .np registry: **https://www.register.com.np**
+   - .com.np is free for Nepali citizens (citizenship certificate or passport) and Nepal-registered companies/brands (registration certificate) — the registry verifies documents manually (hours to ~2 days)
+   - Steps: create account → Check domain → `acttolog.com.np` → Register (upload your document, fill registrant/admin/tech contacts) → wait for approval → DNS management panel
+   - In the register.com.np DNS zone add exactly:
    | Type | Name | Value |
    |---|---|---|
    | A | `@` | `76.76.21.21` |
    | CNAME | `www` | `cname.vercel-dns.com` |
-   Everything else (SSL, apex→www 301, canonical switch) is pre-wired; `tools/domain-watch.js` + `tools/go-live-verify.js https://www.acttolog.com` complete the loop.
-2. **Google OAuth client** (makes "Continue with Google" registrable): Cloud Console → Credentials → OAuth client (Web) → redirect URIs `https://www.acttolog.com/api/auth/callback` + `https://acttolog.vercel.app/api/auth/callback` → paste Client ID + Secret → set as encrypted Vercel envs (flow already built & tested).
+   - Everything else is pre-wired: Vercel domains attached (apex→www 301), SSL auto-issues, canonical/OG/sitemap/robots/JSON-LD already point at https://www.acttolog.com.np (verified live on the Vercel deployment)
+   - Acceptance loop afterwards: `node tools/domain-watch.js` + `node tools/go-live-verify.js https://www.acttolog.com.np`
+   - (`acttolog.com` remains attached as well if you ever register it later — no changes needed)
+2. **Google OAuth client** (makes "Continue with Google" registrable): Cloud Console → Credentials → OAuth client (Web) → authorized origins `https://www.acttolog.com.np`, `https://acttolog.vercel.app` → redirect URIs `https://www.acttolog.com.np/api/auth/callback` + `https://acttolog.vercel.app/api/auth/callback` → paste Client ID + Secret → set as encrypted Vercel envs (flow already built & tested).
 3. **Supabase `DATABASE_URL`** → `npx prisma migrate deploy && npm run db:seed` → contact inbox, saved sync, submissions, analytics storage, admin writes go live.
 4. **Optional**: `OPENAI_API_KEY` (AI web-mode), `NEXT_PUBLIC_GA_ID` (confirm no existing property first), Drive service account (weekly backups), payment provider when authorized.
 
