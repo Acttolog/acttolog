@@ -15,7 +15,7 @@
  *    frustum/idle pause via frameloop control, WebGL poster fallback (parent)
  */
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { TIER_CONFIG, prefersReducedMotion, type QualityTier } from './tier';
@@ -100,8 +100,9 @@ uniform vec3 glowColor;
 varying vec3 vNormal;
 varying vec3 vViewDir;
 void main() {
-  float f = 1.0 - abs(dot(normalize(vNormal), normalize(vViewDir)));
-  float intensity = pow(clamp(f, 0.0, 1.0), 3.1) * 1.15;
+  // front-side fresnel: zero at disc centre, max at the limb (robust across drivers)
+  float f = clamp(1.0 - dot(normalize(vNormal), normalize(vViewDir)), 0.0, 1.0);
+  float intensity = pow(f, 3.4) * 1.25;
   gl_FragColor = vec4(glowColor * intensity, intensity);
   #include <colorspace_fragment>
 }`;
@@ -109,6 +110,7 @@ void main() {
 /* ── sub-components ─────────────────────────────────────────────── */
 
 function Earth({ segments, sunDir }: { segments: number; sunDir: THREE.Vector3 }) {
+  const matRef = useRef<THREE.ShaderMaterial>(null);
   const uniforms = useMemo(() => ({
     dayMap: { value: null as THREE.Texture | null },
     nightMap: { value: null as THREE.Texture | null },
@@ -116,27 +118,48 @@ function Earth({ segments, sunDir }: { segments: number; sunDir: THREE.Vector3 }
     loaded: { value: 0 },
   }), [sunDir]);
 
+  // R3F copies the uniforms prop into the material at mount; texture updates
+  // must therefore mutate material.uniforms directly (not the source object).
+  const applyTex = useCallback((key: 'dayMap' | 'nightMap', tex: THREE.Texture) => {
+    const u = matRef.current?.uniforms as Record<string, { value: unknown }> | undefined;
+    if (!u) return;
+    u[key].value = tex;
+    const both = Boolean((u.dayMap.value as unknown) && (u.nightMap.value as unknown));
+    u.loaded.value = both ? 1 : 0;
+    if (typeof window !== 'undefined') {
+      (window as unknown as { __atlEarth?: Record<string, unknown> }).__atlEarth = {
+        loaded: u.loaded.value, day: Boolean(u.dayMap.value), night: Boolean(u.nightMap.value),
+      };
+    }
+  }, []);
+
   useEffect(() => {
     const loader = new THREE.TextureLoader();
     let cancelled = false;
+    const pending: Partial<Record<'dayMap' | 'nightMap', THREE.Texture>> = {};
     const load = (url: string, key: 'dayMap' | 'nightMap') => {
       loader.load(url, (tex) => {
         if (cancelled) { tex.dispose(); return; }
-        tex.colorSpace = THREE.SRGBColorSpace;
-        tex.anisotropy = 4;
-        uniforms[key].value = tex;
-        uniforms.loaded.value = uniforms.dayMap.value && uniforms.nightMap.value ? 1 : 0;
+        // Raw sRGB bytes (RGBA8) for maximum driver compatibility;
+        // the shader linearises manually with pow(c, 2.2).
+        tex.colorSpace = THREE.NoColorSpace;
+        pending[key] = tex;
+        applyTex(key, tex);
       });
     };
     load('/textures/earth-day.jpg', 'dayMap');
     load('/textures/earth-lights.jpg', 'nightMap');
-    return () => { cancelled = true; };
-  }, [uniforms]);
+    // if textures arrived before the material ref was ready, flush on next tick
+    const t = setTimeout(() => {
+      (Object.keys(pending) as ('dayMap' | 'nightMap')[]).forEach((k) => applyTex(k, pending[k]!));
+    }, 250);
+    return () => { cancelled = true; clearTimeout(t); };
+  }, [applyTex]);
 
   return (
     <mesh>
       <sphereGeometry args={[1, segments, segments]} />
-      <shaderMaterial vertexShader={EARTH_VERT} fragmentShader={EARTH_FRAG} uniforms={uniforms} />
+      <shaderMaterial ref={matRef} vertexShader={EARTH_VERT} fragmentShader={EARTH_FRAG} uniforms={uniforms} />
     </mesh>
   );
 }
@@ -147,7 +170,7 @@ function Atmosphere() {
     <mesh scale={1.135}>
       <sphereGeometry args={[1, 48, 48]} />
       <shaderMaterial vertexShader={ATMO_VERT} fragmentShader={ATMO_FRAG} uniforms={uniforms}
-        transparent side={THREE.BackSide} blending={THREE.AdditiveBlending} depthWrite={false} />
+        transparent side={THREE.FrontSide} blending={THREE.AdditiveBlending} depthWrite={false} />
     </mesh>
   );
 }

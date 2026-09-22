@@ -55,3 +55,6 @@ core.*
 
 # local status reports
 STATUS.md
+
+# QA screenshots (local artifacts)
+qa-shots/
