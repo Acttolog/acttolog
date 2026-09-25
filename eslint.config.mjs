@@ -21,6 +21,10 @@ const lintConfig = [
       // Admin settings renders a local Row helper inside the page body; the
       // static-components rule wants it hoisted. Tracked for the CMS pass.
       'react-hooks/static-components': 'warn',
+      // React Three Fiber mutates refs inside useFrame and reads them in JSX by
+      // design; the React Compiler heuristics below conflict with that pattern.
+      'react-hooks/refs': 'warn',
+      'react-hooks/immutability': 'warn',
     },
   },
 ];

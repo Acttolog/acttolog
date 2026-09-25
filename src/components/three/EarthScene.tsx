@@ -19,6 +19,243 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { TIER_CONFIG, prefersReducedMotion, type QualityTier } from './tier';
+import { TileSphere, type TileLayer } from './TileGlobe';
+
+/* ── live entity beacons (OSINT-style pulses over world cities) ─── */
+export const ENTITY_POINTS: [number, number][] = [
+  [27.71, 85.32], [34.05, -118.24], [42.36, -71.06], [35.68, 139.69], [52.52, 13.4],
+  [51.5, -0.12], [48.85, 2.35], [55.75, 37.62], [39.9, 116.4], [28.61, 77.2],
+  [19.07, 72.87], [13.08, 80.27], [23.81, 90.41], [24.86, 67.0], [31.55, 74.34],
+  [19.43, -99.13], [-23.55, -46.63], [40.71, -74.0], [43.65, -79.38], [49.28, -123.12],
+  [-33.87, 151.21], [-36.85, 174.76], [1.35, 103.82], [22.32, 114.17], [37.57, 126.98],
+  [30.04, 31.24], [6.52, 3.37], [-1.29, 36.82], [25.2, 55.27], [41.01, 28.98],
+  [59.33, 18.06], [45.46, 9.19], [40.42, -3.7], [38.72, -9.14], [60.17, 24.94],
+  [64.13, -21.9],
+];
+
+export const ENTITY_COUNT = ENTITY_POINTS.length;
+
+/** Lat/lon graticule — the intelligence-grid look. */
+function Graticule() {
+  const geo = useMemo(() => {
+    const pts: number[] = [];
+    const R = 1.005;
+    const push = (lat: number, lon: number) => { const v = latLonToVec3(lat, lon, R); pts.push(v.x, v.y, v.z); };
+    for (let lat = -75; lat <= 75; lat += 15) for (let lon = -180; lon < 180; lon += 4) { push(lat, lon); push(lat, lon + 4); }
+    for (let lon = -180; lon < 180; lon += 15) for (let lat = -88; lat < 88; lat += 4) { push(lat, lon); push(lat + 4, lon); }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
+    return g;
+  }, []);
+  return (
+    <lineSegments geometry={geo}>
+      <lineBasicMaterial color="#35e0ff" transparent opacity={0.09} depthWrite={false} />
+    </lineSegments>
+  );
+}
+
+function EntityBeacons({ reduced }: { reduced: boolean }) {
+  const refs = useRef<(THREE.Mesh | null)[]>([]);
+  useFrame((state) => {
+    if (reduced) return;
+    const t = state.clock.elapsedTime;
+    refs.current.forEach((m, i) => {
+      if (!m) return;
+      const k = (t * 0.5 + i * 0.137) % 1;
+      m.scale.setScalar(0.5 + k * 2.2);
+      (m.material as THREE.MeshBasicMaterial).opacity = 0.45 * (1 - k);
+    });
+  });
+  return (
+    <group>
+      {ENTITY_POINTS.map(([lat, lon], i) => {
+        const pos = latLonToVec3(lat, lon, 1.006);
+        const out = pos.clone().normalize();
+        return (
+          <group key={i} position={pos}>
+            <mesh>
+              <sphereGeometry args={[0.006, 8, 8]} />
+              <meshBasicMaterial color={i % 5 === 0 ? '#ff4ecd' : '#9be8ff'} toneMapped={false} />
+            </mesh>
+            <mesh ref={(el) => { refs.current[i] = el; }}
+              quaternion={new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, 1), out)}>
+              <ringGeometry args={[0.012, 0.016, 24]} />
+              <meshBasicMaterial color="#35e0ff" transparent opacity={0.4} side={THREE.DoubleSide}
+                blending={THREE.AdditiveBlending} depthWrite={false} toneMapped={false} />
+            </mesh>
+          </group>
+        );
+      })}
+    </group>
+  );
+}
+
+
+/** Realistic 3D division landmarks — composite primitives with idle motion:
+ *  beam column, base pulse, and a unique structure per division. */
+function DivisionStructures({ reduced }: { reduced: boolean }) {
+  const group = useRef<THREE.Group>(null);
+  const spin = useRef<(THREE.Object3D | null)[]>([]);
+  useFrame((state) => {
+    if (reduced) return;
+    const t = state.clock.elapsedTime;
+    spin.current.forEach((o, i) => {
+      if (!o) return;
+      o.rotation.y = t * (0.35 + (i % 3) * 0.12);
+      o.position.y = 0.055 + Math.sin(t * 0.9 + i * 1.7) * 0.006; // gentle bob
+    });
+  });
+
+  const beam = (color: string) => (
+    <mesh position={[0, 0.05, 0]}>
+      <cylinderGeometry args={[0.0035, 0.008, 0.11, 10, 1, true]} />
+      <meshBasicMaterial color={color} transparent opacity={0.5} blending={THREE.AdditiveBlending}
+        depthWrite={false} side={THREE.DoubleSide} toneMapped={false} />
+    </mesh>
+  );
+
+  let si = 0;
+  return (
+    <group ref={group}>
+      {DIVISION_NODES.map((n) => {
+        const pos = latLonToVec3(n.lat, n.lon, 1.002);
+        const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), pos.clone().normalize());
+        const idx = si++;
+        return (
+          <group key={n.id} position={pos} quaternion={q}>
+            {beam(n.color)}
+            <group ref={(el) => { spin.current[idx] = el; }} position={[0, 0.055, 0]}>
+              {n.id === 'research' && (
+                /* Thesyn Research — thesis stack + analysis orb */
+                <group>
+                  <mesh position={[0, -0.012, 0]} rotation={[0, 0.3, 0]}>
+                    <boxGeometry args={[0.032, 0.006, 0.024]} />
+                    <meshStandardMaterial color="#0e2c3d" roughness={0.35} metalness={0.55} emissive="#35e0ff" emissiveIntensity={0.22} />
+                  </mesh>
+                  <mesh position={[0, -0.004, 0]} rotation={[0, -0.2, 0]}>
+                    <boxGeometry args={[0.028, 0.006, 0.021]} />
+                    <meshStandardMaterial color="#123a4f" roughness={0.35} metalness={0.55} emissive="#35e0ff" emissiveIntensity={0.3} />
+                  </mesh>
+                  <mesh position={[0, 0.004, 0]}>
+                    <boxGeometry args={[0.024, 0.006, 0.018]} />
+                    <meshStandardMaterial color="#16455c" roughness={0.3} metalness={0.6} emissive="#7c5cff" emissiveIntensity={0.35} />
+                  </mesh>
+                  <mesh position={[0, 0.016, 0]}>
+                    <sphereGeometry args={[0.007, 18, 18]} />
+                    <meshStandardMaterial color="#35e0ff" roughness={0.15} metalness={0.3} emissive="#35e0ff" emissiveIntensity={1.1} />
+                  </mesh>
+                </group>
+              )}
+              {n.id === 'darkroom' && (
+                /* Darkroom — aperture vault with glowing slit */
+                <group>
+                  <mesh>
+                    <boxGeometry args={[0.026, 0.02, 0.026]} />
+                    <meshStandardMaterial color="#101418" roughness={0.5} metalness={0.75} emissive="#f5c26b" emissiveIntensity={0.08} />
+                  </mesh>
+                  <mesh position={[0, 0, 0.0135]}>
+                    <planeGeometry args={[0.016, 0.0035]} />
+                    <meshBasicMaterial color="#f5c26b" toneMapped={false} />
+                  </mesh>
+                  <mesh rotation={[Math.PI / 2, 0, 0]}>
+                    <torusGeometry args={[0.019, 0.0016, 8, 28]} />
+                    <meshStandardMaterial color="#f5c26b" roughness={0.25} metalness={0.8} emissive="#f5c26b" emissiveIntensity={0.55} />
+                  </mesh>
+                </group>
+              )}
+              {n.id === 'academy' && (
+                /* Academy — graduation spire: cap cone over core */
+                <group>
+                  <mesh position={[0, -0.008, 0]}>
+                    <cylinderGeometry args={[0.011, 0.015, 0.012, 6]} />
+                    <meshStandardMaterial color="#1b1440" roughness={0.4} metalness={0.6} emissive="#7c5cff" emissiveIntensity={0.3} />
+                  </mesh>
+                  <mesh position={[0, 0.006, 0]} rotation={[Math.PI, 0, 0]}>
+                    <coneGeometry args={[0.019, 0.008, 4]} />
+                    <meshStandardMaterial color="#241a55" roughness={0.35} metalness={0.65} emissive="#7c5cff" emissiveIntensity={0.5} />
+                  </mesh>
+                  <mesh position={[0, 0.016, 0]}>
+                    <sphereGeometry args={[0.004, 14, 14]} />
+                    <meshStandardMaterial color="#c9b6ff" emissive="#c9b6ff" emissiveIntensity={1.2} roughness={0.2} />
+                  </mesh>
+                </group>
+              )}
+              {n.id === 'entertainment' && (
+                /* Entertainment — film reel torus + play cone */
+                <group>
+                  <mesh rotation={[Math.PI / 2.3, 0, 0]}>
+                    <torusGeometry args={[0.017, 0.004, 10, 30]} />
+                    <meshStandardMaterial color="#3d0f2c" roughness={0.35} metalness={0.6} emissive="#ff4ecd" emissiveIntensity={0.5} />
+                  </mesh>
+                  <mesh rotation={[0, 0, -Math.PI / 2]} position={[0, 0, 0]}>
+                    <coneGeometry args={[0.008, 0.012, 3]} />
+                    <meshStandardMaterial color="#ff4ecd" emissive="#ff4ecd" emissiveIntensity={1.0} roughness={0.3} />
+                  </mesh>
+                </group>
+              )}
+              {n.id === 'games' && (
+                /* Games — crystal cluster (interactive shards) */
+                <group>
+                  <mesh position={[0, 0, 0]}>
+                    <icosahedronGeometry args={[0.012, 0]} />
+                    <meshStandardMaterial color="#0c2c1d" roughness={0.25} metalness={0.7} emissive="#3ddc97" emissiveIntensity={0.55} flatShading />
+                  </mesh>
+                  <mesh position={[0.013, -0.004, 0.004]} rotation={[0.4, 0.7, 0]}>
+                    <icosahedronGeometry args={[0.006, 0]} />
+                    <meshStandardMaterial color="#3ddc97" roughness={0.2} metalness={0.5} emissive="#3ddc97" emissiveIntensity={0.9} flatShading />
+                  </mesh>
+                  <mesh position={[-0.012, -0.003, -0.005]} rotation={[0.2, 0.4, 0.5]}>
+                    <icosahedronGeometry args={[0.005, 0]} />
+                    <meshStandardMaterial color="#9be8c9" roughness={0.2} metalness={0.5} emissive="#3ddc97" emissiveIntensity={0.8} flatShading />
+                  </mesh>
+                </group>
+              )}
+            </group>
+          </group>
+        );
+      })}
+    </group>
+  );
+}
+
+/** Acttolog orbital core — holographic logo sprite circling the world. */
+function ActtologCore({ reduced }: { reduced: boolean }) {
+  const ref = useRef<THREE.Group>(null);
+  const tex = useMemo(() => {
+    if (typeof document === 'undefined') return null;
+    const c = document.createElement('canvas');
+    c.width = 256; c.height = 256;
+    const x = c.getContext('2d')!;
+    const g = x.createLinearGradient(0, 0, 256, 256);
+    g.addColorStop(0, '#35e0ff'); g.addColorStop(1, '#7c5cff');
+    x.strokeStyle = g; x.lineWidth = 14; x.globalAlpha = 0.9;
+    x.beginPath(); x.arc(128, 128, 96, 0, Math.PI * 2); x.stroke();
+    x.lineWidth = 22; x.lineCap = 'round'; x.lineJoin = 'round';
+    x.beginPath(); x.moveTo(82, 172); x.lineTo(128, 62); x.lineTo(174, 172); x.moveTo(100, 140); x.lineTo(156, 140); x.stroke();
+    x.fillStyle = '#ff4ecd'; x.beginPath(); x.arc(200, 76, 13, 0, Math.PI * 2); x.fill();
+    const t = new THREE.CanvasTexture(c);
+    t.colorSpace = THREE.SRGBColorSpace;
+    return t;
+  }, []);
+  useFrame((state) => {
+    if (!ref.current) return;
+    const t = reduced ? 0.6 : state.clock.elapsedTime * 0.12;
+    ref.current.rotation.y = t * Math.PI * 2;
+    ref.current.rotation.x = Math.sin(t * 2.1) * 0.35;
+  });
+  if (!tex) return null;
+  return (
+    <group ref={ref}>
+      <sprite position={[1.42, 0.12, 0]} scale={[0.16, 0.16, 1]}>
+        <spriteMaterial map={tex} transparent opacity={0.95} depthWrite={false} toneMapped={false} />
+      </sprite>
+      <mesh rotation={[Math.PI / 2.35, 0, 0]}>
+        <torusGeometry args={[1.42, 0.0012, 6, 160]} />
+        <meshBasicMaterial color="#7c5cff" transparent opacity={0.35} blending={THREE.AdditiveBlending} depthWrite={false} toneMapped={false} />
+      </mesh>
+    </group>
+  );
+}
 
 /* ── division nodes — real places, real routes ─────────────────── */
 
@@ -53,12 +290,15 @@ const EARTH_VERT = /* glsl */ `
 varying vec2 vUv;
 varying vec3 vWorldNormal;
 varying vec3 vWorldPos;
+#include <common>
+#include <logdepthbuf_pars_vertex>
 void main() {
   vUv = uv;
   vec4 wp = modelMatrix * vec4(position, 1.0);
   vWorldPos = wp.xyz;
   vWorldNormal = normalize(mat3(modelMatrix) * normal);
   gl_Position = projectionMatrix * viewMatrix * wp;
+  #include <logdepthbuf_vertex>
 }`;
 
 const EARTH_FRAG = /* glsl */ `
@@ -69,6 +309,7 @@ varying vec2 vUv;
 varying vec3 vWorldNormal;
 varying vec3 vWorldPos;
 uniform float loaded;
+#include <logdepthbuf_pars_fragment>
 void main() {
   vec3 day = loaded > 0.5 ? pow(texture2D(dayMap, vUv).rgb, vec3(2.2)) : vec3(0.02, 0.07, 0.16);
   vec3 night = loaded > 0.5 ? pow(texture2D(nightMap, vUv).rgb, vec3(2.2)) : vec3(0.0);
@@ -83,33 +324,39 @@ void main() {
   col += vec3(0.49, 0.36, 1.0) * pow(rim, 5.0) * 0.22;
   gl_FragColor = vec4(col, 1.0);
   #include <colorspace_fragment>
+  #include <logdepthbuf_fragment>
 }`;
 
 const ATMO_VERT = /* glsl */ `
 varying vec3 vNormal;
 varying vec3 vViewDir;
+#include <common>
+#include <logdepthbuf_pars_vertex>
 void main() {
   vec4 wp = modelMatrix * vec4(position, 1.0);
   vViewDir = normalize(cameraPosition - wp.xyz);
   vNormal = normalize(mat3(modelMatrix) * normal);
   gl_Position = projectionMatrix * viewMatrix * wp;
+  #include <logdepthbuf_vertex>
 }`;
 
 const ATMO_FRAG = /* glsl */ `
 uniform vec3 glowColor;
 varying vec3 vNormal;
 varying vec3 vViewDir;
+#include <logdepthbuf_pars_fragment>
 void main() {
   // front-side fresnel: zero at disc centre, max at the limb (robust across drivers)
   float f = clamp(1.0 - dot(normalize(vNormal), normalize(vViewDir)), 0.0, 1.0);
   float intensity = pow(f, 3.4) * 1.25;
   gl_FragColor = vec4(glowColor * intensity, intensity);
   #include <colorspace_fragment>
+  #include <logdepthbuf_fragment>
 }`;
 
 /* ── sub-components ─────────────────────────────────────────────── */
 
-function Earth({ segments, sunDir }: { segments: number; sunDir: THREE.Vector3 }) {
+function Earth({ segments, sunDir, onCursor }: { segments: number; sunDir: THREE.Vector3; onCursor?: (lat: number | null, lon: number | null) => void }) {
   const matRef = useRef<THREE.ShaderMaterial>(null);
   const uniforms = useMemo(() => ({
     dayMap: { value: null as THREE.Texture | null },
@@ -157,7 +404,18 @@ function Earth({ segments, sunDir }: { segments: number; sunDir: THREE.Vector3 }
   }, [applyTex]);
 
   return (
-    <mesh>
+    <mesh
+      onPointerMove={(e) => {
+        if (!onCursor) return;
+        const local = e.object.worldToLocal(e.point.clone());
+        const r = local.length() || 1;
+        const lat = 90 - (Math.acos(local.y / r) * 180) / Math.PI;
+        let lon = (Math.atan2(local.z, -local.x) * 180) / Math.PI - 180;
+        if (lon < -180) lon += 360; if (lon > 180) lon -= 360;
+        onCursor(lat, lon);
+      }}
+      onPointerOut={() => onCursor && onCursor(null, null)}
+    >
       <sphereGeometry args={[1, segments, segments]} />
       <shaderMaterial ref={matRef} vertexShader={EARTH_VERT} fragmentShader={EARTH_FRAG} uniforms={uniforms} />
     </mesh>
@@ -377,19 +635,30 @@ function Starfield({ count }: { count: number }) {
 }
 
 /** Camera rig: pointer parallax + scroll-linked dolly (spec §23). */
-function Rig({ scrollRef }: { scrollRef: React.RefObject<number> }) {
+function Rig({ scrollRef, distTargetRef, distRef }: {
+  scrollRef: React.RefObject<number>;
+  distTargetRef: React.RefObject<number>;
+  distRef: React.RefObject<number>;
+}) {
   const { camera } = useThree();
+  const cur = useRef(3.15);
   const target = useRef(new THREE.Vector3(0, 0.12, 3.15));
   useFrame((state, dt) => {
     const p = scrollRef.current ?? 0;
     const k = Math.min(1, dt * 3.2);
+    const desired = (distTargetRef.current ?? 3.15) * (1 - p * 0.22);
+    cur.current += (desired - cur.current) * Math.min(1, dt * 4.5);
+    distRef.current = cur.current;
+    // hero composition offsets fade out on surface approach so the view
+    // centre is exactly the geocoded point at street level
+    const surf = THREE.MathUtils.clamp((cur.current - 1.0) / 1.5, 0, 1);
     target.current.set(
-      state.pointer.x * 0.16 + p * 0.25,
-      0.12 + state.pointer.y * 0.1 + p * 0.42,
-      3.15 - p * 0.95,
+      state.pointer.x * 0.16 * surf + p * 0.25 * surf,
+      0.12 * surf + state.pointer.y * 0.1 * surf + p * 0.42 * surf,
+      cur.current,
     );
     camera.position.lerp(target.current, k);
-    camera.lookAt(0, p * 0.1, 0);
+    camera.lookAt(0, p * 0.1 * surf, 0);
   });
   return null;
 }
@@ -432,39 +701,118 @@ function BloomPass() {
   return null;
 }
 
-function WorldGroup({ children, reduced, dragRef, tier, scrollRef }: {
+function WorldGroup({ children, reduced, dragRef, tier, scrollRef, flyRef, distRef }: {
   children: React.ReactNode; reduced: boolean;
   dragRef: React.RefObject<{ dx: number; vel: number; dragging: boolean }>;
   tier: QualityTier;
   scrollRef: React.RefObject<number>;
+  flyRef: React.RefObject<{ lat: number; lon: number; token: number } | null>;
+  distRef: React.RefObject<number>;
 }) {
   const group = useRef<THREE.Group>(null);
   const cfg = TIER_CONFIG[tier];
-  useFrame((_, dt) => {
+  const flyState = useRef({ token: -1, quat: new THREE.Quaternion(), active: false });
+  useFrame((state, dt) => {
     if (!group.current) return;
+    const fly = flyRef.current;
+    if (fly && fly.token !== flyState.current.token) {
+      flyState.current.token = fly.token;
+      const v = latLonToVec3(fly.lat, fly.lon, 1).normalize();
+      flyState.current.quat.setFromUnitVectors(v, new THREE.Vector3(0, 0, 1));
+      flyState.current.active = true;
+    }
+    if (flyState.current.active) {
+      group.current.quaternion.slerp(flyState.current.quat, Math.min(1, dt * 2.4));
+      if (group.current.quaternion.angleTo(flyState.current.quat) < 0.01) {
+        group.current.quaternion.copy(flyState.current.quat);
+        flyState.current.active = false;
+      }
+    }
+    if (typeof window !== 'undefined') {
+      (window as unknown as Record<string, unknown>).__atlQ = group.current.quaternion.toArray();
+    }
+    const surface = (distRef.current ?? 3) < 1.25;
     if (!reduced) {
       const drag = dragRef.current;
       if (drag) {
-        if (drag.dragging) { drag.vel = drag.dx * 0.006; drag.dx = 0; }
+        if (drag.dragging) { drag.vel = drag.dx * 0.006; drag.dx = 0; flyState.current.active = false; }
         else drag.vel *= 0.94;
         group.current.rotation.y += drag.vel;
       }
-      group.current.rotation.y += dt * cfg.autoRotate * 0.35;
-      const p = scrollRef.current ?? 0;
-      group.current.rotation.x = THREE.MathUtils.lerp(group.current.rotation.x, 0.16 + p * -0.22, Math.min(1, dt * 2));
+      // orbit-mode motion yields to the surface/fly mode so geocoding lands exact
+      if (!surface && !flyState.current.active) {
+        group.current.rotation.y += dt * cfg.autoRotate * 0.35; // horizontal spin
+        const p = scrollRef.current ?? 0;
+        const wobble = reduced ? 0 : Math.sin(state.clock.elapsedTime * 0.11) * 0.10; // vertical breathing
+        group.current.rotation.x = THREE.MathUtils.lerp(group.current.rotation.x, 0.16 + p * -0.22 + wobble, Math.min(1, dt * 2));
+        group.current.rotation.z = THREE.MathUtils.lerp(group.current.rotation.z, reduced ? 0 : Math.sin(state.clock.elapsedTime * 0.07) * 0.05, Math.min(1, dt * 2));
+      }
     }
   });
   return <group ref={group}>{children}</group>;
 }
 
+/** Hides the base Earth below ~765 km so street tiles own the surface. */
+function SurfaceHide({ children, distRef }: { children: React.ReactNode; distRef: React.RefObject<number> }) {
+  const ref = useRef<THREE.Group>(null);
+  useFrame(() => {
+    if (ref.current) ref.current.visible = (distRef.current ?? 3) > 1.12;
+  });
+  return <group ref={ref}>{children}</group>;
+}
+
+/** Hides orbit decorations (grid, nodes, arcs, atmosphere, dust) when the
+ *  camera descends below ~700 km — the way real globe engines switch to
+ *  surface mode so tiles own the screen at street level. */
+function DecorCull({ children, distRef }: { children: React.ReactNode; distRef: React.RefObject<number> }) {
+  const ref = useRef<THREE.Group>(null);
+  useFrame(() => {
+    if (ref.current) ref.current.visible = (distRef.current ?? 3) > 1.105;
+  });
+  return <group ref={ref}>{children}</group>;
+}
+
+/** Find-your-home pin — magenta pulse at the geocoded location. */
+function PinMarker({ lat, lon }: { lat: number; lon: number }) {
+  const ref = useRef<THREE.Mesh>(null);
+  const pos = useMemo(() => latLonToVec3(lat, lon, 1.008), [lat, lon]);
+  const out = useMemo(() => pos.clone().normalize(), [pos]);
+  useFrame((state) => {
+    if (!ref.current) return;
+    const k = (state.clock.elapsedTime * 0.8) % 1;
+    ref.current.scale.setScalar(0.8 + k * 3);
+    (ref.current.material as THREE.MeshBasicMaterial).opacity = 0.7 * (1 - k);
+  });
+  return (
+    <group position={pos}>
+      <mesh>
+        <sphereGeometry args={[0.012, 12, 12]} />
+        <meshBasicMaterial color="#ff4ecd" toneMapped={false} />
+      </mesh>
+      <mesh ref={ref} quaternion={new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, 1), out)}>
+        <ringGeometry args={[0.02, 0.026, 32]} />
+        <meshBasicMaterial color="#ff4ecd" transparent opacity={0.7} side={THREE.DoubleSide}
+          blending={THREE.AdditiveBlending} depthWrite={false} toneMapped={false} />
+      </mesh>
+    </group>
+  );
+}
+
 /* ── scene root ─────────────────────────────────────────────────── */
 
-function Scene({ tier, scrollRef, dragRef, onSelect, onStats }: {
+function Scene({ tier, scrollRef, distTargetRef, distRef, flyRef, dragRef, onSelect, onStats, onCursor, layer, tilesEnabled, pin }: {
   tier: QualityTier;
   scrollRef: React.RefObject<number>;
+  distTargetRef: React.RefObject<number>;
+  distRef: React.RefObject<number>;
+  flyRef: React.RefObject<{ lat: number; lon: number; token: number } | null>;
   dragRef: React.RefObject<{ dx: number; vel: number; dragging: boolean }>;
   onSelect: (route: string) => void;
   onStats?: (fps: number) => void;
+  onCursor?: (lat: number | null, lon: number | null) => void;
+  layer: TileLayer;
+  tilesEnabled: boolean;
+  pin: [number, number] | null;
 }) {
   const cfg = TIER_CONFIG[tier];
   const reduced = useMemo(() => prefersReducedMotion(), []);
@@ -479,28 +827,42 @@ function Scene({ tier, scrollRef, dragRef, onSelect, onStats }: {
 
   return (
     <>
-      <Rig scrollRef={scrollRef} />
+      <Rig scrollRef={scrollRef} distTargetRef={distTargetRef} distRef={distRef} />
       <Starfield count={cfg.stars} />
-      <WorldGroup reduced={reduced} dragRef={dragRef} tier={tier} scrollRef={scrollRef}>
-        <Earth segments={cfg.sphereSegments} sunDir={sunDir} />
-        <Atmosphere />
-        <OrbitalRings count={cfg.rings} reduced={reduced} />
-        <Arcs nodes={DIVISION_NODES} pulses={cfg.pulses} reduced={reduced} />
-        <DivisionNodes nodes={DIVISION_NODES} labels={cfg.labels} reduced={reduced} onSelect={onSelect} />
-      </WorldGroup>
+      <WorldGroup reduced={reduced} dragRef={dragRef} tier={tier} scrollRef={scrollRef} flyRef={flyRef} distRef={distRef}>
+        <Earth segments={cfg.sphereSegments} sunDir={sunDir} onCursor={onCursor} />
+        {tilesEnabled && <TileSphere layer={layer} distRef={distRef} active />}
+        {pin && <PinMarker lat={pin[0]} lon={pin[1]} />}
+        <DecorCull distRef={distRef}>
+          <Graticule />
+          <EntityBeacons reduced={reduced} />
+          <Atmosphere />
+          <OrbitalRings count={cfg.rings} reduced={reduced} />
+          <Arcs nodes={DIVISION_NODES} pulses={cfg.pulses} reduced={reduced} />
+          <DivisionNodes nodes={DIVISION_NODES} labels={cfg.labels} reduced={reduced} onSelect={onSelect} />
+          <ActtologCore reduced={reduced} />
       {cfg.particles > 0 && <Dust count={cfg.particles} reduced={reduced} />}
+        </DecorCull>
+      </WorldGroup>
       {cfg.bloom && !reduced && <BloomPass />}
     </>
   );
 }
 
-export function EarthScene({ tier, frameloop, scrollRef, dragRef, onSelect, onStats }: {
+export function EarthScene({ tier, frameloop, scrollRef, distTargetRef, distRef, flyRef, dragRef, onSelect, onStats, onCursor, layer, tilesEnabled, pin }: {
   tier: QualityTier;
   frameloop: 'always' | 'demand' | 'never';
   scrollRef: React.RefObject<number>;
+  distTargetRef: React.RefObject<number>;
+  distRef: React.RefObject<number>;
+  flyRef: React.RefObject<{ lat: number; lon: number; token: number } | null>;
   dragRef: React.RefObject<{ dx: number; vel: number; dragging: boolean }>;
   onSelect: (route: string) => void;
   onStats?: (fps: number) => void;
+  onCursor?: (lat: number | null, lon: number | null) => void;
+  layer: TileLayer;
+  tilesEnabled: boolean;
+  pin: [number, number] | null;
 }) {
   const cfg = TIER_CONFIG[tier];
   const reduced = typeof window !== 'undefined' && prefersReducedMotion();
@@ -509,10 +871,14 @@ export function EarthScene({ tier, frameloop, scrollRef, dragRef, onSelect, onSt
       className="globe-canvas"
       dpr={cfg.dpr}
       frameloop={reduced ? 'demand' : frameloop}
-      camera={{ position: [0, 0.12, 3.15], fov: 42 }}
-      gl={{ antialias: tier !== 'low', alpha: true, powerPreference: 'high-performance' }}
+      camera={{ position: [0, 0.12, 3.15], fov: 42, near: 0.00002, far: 500 }}
+      gl={{ antialias: tier !== 'low', alpha: true, powerPreference: 'high-performance', logarithmicDepthBuffer: true }}
+      onWheel={(e) => {
+        const next = (distTargetRef.current ?? 3.15) * Math.exp(e.deltaY * 0.0011);
+        distTargetRef.current = Math.min(3.6, Math.max(1.0025, next));
+      }}
     >
-      <Scene tier={tier} scrollRef={scrollRef} dragRef={dragRef} onSelect={onSelect} onStats={onStats} />
+      <Scene tier={tier} scrollRef={scrollRef} distTargetRef={distTargetRef} distRef={distRef} flyRef={flyRef} dragRef={dragRef} onSelect={onSelect} onStats={onStats} onCursor={onCursor} layer={layer} tilesEnabled={tilesEnabled} pin={pin} />
     </Canvas>
   );
 }

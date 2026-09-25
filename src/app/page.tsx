@@ -1,5 +1,8 @@
 import type { Metadata } from 'next';
 import { Hero } from '@/components/home/Hero';
+import { WorldShowcase } from '@/components/home/WorldShowcase';
+import fs from 'node:fs';
+import path from 'node:path';
 import { HomeLayers, type HomeData, type LatestItem } from '@/components/home/HomeLayers';
 import { getDB, pub, homeSection, seoFor, divisions as getDivisions } from '@/lib/content';
 import type { Bi } from '@/lib/content/types';
@@ -22,6 +25,10 @@ export default function HomePage() {
   const offers = pub(db.offers);
 
   // latest feed (prototype h6)
+  const mediaDir = path.join(process.cwd(), 'public', 'media');
+  const shots = ['world', 'research', 'darkroom', 'academy', 'entertainment', 'games']
+    .filter((id) => fs.existsSync(path.join(mediaDir, `${id}.jpg`)));
+
   const feed: LatestItem[] = [];
   posts.slice(0, 4).forEach((p) => feed.push({ title: p.title as Bi, kind: 'Blog', date: p.publishedAt, route: `/blog/${p.slug}`, color: 'var(--vi)', icon: 'doc', mem: p.access === 'members' }));
   ents.filter((e) => e.featured).slice(0, 2).forEach((e) => feed.push({ title: e.title as Bi, kind: 'Entertainment', date: e.date, route: `/entertainment/${e.slug}`, color: 'var(--mg)', icon: 'play', mem: e.access === 'members' }));
@@ -35,6 +42,7 @@ export default function HomePage() {
   }
 
   const data: HomeData = {
+    shots,
     sections,
     settings: db.settings,
     divisions: dvs,
@@ -60,9 +68,25 @@ export default function HomePage() {
     offers: offers.filter((o) => o.featured).slice(0, 3).length ? offers.filter((o) => o.featured).slice(0, 3) : offers.slice(0, 3),
   };
 
+  const esc = (x: string) => x.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const ticker: string[] = [
+    `<b>LIVE</b> ACTTOLOG WORLD NETWORK`,
+    ...dvs.map((d) => `${esc(d.name.en.toUpperCase())} <b>ONLINE</b>`),
+    `BLOG ENTRIES <b>${posts.length}</b>`,
+    `DARKROOM RESOURCES <b>${drs.length}</b> VERIFIED FEED`,
+    `ACADEMY COURSES <b>${courses.length}</b>`,
+    `GAMES <b>${games.length}</b>`,
+    `OFFERS <b>${offers.length}</b> NPR/USD`,
+    `ENTERTAINMENT <b>${ents.length}</b> ITEMS`,
+    ...posts.slice(0, 3).map((pp) => `NEW · ${esc(pp.title.en.toUpperCase())}`),
+    ...drs.filter((r) => r.featured).slice(0, 4).map((r) => `FEATURED RESOURCE · ${esc(r.name.toUpperCase())}`),
+    `DISCOVER · LEARN · CREATE · CONNECT`,
+  ];
+
   return (
     <>
-      <Hero settings={db.settings} />
+      <Hero settings={db.settings} ticker={ticker} />
+      <WorldShowcase shots={shots} />
       <HomeLayers data={data} />
     </>
   );

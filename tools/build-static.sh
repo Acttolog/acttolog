@@ -17,7 +17,7 @@ ln -sfn "$(pwd)/node_modules" "$SB/node_modules"
 cd "$SB"
 ACTTOLOG_EXPORT=1 NEXT_PUBLIC_STATIC=1 ACTTOLOG_LOWMEM=1 \
   NEXT_PUBLIC_SITE_URL=https://acttolog.github.io \
-  NODE_OPTIONS="--max-old-space-size=500 --max-semi-space-size=1" \
+  NODE_OPTIONS="--max-old-space-size=470 --max-semi-space-size=1" \
   npx next build --webpack
 echo "STATIC BUILD OK → $SB/out"
 ls out | head -20

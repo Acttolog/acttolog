@@ -75,6 +75,72 @@ html[data-theme="light"] {
   --mg: #d62fa8;
 }
 
+html[data-theme="midnight"] {
+  color-scheme: dark;
+  --bg: #020312; --bg2: #050827; --panel: rgba(8, 12, 40, 0.82); --panel2: rgba(5, 8, 30, 0.92);
+  --solid: #070b26; --txt: #dfe7ff; --mut: #8b98c9; --dim: #5f6b96;
+  --line: rgba(110, 150, 255, 0.16); --line2: rgba(110, 150, 255, 0.34);
+  --shadow: 0 30px 80px -40px rgba(0, 0, 10, 0.95);
+  --cy: #5ea2ff; --vi: #8f6bff; --mg: #ff5fd0;
+}
+html[data-theme="aurora"] {
+  color-scheme: dark;
+  --bg: #02100d; --bg2: #041814; --panel: rgba(6, 26, 22, 0.82); --panel2: rgba(4, 18, 15, 0.92);
+  --solid: #052019; --txt: #dffcf2; --mut: #8fc4b2; --dim: #62907f;
+  --line: rgba(90, 255, 210, 0.14); --line2: rgba(90, 255, 210, 0.32);
+  --shadow: 0 30px 80px -40px rgba(0, 10, 6, 0.9);
+  --cy: #2dffd0; --vi: #37b6ff; --mg: #b96bff;
+}
+html[data-theme="sunset"] {
+  color-scheme: dark;
+  --bg: #12040a; --bg2: #1c0710; --panel: rgba(38, 10, 20, 0.82); --panel2: rgba(26, 7, 14, 0.92);
+  --solid: #230a13; --txt: #ffe9ef; --mut: #cf9aa8; --dim: #9c6b78;
+  --line: rgba(255, 140, 170, 0.16); --line2: rgba(255, 140, 170, 0.34);
+  --shadow: 0 30px 80px -40px rgba(20, 0, 8, 0.9);
+  --cy: #ffb454; --vi: #ff5f7a; --mg: #ff8bd6;
+}
+html[data-theme="paper"] {
+  color-scheme: light;
+  --bg: #f6f1e7; --bg2: #ede5d6; --panel: rgba(255, 252, 246, 0.88); --panel2: rgba(255, 255, 250, 0.95);
+  --solid: #fffdf8; --txt: #241b10; --mut: #5d5140; --dim: #8a7c66;
+  --line: rgba(90, 60, 20, 0.16); --line2: rgba(90, 60, 20, 0.32);
+  --shadow: 0 26px 60px -34px rgba(90, 60, 20, 0.35);
+  --cy: #0a7f8f; --vi: #6b4bd8; --mg: #c2358f;
+}
+
+html[data-theme="cyber"] {
+  color-scheme: dark;
+  --bg: #030a04; --bg2: #06120a; --panel: rgba(6, 26, 12, 0.82); --panel2: rgba(4, 18, 9, 0.92);
+  --solid: #06180c; --txt: #e2ffe9; --mut: #8fc79d; --dim: #5e9269;
+  --line: rgba(90, 255, 140, 0.14); --line2: rgba(90, 255, 140, 0.32);
+  --shadow: 0 30px 80px -40px rgba(0, 10, 2, 0.9);
+  --cy: #49ff8b; --vi: #00d0ff; --mg: #d0ff4e;
+}
+html[data-theme="royal"] {
+  color-scheme: dark;
+  --bg: #0a0618; --bg2: #120a28; --panel: rgba(26, 16, 54, 0.82); --panel2: rgba(18, 11, 40, 0.92);
+  --solid: #170e33; --txt: #f0e9ff; --mut: #b0a1d8; --dim: #7d6fa8;
+  --line: rgba(190, 160, 255, 0.16); --line2: rgba(190, 160, 255, 0.34);
+  --shadow: 0 30px 80px -40px rgba(8, 0, 20, 0.92);
+  --cy: #c084fc; --vi: #818cf8; --mg: #fbbf24;
+}
+html[data-theme="ocean"] {
+  color-scheme: dark;
+  --bg: #02121c; --bg2: #041c2a; --panel: rgba(6, 32, 46, 0.82); --panel2: rgba(4, 22, 33, 0.92);
+  --solid: #052231; --txt: #dff6ff; --mut: #8fbdd0; --dim: #5f8ba0;
+  --line: rgba(110, 210, 255, 0.15); --line2: rgba(110, 210, 255, 0.33);
+  --shadow: 0 30px 80px -40px rgba(0, 10, 18, 0.9);
+  --cy: #38dfff; --vi: #2f7cff; --mg: #52ffc8;
+}
+html[data-theme="rose"] {
+  color-scheme: dark;
+  --bg: #14060f; --bg2: #1e0a18; --panel: rgba(40, 10, 30, 0.82); --panel2: rgba(28, 7, 21, 0.92);
+  --solid: #290b1e; --txt: #ffeaf4; --mut: #d29ab6; --dim: #9c6b84;
+  --line: rgba(255, 140, 190, 0.16); --line2: rgba(255, 140, 190, 0.34);
+  --shadow: 0 30px 80px -40px rgba(20, 0, 12, 0.9);
+  --cy: #ff6fa5; --vi: #b06cff; --mg: #ffc46b;
+}
+
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 
@@ -287,7 +353,24 @@ button, input, select, textarea { font: inherit; color: inherit; }
   color: var(--dim); text-transform: uppercase; pointer-events: none;
 }
 .hudtl { top: calc(var(--nav) + 20px); left: 4vw; display: flex; flex-direction: column; gap: 6px; }
-.hudbr { bottom: 18px; right: 4vw; text-align: right; display: flex; flex-direction: column; gap: 6px; align-items: flex-end; }
+.hudbr { bottom: 52px; right: 4vw; text-align: right; display: flex; flex-direction: column; gap: 6px; align-items: flex-end; }
+.hudbl { bottom: 52px; left: 4vw; display: flex; flex-direction: column; gap: 6px; }
+@media (max-width: 1099px) { .hudbl { display: none; } }
+.hero-ticker {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 4; height: 34px;
+  display: flex; align-items: center; overflow: hidden;
+  background: color-mix(in srgb, var(--bg) 78%, transparent);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid var(--line);
+}
+.hero-ticker .marqt { gap: 0; }
+.hero-ticker .tk {
+  display: inline-flex; align-items: center; gap: 8px; padding: 0 22px;
+  font-family: var(--font-mono); font-size: 10.2px; letter-spacing: .14em;
+  color: var(--dim); white-space: nowrap; text-transform: uppercase;
+}
+.hero-ticker .tk b { color: var(--cy); font-weight: 600; }
+.hero-ticker .tk .sep { color: var(--line2); }
 .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--ok); animation: pls 2.2s infinite; display: inline-block; }
 @keyframes pls {
   0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--ok) 70%, transparent); }
@@ -303,6 +386,32 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .cue i::after { content: ''; position: absolute; top: -42px; left: 0; width: 1px; height: 42px; background: linear-gradient(180deg, transparent, var(--txt)); animation: cu 2.4s ease-in-out infinite; }
 @keyframes cu { 0% { top: -42px; } 60%, 100% { top: 42px; } }
 @media (max-width: 1099px) { .hudtl, .hudbr { display: none; } }
+
+/* ── globe pointer ring (visible mouse readout) ── */
+.pointer-ring {
+  position: absolute; z-index: 6; pointer-events: none;
+  width: 34px; height: 34px; margin: -17px 0 0 -17px; border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--cy) 70%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--cy) 18%, transparent), 0 0 18px color-mix(in srgb, var(--cy) 30%, transparent) inset;
+  animation: prspin 6s linear infinite;
+}
+.pointer-ring::before, .pointer-ring::after {
+  content: ''; position: absolute; background: color-mix(in srgb, var(--cy) 80%, transparent);
+}
+.pointer-ring::before { left: 50%; top: -5px; width: 1px; height: 5px; }
+.pointer-ring::after { top: 50%; left: -5px; height: 1px; width: 5px; }
+@keyframes prspin { to { transform: rotate(360deg); } }
+.pointer-ring .pr-dot {
+  position: absolute; left: 50%; top: 50%; width: 3px; height: 3px; margin: -1.5px;
+  border-radius: 50%; background: var(--mg); box-shadow: 0 0 8px var(--mg);
+}
+.pointer-ring .pr-chip {
+  position: absolute; left: 40px; top: -8px; white-space: nowrap;
+  font-size: 9.4px; letter-spacing: .14em; color: var(--cy);
+  background: color-mix(in srgb, var(--bg) 72%, transparent);
+  border: 1px solid color-mix(in srgb, var(--cy) 30%, transparent);
+  padding: 3px 8px; border-radius: 8px; backdrop-filter: blur(6px);
+}
 
 /* ── orbital ecosystem SVG ── */
 .orb-arm { cursor: pointer; }

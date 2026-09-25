@@ -8,7 +8,7 @@ import { useSession } from '@/lib/session';
 import { track } from '@/lib/analytics';
 import { clientAiAnswer } from '@/lib/ai-core';
 
-interface Msg { role: 'user' | 'ai'; text: string; sources?: AiSource[] }
+interface Msg { role: 'user' | 'ai'; text: string; sources?: AiSource[]; steps?: { label: string; detail: string }[] }
 export interface AiSource { title: string; route: string; meta: string; origin: 'acttolog' | 'web' }
 
 const SUGGESTIONS = {
@@ -90,7 +90,7 @@ export function AiChat({ variant, prefill, openSignal }: {
       replied = false;
       try {
         const local = clientAiAnswer(q, locale, mode);
-        setMessages((prev) => [...prev, { role: 'ai', text: local.answer, sources: local.sources }]);
+        setMessages((prev) => [...prev, { role: 'ai', text: local.answer, sources: local.sources, steps: local.steps }]);
         replied = true;
       } catch { /* apology below */ }
     }
@@ -123,6 +123,18 @@ export function AiChat({ variant, prefill, openSignal }: {
           <div key={i} className="aimsg u">{m.text}</div>
         ) : (
           <div key={i} className="aimsg a">
+            {m.steps && m.steps.length > 0 && (
+              <div className="mb-3 space-y-1.5">
+                <div className="mono text-[8.8px] tracking-[.22em] dim">AGENT TRACE</div>
+                {m.steps.map((st, j) => (
+                  <div key={j} className="flex items-center gap-2 text-[10.6px] mono dim">
+                    <span className="badge b-vi !text-[8.6px]">{String(j + 1).padStart(2, '0')}</span>
+                    <span style={{ color: 'var(--txt)' }}>{st.label}</span>
+                    <span className="truncate">{st.detail}</span>
+                  </div>
+                ))}
+              </div>
+            )}
             <div style={{ whiteSpace: 'pre-line' }}>{m.text}</div>
             {m.sources && m.sources.length > 0 && (
               <div className="mt-3 pt-3 space-y-2" style={{ borderTop: '1px solid var(--line)' }}>

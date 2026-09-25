@@ -25,7 +25,7 @@ const notoDevanagari = Noto_Sans_Devanagari({
 });
 
 const db = getDB();
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.acttolog.com';
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.acttolog.com.np';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

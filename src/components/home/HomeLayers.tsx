@@ -12,6 +12,8 @@ import { usePrefs } from '@/lib/prefs';
 import { useSession } from '@/lib/session';
 import { track } from '@/lib/analytics';
 import { resolveImage, money, fdate, nf, rt } from '@/lib/utils';
+
+
 import type {
   AcademyCourse, Bi, BlogPost, DarkroomCategory, DarkroomResource,
   Division, EntertainmentItem, HomeSection, Offer, SiteSettings,
@@ -23,6 +25,7 @@ export interface LatestItem {
 }
 
 export interface HomeData {
+  shots: string[];
   sections: Record<string, HomeSection>;
   settings: SiteSettings;
   divisions: Division[];
@@ -39,11 +42,12 @@ const ORBIT_NODES: [number, number][] = [[132, 96], [668, 96], [96, 372], [704, 
 
 export function HomeLayers({ data }: { data: HomeData }) {
   const { sections: sec, settings: s, divisions: dvs } = data;
+
   return (
     <>
       <LayerIntro sec={sec.intro} s={s} counts={data.counts} />
       <LayerEcosystem sec={sec.eco} dvs={dvs} />
-      <LayerDivisions sec={sec.divisions} dvs={dvs} counts={data.counts} />
+      <LayerDivisions sec={sec.divisions} dvs={dvs} counts={data.counts} shots={data.shots} />
       <LayerFeatured sec={sec.featured} f={data.featured} />
       <LayerLatest sec={sec.latest} items={data.latest} />
       <LayerAcademy sec={sec.academy} courses={data.courses} />
@@ -193,7 +197,10 @@ function LayerEcosystem({ sec, dvs }: { sec: HomeSection; dvs: Division[] }) {
 
 /* ── 03 · divisions ─────────────────────────────────────────────── */
 
-function LayerDivisions({ sec, dvs, counts }: { sec: HomeSection; dvs: Division[]; counts: HomeData['counts'] }) {
+function LayerDivisions({ sec, dvs, counts, shots }: { sec: HomeSection; dvs: Division[]; counts: HomeData['counts']; shots: string[] }) {
+  /** Real media shot when present, procedural brand art otherwise. */
+  const shot = (id: string, art: string) =>
+    shots.includes(id) ? `/media/${id}.jpg` : resolveImage(`art:${art}`);
   const { L, locale } = useI18n();
   if (sec.visible === false) return null;
   const cnt: Record<string, string> = {
@@ -215,7 +222,7 @@ function LayerDivisions({ sec, dvs, counts }: { sec: HomeSection; dvs: Division[
                 <div className="grid sm:grid-cols-[.85fr_1.15fr] h-full">
                   <div className="h-[188px] sm:h-full min-h-[188px] overflow-hidden relative">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={resolveImage(`art:${d.art || 'nebula'}`)} alt=""
+                    <img src={shot(d.id, d.art || 'nebula')} alt=""
                       className="w-full h-full object-cover transition-transform duration-[1.6s] group-hover:scale-105" />
                     <div className="absolute inset-0" style={{ background: `linear-gradient(90deg,transparent 40%,color-mix(in srgb,var(--panel2) 88%,transparent))` }} />
                   </div>

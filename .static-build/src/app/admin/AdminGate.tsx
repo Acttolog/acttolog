@@ -12,12 +12,15 @@ export function AdminGate({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const staff = Boolean(user && (user.role === 'Owner' || user.role === 'Admin'));
 
-  // the login page renders without the gated shell
-  if (pathname.startsWith('/admin/login')) return <>{children}</>;
+  const isLogin = pathname.startsWith('/admin/login');
 
   useEffect(() => {
-    if (!loading && !user) router.replace('/admin/login');
-  }, [loading, user, router]);
+    if (isLogin || loading || user) return;
+    router.replace('/admin/login');
+  }, [isLogin, loading, user, router]);
+
+  // the login page renders without the gated shell
+  if (isLogin) return <>{children}</>;
 
   if (loading) {
     return (
@@ -28,8 +31,7 @@ export function AdminGate({ children }: { children: React.ReactNode }) {
   }
   if (!user) return null;
   if (!staff) {
-    useEffectForbidden(router);
-    return null;
+    return <ForbiddenRedirect />;
   }
   return (
     <div className="ashell" style={{ paddingTop: 0 }}>
@@ -39,6 +41,8 @@ export function AdminGate({ children }: { children: React.ReactNode }) {
   );
 }
 
-function useEffectForbidden(router: ReturnType<typeof useRouter>) {
+function ForbiddenRedirect() {
+  const router = useRouter();
   useEffect(() => { router.replace('/forbidden'); }, [router]);
+  return null;
 }

@@ -19,6 +19,76 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { TIER_CONFIG, prefersReducedMotion, type QualityTier } from './tier';
+import { TileSphere, type TileLayer } from './TileGlobe';
+
+/* ── live entity beacons (OSINT-style pulses over world cities) ─── */
+export const ENTITY_POINTS: [number, number][] = [
+  [27.71, 85.32], [34.05, -118.24], [42.36, -71.06], [35.68, 139.69], [52.52, 13.4],
+  [51.5, -0.12], [48.85, 2.35], [55.75, 37.62], [39.9, 116.4], [28.61, 77.2],
+  [19.07, 72.87], [13.08, 80.27], [23.81, 90.41], [24.86, 67.0], [31.55, 74.34],
+  [19.43, -99.13], [-23.55, -46.63], [40.71, -74.0], [43.65, -79.38], [49.28, -123.12],
+  [-33.87, 151.21], [-36.85, 174.76], [1.35, 103.82], [22.32, 114.17], [37.57, 126.98],
+  [30.04, 31.24], [6.52, 3.37], [-1.29, 36.82], [25.2, 55.27], [41.01, 28.98],
+  [59.33, 18.06], [45.46, 9.19], [40.42, -3.7], [38.72, -9.14], [60.17, 24.94],
+  [64.13, -21.9],
+];
+
+export const ENTITY_COUNT = ENTITY_POINTS.length;
+
+/** Lat/lon graticule — the intelligence-grid look. */
+function Graticule() {
+  const geo = useMemo(() => {
+    const pts: number[] = [];
+    const R = 1.004;
+    const push = (lat: number, lon: number) => { const v = latLonToVec3(lat, lon, R); pts.push(v.x, v.y, v.z); };
+    for (let lat = -75; lat <= 75; lat += 15) for (let lon = -180; lon < 180; lon += 4) { push(lat, lon); push(lat, lon + 4); }
+    for (let lon = -180; lon < 180; lon += 15) for (let lat = -88; lat < 88; lat += 4) { push(lat, lon); push(lat + 4, lon); }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
+    return g;
+  }, []);
+  return (
+    <lineSegments geometry={geo}>
+      <lineBasicMaterial color="#35e0ff" transparent opacity={0.09} depthWrite={false} />
+    </lineSegments>
+  );
+}
+
+function EntityBeacons({ reduced }: { reduced: boolean }) {
+  const refs = useRef<(THREE.Mesh | null)[]>([]);
+  useFrame((state) => {
+    if (reduced) return;
+    const t = state.clock.elapsedTime;
+    refs.current.forEach((m, i) => {
+      if (!m) return;
+      const k = (t * 0.5 + i * 0.137) % 1;
+      m.scale.setScalar(0.5 + k * 2.2);
+      (m.material as THREE.MeshBasicMaterial).opacity = 0.45 * (1 - k);
+    });
+  });
+  return (
+    <group>
+      {ENTITY_POINTS.map(([lat, lon], i) => {
+        const pos = latLonToVec3(lat, lon, 1.006);
+        const out = pos.clone().normalize();
+        return (
+          <group key={i} position={pos}>
+            <mesh>
+              <sphereGeometry args={[0.006, 8, 8]} />
+              <meshBasicMaterial color={i % 5 === 0 ? '#ff4ecd' : '#9be8ff'} toneMapped={false} />
+            </mesh>
+            <mesh ref={(el) => { refs.current[i] = el; }}
+              quaternion={new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, 1), out)}>
+              <ringGeometry args={[0.012, 0.016, 24]} />
+              <meshBasicMaterial color="#35e0ff" transparent opacity={0.4} side={THREE.DoubleSide}
+                blending={THREE.AdditiveBlending} depthWrite={false} toneMapped={false} />
+            </mesh>
+          </group>
+        );
+      })}
+    </group>
+  );
+}
 
 /* ── division nodes — real places, real routes ─────────────────── */
 
@@ -109,7 +179,7 @@ void main() {
 
 /* ── sub-components ─────────────────────────────────────────────── */
 
-function Earth({ segments, sunDir }: { segments: number; sunDir: THREE.Vector3 }) {
+function Earth({ segments, sunDir, onCursor }: { segments: number; sunDir: THREE.Vector3; onCursor?: (lat: number | null, lon: number | null) => void }) {
   const matRef = useRef<THREE.ShaderMaterial>(null);
   const uniforms = useMemo(() => ({
     dayMap: { value: null as THREE.Texture | null },
@@ -157,7 +227,18 @@ function Earth({ segments, sunDir }: { segments: number; sunDir: THREE.Vector3 }
   }, [applyTex]);
 
   return (
-    <mesh>
+    <mesh
+      onPointerMove={(e) => {
+        if (!onCursor) return;
+        const local = e.object.worldToLocal(e.point.clone());
+        const r = local.length() || 1;
+        const lat = 90 - (Math.acos(local.y / r) * 180) / Math.PI;
+        let lon = (Math.atan2(local.z, -local.x) * 180) / Math.PI - 180;
+        if (lon < -180) lon += 360; if (lon > 180) lon -= 360;
+        onCursor(lat, lon);
+      }}
+      onPointerOut={() => onCursor && onCursor(null, null)}
+    >
       <sphereGeometry args={[1, segments, segments]} />
       <shaderMaterial ref={matRef} vertexShader={EARTH_VERT} fragmentShader={EARTH_FRAG} uniforms={uniforms} />
     </mesh>
@@ -377,16 +458,24 @@ function Starfield({ count }: { count: number }) {
 }
 
 /** Camera rig: pointer parallax + scroll-linked dolly (spec §23). */
-function Rig({ scrollRef }: { scrollRef: React.RefObject<number> }) {
+function Rig({ scrollRef, distTargetRef, distRef }: {
+  scrollRef: React.RefObject<number>;
+  distTargetRef: React.RefObject<number>;
+  distRef: React.RefObject<number>;
+}) {
   const { camera } = useThree();
+  const cur = useRef(3.15);
   const target = useRef(new THREE.Vector3(0, 0.12, 3.15));
   useFrame((state, dt) => {
     const p = scrollRef.current ?? 0;
     const k = Math.min(1, dt * 3.2);
+    const desired = (distTargetRef.current ?? 3.15) * (1 - p * 0.22);
+    cur.current += (desired - cur.current) * Math.min(1, dt * 4.5);
+    distRef.current = cur.current;
     target.current.set(
-      state.pointer.x * 0.16 + p * 0.25,
-      0.12 + state.pointer.y * 0.1 + p * 0.42,
-      3.15 - p * 0.95,
+      state.pointer.x * 0.16 * (cur.current / 3.15) + p * 0.25,
+      0.12 + state.pointer.y * 0.1 * (cur.current / 3.15) + p * 0.42,
+      cur.current,
     );
     camera.position.lerp(target.current, k);
     camera.lookAt(0, p * 0.1, 0);
@@ -432,20 +521,33 @@ function BloomPass() {
   return null;
 }
 
-function WorldGroup({ children, reduced, dragRef, tier, scrollRef }: {
+function WorldGroup({ children, reduced, dragRef, tier, scrollRef, flyRef }: {
   children: React.ReactNode; reduced: boolean;
   dragRef: React.RefObject<{ dx: number; vel: number; dragging: boolean }>;
   tier: QualityTier;
   scrollRef: React.RefObject<number>;
+  flyRef: React.RefObject<{ lat: number; lon: number; token: number } | null>;
 }) {
   const group = useRef<THREE.Group>(null);
   const cfg = TIER_CONFIG[tier];
+  const flyState = useRef({ token: -1, quat: new THREE.Quaternion(), active: false });
   useFrame((_, dt) => {
     if (!group.current) return;
+    const fly = flyRef.current;
+    if (fly && fly.token !== flyState.current.token) {
+      flyState.current.token = fly.token;
+      const v = latLonToVec3(fly.lat, fly.lon, 1).normalize();
+      flyState.current.quat.setFromUnitVectors(v, new THREE.Vector3(0, 0, 1));
+      flyState.current.active = true;
+    }
+    if (flyState.current.active) {
+      group.current.quaternion.slerp(flyState.current.quat, Math.min(1, dt * 2.4));
+      if (group.current.quaternion.angleTo(flyState.current.quat) < 0.01) flyState.current.active = false;
+    }
     if (!reduced) {
       const drag = dragRef.current;
       if (drag) {
-        if (drag.dragging) { drag.vel = drag.dx * 0.006; drag.dx = 0; }
+        if (drag.dragging) { drag.vel = drag.dx * 0.006; drag.dx = 0; flyState.current.active = false; }
         else drag.vel *= 0.94;
         group.current.rotation.y += drag.vel;
       }
@@ -457,14 +559,47 @@ function WorldGroup({ children, reduced, dragRef, tier, scrollRef }: {
   return <group ref={group}>{children}</group>;
 }
 
+/** Find-your-home pin — magenta pulse at the geocoded location. */
+function PinMarker({ lat, lon }: { lat: number; lon: number }) {
+  const ref = useRef<THREE.Mesh>(null);
+  const pos = useMemo(() => latLonToVec3(lat, lon, 1.008), [lat, lon]);
+  const out = useMemo(() => pos.clone().normalize(), [pos]);
+  useFrame((state) => {
+    if (!ref.current) return;
+    const k = (state.clock.elapsedTime * 0.8) % 1;
+    ref.current.scale.setScalar(0.8 + k * 3);
+    (ref.current.material as THREE.MeshBasicMaterial).opacity = 0.7 * (1 - k);
+  });
+  return (
+    <group position={pos}>
+      <mesh>
+        <sphereGeometry args={[0.012, 12, 12]} />
+        <meshBasicMaterial color="#ff4ecd" toneMapped={false} />
+      </mesh>
+      <mesh ref={ref} quaternion={new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, 1), out)}>
+        <ringGeometry args={[0.02, 0.026, 32]} />
+        <meshBasicMaterial color="#ff4ecd" transparent opacity={0.7} side={THREE.DoubleSide}
+          blending={THREE.AdditiveBlending} depthWrite={false} toneMapped={false} />
+      </mesh>
+    </group>
+  );
+}
+
 /* ── scene root ─────────────────────────────────────────────────── */
 
-function Scene({ tier, scrollRef, dragRef, onSelect, onStats }: {
+function Scene({ tier, scrollRef, distTargetRef, distRef, flyRef, dragRef, onSelect, onStats, onCursor, layer, tilesEnabled, pin }: {
   tier: QualityTier;
   scrollRef: React.RefObject<number>;
+  distTargetRef: React.RefObject<number>;
+  distRef: React.RefObject<number>;
+  flyRef: React.RefObject<{ lat: number; lon: number; token: number } | null>;
   dragRef: React.RefObject<{ dx: number; vel: number; dragging: boolean }>;
   onSelect: (route: string) => void;
   onStats?: (fps: number) => void;
+  onCursor?: (lat: number | null, lon: number | null) => void;
+  layer: TileLayer;
+  tilesEnabled: boolean;
+  pin: [number, number] | null;
 }) {
   const cfg = TIER_CONFIG[tier];
   const reduced = useMemo(() => prefersReducedMotion(), []);
@@ -479,28 +614,39 @@ function Scene({ tier, scrollRef, dragRef, onSelect, onStats }: {
 
   return (
     <>
-      <Rig scrollRef={scrollRef} />
+      <Rig scrollRef={scrollRef} distTargetRef={distTargetRef} distRef={distRef} />
       <Starfield count={cfg.stars} />
-      <WorldGroup reduced={reduced} dragRef={dragRef} tier={tier} scrollRef={scrollRef}>
-        <Earth segments={cfg.sphereSegments} sunDir={sunDir} />
+      <WorldGroup reduced={reduced} dragRef={dragRef} tier={tier} scrollRef={scrollRef} flyRef={flyRef}>
+        <Earth segments={cfg.sphereSegments} sunDir={sunDir} onCursor={onCursor} />
+        <Graticule />
+        <EntityBeacons reduced={reduced} />
         <Atmosphere />
         <OrbitalRings count={cfg.rings} reduced={reduced} />
         <Arcs nodes={DIVISION_NODES} pulses={cfg.pulses} reduced={reduced} />
         <DivisionNodes nodes={DIVISION_NODES} labels={cfg.labels} reduced={reduced} onSelect={onSelect} />
+        {pin && <PinMarker lat={pin[0]} lon={pin[1]} />}
       </WorldGroup>
+      {tilesEnabled && <TileSphere layer={layer} distRef={distRef} active />}
       {cfg.particles > 0 && <Dust count={cfg.particles} reduced={reduced} />}
       {cfg.bloom && !reduced && <BloomPass />}
     </>
   );
 }
 
-export function EarthScene({ tier, frameloop, scrollRef, dragRef, onSelect, onStats }: {
+export function EarthScene({ tier, frameloop, scrollRef, distTargetRef, distRef, flyRef, dragRef, onSelect, onStats, onCursor, layer, tilesEnabled, pin }: {
   tier: QualityTier;
   frameloop: 'always' | 'demand' | 'never';
   scrollRef: React.RefObject<number>;
+  distTargetRef: React.RefObject<number>;
+  distRef: React.RefObject<number>;
+  flyRef: React.RefObject<{ lat: number; lon: number; token: number } | null>;
   dragRef: React.RefObject<{ dx: number; vel: number; dragging: boolean }>;
   onSelect: (route: string) => void;
   onStats?: (fps: number) => void;
+  onCursor?: (lat: number | null, lon: number | null) => void;
+  layer: TileLayer;
+  tilesEnabled: boolean;
+  pin: [number, number] | null;
 }) {
   const cfg = TIER_CONFIG[tier];
   const reduced = typeof window !== 'undefined' && prefersReducedMotion();
@@ -511,8 +657,12 @@ export function EarthScene({ tier, frameloop, scrollRef, dragRef, onSelect, onSt
       frameloop={reduced ? 'demand' : frameloop}
       camera={{ position: [0, 0.12, 3.15], fov: 42 }}
       gl={{ antialias: tier !== 'low', alpha: true, powerPreference: 'high-performance' }}
+      onWheel={(e) => {
+        const next = (distTargetRef.current ?? 3.15) * Math.exp(e.deltaY * 0.0011);
+        distTargetRef.current = Math.min(3.6, Math.max(1.004, next));
+      }}
     >
-      <Scene tier={tier} scrollRef={scrollRef} dragRef={dragRef} onSelect={onSelect} onStats={onStats} />
+      <Scene tier={tier} scrollRef={scrollRef} distTargetRef={distTargetRef} distRef={distRef} flyRef={flyRef} dragRef={dragRef} onSelect={onSelect} onStats={onStats} onCursor={onCursor} layer={layer} tilesEnabled={tilesEnabled} pin={pin} />
     </Canvas>
   );
 }

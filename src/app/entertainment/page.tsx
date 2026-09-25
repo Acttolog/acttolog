@@ -4,6 +4,7 @@ import { PageHead } from '@/components/ui/Heads';
 import { Reveal } from '@/components/ui/Reveal';
 import { Icon } from '@/components/ui/Icon';
 import { EntertainmentGrid } from './EntertainmentGrid';
+import { EntertainmentChannels } from '@/components/content/Extensions';
 import { getDB, pub, seoFor } from '@/lib/content';
 
 const db = getDB();
@@ -26,6 +27,7 @@ export default function EntertainmentPage() {
       <section className="sec pt-2">
         <div className="wrap">
           <EntertainmentGrid items={items} cats={cats} />
+          <EntertainmentChannels />
           <Reveal>
             <div className="panel p-6 sm:p-8 mt-12 flex flex-wrap items-center gap-6 justify-between">
               <div>

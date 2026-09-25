@@ -4,6 +4,7 @@ import { PageHead } from '@/components/ui/Heads';
 import { Reveal } from '@/components/ui/Reveal';
 import { Icon } from '@/components/ui/Icon';
 import { GamesClient } from './GamesClient';
+import { GamesExtraGrid } from '@/components/content/Extensions';
 import { getDB, pub, seoFor } from '@/lib/content';
 
 const db = getDB();
@@ -25,6 +26,7 @@ export default function GamesPage() {
       <section className="sec pt-2">
         <div className="wrap">
           <GamesClient games={games} />
+          <GamesExtraGrid />
 
           <Reveal>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-12">

@@ -4,6 +4,7 @@ import { PageHead } from '@/components/ui/Heads';
 import { Reveal } from '@/components/ui/Reveal';
 import { Icon } from '@/components/ui/Icon';
 import { AcademyClient } from './AcademyClient';
+import { AcademyExtraSections } from '@/components/content/Extensions';
 import { getDB, pub, seoFor } from '@/lib/content';
 
 const db = getDB();
@@ -46,6 +47,7 @@ export default function AcademyPage() {
           </Reveal>
 
           <AcademyClient courses={courses} guestVisible={guestCourses.length} />
+          <AcademyExtraSections />
 
           <Reveal>
             <div className="grid sm:grid-cols-3 gap-4 mt-10">

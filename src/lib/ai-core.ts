@@ -54,7 +54,15 @@ export function retrieveActtolog(q: string, locale: Locale, limit = 6) {
 /** Index-mode answer (no external provider) — honest, labelled, never invented. */
 export function clientAiAnswer(question: string, locale: Locale, mode: 'act' | 'actweb' = 'act') {
   const hits = retrieveActtolog(question, locale);
-  return { answer: indexAnswer(question, hits, mode, locale), sources: hits.map((h) => ({ title: h.it.title, route: h.it.route, meta: h.it.meta, origin: 'acttolog' as const })), provider: 'acttolog-index' as const, mode };
+  const groups: Record<string, number> = {};
+  hits.forEach((h) => { const k = h.it.meta.split(' ·')[0]; groups[k] = (groups[k] || 0) + 1; });
+  const steps = [
+    { label: 'PLAN', detail: mode === 'act' ? 'Acttolog-only retrieval' : 'Acttolog first, then labelled external knowledge' },
+    { label: 'RETRIEVE', detail: `${hits.length} hits across ${Object.keys(groups).length || 0} content kinds` },
+    { label: 'GROUND', detail: hits.length ? 'answers cite ACTTOLOG SOURCE cards only' : 'no-match honesty rule applied' },
+    { label: 'COMPOSE', detail: locale === 'ne' ? 'नेपालीमा रचना' : 'composed in English' },
+  ];
+  return { answer: indexAnswer(question, hits, mode, locale), sources: hits.map((h) => ({ title: h.it.title, route: h.it.route, meta: h.it.meta, origin: 'acttolog' as const })), provider: 'acttolog-index' as const, mode, steps };
 }
 
 export function indexAnswer(q: string, hits: ReturnType<typeof retrieveActtolog>, mode: 'act' | 'actweb', locale: Locale): string {

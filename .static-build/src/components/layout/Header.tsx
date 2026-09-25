@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { Logo } from '@/components/Logo';
 import { Icon } from '@/components/ui/Icon';
 import { useI18n } from '@/lib/i18n';
-import { usePrefs } from '@/lib/prefs';
+import { usePrefs, THEMES } from '@/lib/prefs';
 import { useSession } from '@/lib/session';
 import type { Division, NavItem } from '@/lib/content/types';
 import { track } from '@/lib/analytics';
@@ -17,7 +17,8 @@ export function Header({ nav, divisions: divs, brand }: {
   nav: NavItem[]; divisions: Division[]; brand: string;
 }) {
   const { t, L, locale, setLocale } = useI18n();
-  const { theme, toggleTheme } = usePrefs();
+  const { theme, setTheme, toggleTheme } = usePrefs();
+  const [themeOpen, setThemeOpen] = useState(false);
   const { user, signIn, signOut } = useSession();
   const pathname = usePathname();
 
@@ -106,7 +107,7 @@ export function Header({ nav, divisions: divs, brand }: {
               aria-label={t('lang')} title="English | नेपाली">
               <span className="mono text-[10.4px] font-bold">{locale === 'en' ? 'EN' : 'ने'}</span>
             </button>
-            <button className="ico" onClick={toggleTheme} aria-label={t('theme')} title={t('theme')}>
+            <button className="ico" onClick={(e) => { e.stopPropagation(); setThemeOpen((v) => !v); }} aria-label={t('theme')} title={t('theme')} aria-haspopup="menu" aria-expanded={themeOpen}>
               {theme === 'dark' ? (
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
                   <circle cx="12" cy="12" r="4.2" />
@@ -118,6 +119,23 @@ export function Header({ nav, divisions: divs, brand }: {
                 </svg>
               )}
             </button>
+            {themeOpen && (
+              <div className="panel" role="menu" style={{ position: 'fixed', top: 64, right: 96, zIndex: 960, minWidth: 210, padding: 10, borderRadius: 16 }}
+                onClick={() => setThemeOpen(false)}>
+                <div className="mono text-[9.4px] tracking-[.22em] dim px-2 pb-2">THEMES</div>
+                {THEMES.map((th) => (
+                  <button key={th.id} className="w-full flex items-center gap-3 px-3 py-2 rounded-[11px] text-[12.8px] transition-colors"
+                    style={theme === th.id ? { background: 'color-mix(in srgb,var(--cy) 14%,transparent)', color: 'var(--txt)' } : { color: 'var(--mut)' }}
+                    onClick={() => setTheme(th.id)}>
+                    <span className="w-6 h-6 rounded-lg flex-none border" style={{ background: th.sw[0], borderColor: 'var(--line2)' }}>
+                      <span className="block w-2.5 h-2.5 rounded-full m-auto" style={{ background: th.sw[1] }} />
+                    </span>
+                    {th.label}
+                    {theme === th.id && <span className="ml-auto" style={{ color: 'var(--cy)' }}><Icon name="check" size={13} /></span>}
+                  </button>
+                ))}
+              </div>
+            )}
 
             {!user ? (
               <button className="btn btn-p btn-sm hidden sm:inline-flex"

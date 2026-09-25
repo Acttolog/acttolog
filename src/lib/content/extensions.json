@@ -1,0 +1,156 @@
+{
+  "_note": "Acttolog content extension — curated real resources (verified official domains). Merged over seed.json by lib/content. Piracy mirrors are deliberately excluded; legal free alternatives provided.",
+  "offerPriceOverrides": {
+    "thesyn-silver": { "npr": 20000, "usd": 150 },
+    "thesyn-gold": { "npr": 30000, "usd": 225 },
+    "thesyn-diamond": { "npr": 60000, "usd": 450 }
+  },
+  "newOffers": [
+    {
+      "id": "o7", "slug": "acttolog-member-join", "division": "darkroom",
+      "title": { "en": "Acttolog Member — Join Free", "ne": "Acttolog सदस्य — निःशुल्क सामेल" },
+      "short": { "en": "One Google click: saved items, Academy gate, games progress, AI conversations.", "ne": "एक Google क्लिक: सुरक्षित सामग्री, एकेडेमी, खेल प्रगति, AI कुराकानी।" },
+      "desc": { "en": "Membership is free and private. No forms, no fees — continue with Google and the protected layers of the Acttolog World open: Academy courses, game scores, saved Darkroom resources and saved AI conversations.", "ne": "सदस्यता निःशुल्क र निजी छ। कुनै फारम छैन — Google बाट जारी राख्नुहोस् र सुरक्षित तहहरू खुल्नेछन्।" },
+      "npr": 0, "usd": 0, "mode": "inquiry",
+      "features": [
+        { "en": "Private saved items & recent history", "ne": "निजी सुरक्षित सामग्री" },
+        { "en": "Academy + Games member layers", "ne": "एकेडेमी + खेल सदस्य तह" },
+        { "en": "Saved AI conversations", "ne": "सुरक्षित AI कुराकानी" },
+        { "en": "Darkroom resource submissions", "ne": "डार्करूम स्रोत पेश गर्ने सुविधा" }
+      ],
+      "terms": { "en": "Free forever. Profiles private by default.", "ne": "सधैं निःशुल्क। प्रोफाइल निजी।" },
+      "validUntil": "", "accent": "#35e0ff", "art": "nebula",
+      "status": "published", "access": "public", "audience": "global", "featured": true, "visible": true
+    },
+    {
+      "id": "o8", "slug": "thesyn-workshop-pass", "division": "research",
+      "title": { "en": "Thesyn Workshop Pass", "ne": "थेसिन वर्कसप पास" },
+      "short": { "en": "Live cohort workshops: proposal clinic, SPSS/STATA lab, viva mock board.", "ne": "लाइभ वर्कसप: प्रस्ताव क्लिनिक, SPSS/STATA ल्याब, भाइभा मक बोर्ड।" },
+      "desc": { "en": "A recurring seat in small-group Thesyn Research workshops — bring your own data and leave with a defended structure.", "ne": "साना समूहका वर्कसपमा आफ्नै डाटा ल्याउनुहोस् र बचाउयोग्य संरचनासँग जानुहोस्।" },
+      "npr": 5000, "usd": 40, "mode": "both",
+      "features": [
+        { "en": "Monthly proposal clinic", "ne": "मासिक प्रस्ताव क्लिनिक" },
+        { "en": "Analysis lab with screen-share", "ne": "स्क्रिन-सेयरसहित विश्लेषण ल्याब" },
+        { "en": "Viva mock board session", "ne": "भाइभा मक बोर्ड" }
+      ],
+      "terms": { "en": "Seat per cohort; schedule announced in-app.", "ne": "प्रत्येक कोहर्टमा सिट; तालिका अनुभित्र घोषणा।" },
+      "validUntil": "", "accent": "#f5c26b", "art": "offers",
+      "status": "published", "access": "public", "audience": "global", "featured": false, "visible": true
+    },
+    {
+      "id": "o9", "slug": "gmax-story-pass", "division": "entertainment",
+      "title": { "en": "Gmax Story Pass", "ne": "Gmax स्टोरी पास" },
+      "short": { "en": "Members cut of Gmax Story universes — TikTok, YouTube and Facebook serials.", "ne": "Gmax स्टोरी ब्रह्माण्डको सदस्य कट — TikTok, YouTube र Facebook सिरियल।" },
+      "desc": { "en": "Follow the canon across platforms: director notes, early cuts and members-only episodes from the Gmax Story channels.", "ne": "प्लेटफर्मभर कथा पछ्याउनुहोस्: निर्देशक नोट, प्रारम्भिक कट र सदस्य-विशेष एपिसोड।" },
+      "npr": 999, "usd": 8, "mode": "both",
+      "features": [
+        { "en": "Members-only episodes", "ne": "सदस्य-विशेष एपिसोड" },
+        { "en": "Director notes & early cuts", "ne": "निर्देशक नोट र प्रारम्भिक कट" },
+        { "en": "Community story votes", "ne": "कथा मतदान" }
+      ],
+      "terms": { "en": "Digital membership; cancels any time.", "ne": "डिजिटल सदस्यता; जुनसुकै बेला रद्द।" },
+      "validUntil": "", "accent": "#ff4ecd", "art": "stage",
+      "status": "published", "access": "public", "audience": "global", "featured": false, "visible": true
+    }
+  ],
+  "researchLibrary": {
+    "nepal": [
+      { "name": "NepJOL — Nepal Journals Online", "url": "https://www.nepjol.info/", "desc": { "en": "Official open-access platform for Nepali peer-reviewed journals — economics, medicine, forestry, engineering, social science.", "ne": "नेपाली पिअर-समीक्षित जर्नलको आधिकारिक ओपन-एक्सेस प्लेटफर्म।" }, "tags": ["journals", "open access", "nepal"] },
+      { "name": "TU Central Library — Thesis & Dissertations", "url": "https://elibrary.tucl.edu.np/", "desc": { "en": "Tribhuvan University central library catalogue and thesis repository — MBS/MBA/MA/MSc dissertations across faculties.", "ne": "त्रिभुवन विश्वविद्यालय केन्द्रीय पुस्तकालय थेसिस भण्डार।" }, "tags": ["thesis", "TU", "repository"] },
+      { "name": "Nepal Rastra Bank — Research & Working Papers", "url": "https://www.nrb.org.np/contents/research-publications/", "desc": { "en": "NRB working papers, quarterly economic reviews and macro datasets — the evidence base for Nepali economics research.", "ne": "नेपाल राष्ट्र बैंकका वर्किङ पेपर र त्रैमासिक आर्थिक समीक्षा।" }, "tags": ["economics", "working papers", "nepal"] },
+      { "name": "National Statistics Office (Nepal)", "url": "https://www.nsonep.gov.np/", "desc": { "en": "Census, household surveys, price indices and national accounts — primary data for thesis chapters.", "ne": "जनगणना, सर्वेक्षण र राष्ट्रिय लेखा — प्राथमिक डाटा।" }, "tags": ["data", "census", "nepal"] },
+      { "name": "National Planning Commission — Plans & SDG", "url": "https://www.npc.gov.np/", "desc": { "en": "Periodic plans, SDG status reports and development policy documents of Nepal.", "ne": "आवधिक योजना, SDG प्रतिवेदन र विकास नीति दस्तावेज।" }, "tags": ["development", "policy", "sdg"] },
+      { "name": "Kathmandu University Research Portal", "url": "https://research.ku.edu.np/", "desc": { "en": "KU research outputs, journals and project repositories.", "ne": "काठमाडौं विश्वविद्यालय अनुसन्धान आउटपुट।" }, "tags": ["university", "research"] }
+    ],
+    "international": [
+      { "name": "NBER Working Papers", "url": "https://www.nber.org/research/working-papers", "desc": { "en": "The reference stream for empirical economics — new working papers weekly.", "ne": "अनुभवजन्य अर्थशास्त्रको सन्दर्भ धारा।" }, "tags": ["economics", "papers"] },
+      { "name": "RePEc / IDEAS", "url": "https://ideas.repec.org/", "desc": { "en": "Largest bibliographic database in economics — papers, articles, software, citations.", "ne": "अर्थशास्त्रको सबैभन्दा ठूलो ग्रन्थसूची डाटाबेस।" }, "tags": ["economics", "index"] },
+      { "name": "SSRN", "url": "https://www.ssrn.com/", "desc": { "en": "Early-stage social science research across finance, management, law and economics.", "ne": "सामाजिक विज्ञानको प्रारम्भिक अनुसन्धान।" }, "tags": ["social science", "preprints"] },
+      { "name": "World Bank Documents & Reports", "url": "https://documents.worldbank.org/", "desc": { "en": "Country reports, impact evaluations and development economics evidence — including Nepal systematic reviews.", "ne": "देशीय प्रतिवेदन र प्रभाव मूल्याङ्कन।" }, "tags": ["development", "evidence"] },
+      { "name": "IMF eLibrary", "url": "https://www.elibrary.imf.org/", "desc": { "en": "Macro-financial research, Article IV reports and fiscal monitors.", "ne": "म्याक्रो-वित्तीय अनुसन्धान र प्रतिवेदन।" }, "tags": ["macro", "finance"] },
+      { "name": "The Lancet / Nature / Science (news & papers)", "url": "https://www.thelancet.com/", "desc": { "en": "Flagship peer-reviewed evidence for health and science chapters.", "ne": "स्वास्थ्य र विज्ञानका प्रमुख पिअर-समीक्षित प्रमाण।" }, "tags": ["health", "science"] }
+    ],
+    "guides": [
+      { "name": "TU Thesis & Dissertation Formatting Guidelines", "url": "https://tucl.edu.np/", "desc": { "en": "Official TU central library guidance for dissertation structure and submission formatting.", "ne": "TU केन्द्रीय पुस्तकालयको आधिकारिक ढाँचा मार्गदर्शन।" }, "tags": ["formatting", "TU"] },
+      { "name": "Purdue OWL — APA / MLA / Chicago", "url": "https://owl.purdue.edu/", "desc": { "en": "The global reference for citation styles — examples for every reference type.", "ne": "उद्धरण शैलीको विश्व सन्दर्भ।" }, "tags": ["citation", "APA"] },
+      { "name": "Zotero Documentation", "url": "https://www.zotero.org/support/", "desc": { "en": "Reference manager workflows: capture, cite, sync, collaborate.", "ne": "सन्दर्भ व्यवस्थापन वर्कफ्लो।" }, "tags": ["zotero", "references"] },
+      { "name": "Thesyn Research — Pre-Submission Checklist (members)", "url": "/blog/members-research-checklist", "desc": { "en": "Acttolog members-only checklist: structure, citations, similarity review, figures.", "ne": "सदस्य-विशेष चेकलिस्ट।" }, "tags": ["checklist", "members"] }
+    ],
+    "videos": [
+      { "name": "Research Methods — CrashCourse (YouTube)", "url": "https://www.youtube.com/playlist?list=PL8dPuuaLjXtOPRKzVLY0jJY-uHVH1B-w0", "desc": { "en": "Fast, visual grounding in research design and statistics.", "ne": "अनुसन्धान डिजाइनको दृश्य आधार।" }, "tags": ["methods", "video"] },
+      { "name": "SPSS Tutorials — official-style walkthroughs (YouTube)", "url": "https://www.youtube.com/results?search_query=spss+full+course+data+analysis", "desc": { "en": "Full-course SPSS walkthroughs for cleaning, testing and reporting.", "ne": "SPSS पूर्ण पाठ्यक्रम भिडियो।" }, "tags": ["SPSS", "video"] },
+      { "name": "Econometrics with R / STATA labs (YouTube)", "url": "https://www.youtube.com/results?search_query=econometrics+stata+panel+data+tutorial", "desc": { "en": "Panel data and time-series labs with reproducible code.", "ne": "प्यानल डाटा ल्याब।" }, "tags": ["econometrics", "video"] },
+      { "name": "Thesyn Research Sessions (Acttolog channel — coming)", "url": "/research", "desc": { "en": "Recorded Thesyn clinics will publish here once the media pipeline is connected.", "ne": "मिडिया पाइपलाइन जोडिएपछि यहाँ प्रकाशित हुनेछ।" }, "tags": ["thesyn", "soon"] }
+    ]
+  },
+  "entertainmentChannels": {
+    "social": [
+      { "name": "TikTok — @gmaxstory", "url": "https://www.tiktok.com/@gmaxstory", "kind": "tiktok" },
+      { "name": "Facebook — Gmax Story", "url": "https://www.facebook.com/profile.php?id=61594238395080", "kind": "facebook" },
+      { "name": "YouTube — @GmaxStory", "url": "https://www.youtube.com/@GmaxStory", "kind": "youtube" }
+    ],
+    "legalStreams": [
+      { "name": "Muse Asia (official free anime, YouTube)", "url": "https://www.youtube.com/@MuseAsia", "desc": { "en": "Licensed anime streamed free with ads — the legal way to watch current seasons.", "ne": "लाइसेन्सप्राप्त एनिमे निःशुल्क।" }, "tags": ["anime", "legal"] },
+      { "name": "Ani-One Asia (official anime, YouTube)", "url": "https://www.youtube.com/@AniOneAsia", "desc": { "en": "Official simulcast channel for subtitled/dubbed anime.", "ne": "आधिकारिक एनिमे च्यानल।" }, "tags": ["anime", "legal"] },
+      { "name": "Crunchyroll (free tier)", "url": "https://www.crunchyroll.com/", "desc": { "en": "Catalogue anime with an ad-supported free tier.", "ne": "फ्री तहसहित एनिमे क्याटलग।" }, "tags": ["anime"] },
+      { "name": "Internet Archive — Feature Films", "url": "https://archive.org/details/feature_films", "desc": { "en": "Public-domain and openly licensed full movies, free and legal.", "ne": "सार्वजनिक डोमेन पूर्ण चलचित्र।" }, "tags": ["movies", "public domain"] },
+      { "name": "YouTube — free legal movies", "url": "https://www.youtube.com/feed/storefront?bp=ogUCKAY%253D", "desc": { "en": "YouTube's official free-with-ads movie shelf.", "ne": "YouTube को आधिकारिक निःशुल्क चलचित्र।" }, "tags": ["movies", "legal"] },
+      { "name": "Nepali official channels (YouTube)", "url": "https://www.youtube.com/results?search_query=nepali+short+film+official", "desc": { "en": "Official Nepali short films, cartoons and comedy sketches from verified channels.", "ne": "आधिकारिक नेपाली छोटो चलचित्र र कमेडी।" }, "tags": ["nepali", "legal"] }
+    ]
+  },
+  "academyExtra": {
+    "universities": [
+      { "name": "Tribhuvan University (TU)", "url": "https://tu.edu.np/", "detail": { "en": "Nepal's largest university — faculties, notices, curricula and exam portals.", "ne": "नेपालको सबैभन्दा ठूलो विश्वविद्यालय।" } },
+      { "name": "Kathmandu University (KU)", "url": "https://ku.edu.np/", "detail": { "en": "Programmes, research and admissions portal.", "ne": "पाठ्यक्रम, अनुसन्धान र भर्ना।" } },
+      { "name": "Pokhara University (PU)", "url": "https://pu.edu.np/", "detail": { "en": "Affiliated colleges, syllabi and results.", "ne": "सम्बद्ध क्याम्पस, पाठ्यक्रम र नतिजा।" } },
+      { "name": "Purbanchal University", "url": "https://puub.edu.np/", "detail": { "en": "Eastern region programmes and notices.", "ne": "पूर्वी क्षेत्रका कार्यक्रम।" } },
+      { "name": "Mid-Western / LBU & NWU portals", "url": "https://lbu.edu.np/", "detail": { "en": "Lumbini Buddhist University and regional university portals.", "ne": "क्षेत्रीय विश्वविद्यालय पोर्टल।" } },
+      { "name": "Agriculture & Forestry University (AFU)", "url": "https://afu.edu.np/", "detail": { "en": "Agriculture, forestry and veterinary programmes.", "ne": "कृषि र वन पाठ्यक्रम।" } }
+    ],
+    "scholarships": [
+      { "name": "Fulbright (US)", "url": "https://foreign.fulbrightonline.org/", "detail": { "en": "Flagship graduate exchange — deadlines usually a year ahead.", "ne": "प्रतिष्ठित स्नातक विनिमय।" } },
+      { "name": "Chevening (UK)", "url": "https://www.chevening.org/", "detail": { "en": "Fully-funded one-year master's for future leaders.", "ne": "पूर्ण छात्रवृत्ति एक वर्षे मास्टर।" } },
+      { "name": "Erasmus Mundus (EU)", "url": "https://erasmus-plus.ec.europa.eu/opportunities/individuals/students/erasmus-mundus-joint-masters", "detail": { "en": "Joint master's with scholarships across European universities.", "ne": "युरोपेली संयुक्त मास्टर छात्रवृत्ति।" } },
+      { "name": "Australia Awards", "url": "https://www.australiaawardscholarships.org/", "detail": { "en": "Development-focused scholarships for Nepal applicants.", "ne": "नेपाली आवेदकका लागि विकास केन्द्रित।" } },
+      { "name": "China CSC Scholarship", "url": "https://www.campuschina.org/", "detail": { "en": "Government scholarships across Chinese universities.", "ne": "चिनियाँ सरकारी छात्रवृत्ति।" } },
+      { "name": "JICA / KOICA training programmes", "url": "https://www.jica.go.jp/english/our_work/thematic_issues/capacity.html", "detail": { "en": "Short-term professional training with full funding.", "ne": "पूर्ण वित्तपोषित तालिम।" } },
+      { "name": "Nepal Ministry of Education scholarships", "url": "https://www.moe.gov.np/", "detail": { "en": "National scholarship schemes and quota notices.", "ne": "राष्ट्रिय छात्रवृत्ति योजना।" } }
+    ]
+  },
+  "gamesExtra": [
+    { "name": "itch.io — free browser games", "url": "https://itch.io/games/free/web-game", "kind": "web", "desc": { "en": "Thousands of free indie browser games, no install.", "ne": "हजारौं निःशुल्क ब्राउजर खेल।" } },
+    { "name": "CrazyGames", "url": "https://www.crazygames.com/", "kind": "web", "desc": { "en": "Popular free web games across genres.", "ne": "लोकप्रिय निःशुल्क वेब खेल।" } },
+    { "name": "Poki", "url": "https://poki.com/", "kind": "web", "desc": { "en": "Instant-play catalog, mobile friendly.", "ne": "तुरुन्त खेल, मोबाइल मैत्री।" } },
+    { "name": "Cool Math Games", "url": "https://www.coolmathgames.com/", "kind": "edu", "desc": { "en": "Logic and math-flavoured classics.", "ne": "तर्क र गणित खेल।" } },
+    { "name": "Lichess (chess, free forever)", "url": "https://lichess.org/", "kind": "edu", "desc": { "en": "Open-source chess with puzzles and analysis.", "ne": "खुला स्रोत चेस।" } },
+    { "name": "Seterra — geography trainer", "url": "https://www.seterra.com/", "kind": "edu", "desc": { "en": "Map quizzes that train spatial memory — research-adjacent play.", "ne": "भूगोल प्रश्नोत्तरी।" } },
+    { "name": "Wordle (NYT)", "url": "https://www.nytimes.com/games/wordle/index.html", "kind": "web", "desc": { "en": "Daily word puzzle.", "ne": "दैनिक शब्द पजल।" } },
+    { "name": "Google Doodle games archive", "url": "https://doodles.google/", "kind": "web", "desc": { "en": "Playable doodles archive.", "ne": "खेलयोग्य डुडल।" } },
+    { "name": "Steam — free to play", "url": "https://store.steampowered.com/genre/Free%20to%20Play/", "kind": "desktop", "desc": { "en": "Official desktop downloads, free-to-play section.", "ne": "आधिकारिक डेस्कटप डाउनलोड।" } },
+    { "name": "Epic Games — free games", "url": "https://store.epicgames.com/en-US/free-games", "kind": "desktop", "desc": { "en": "Weekly official free game giveaways.", "ne": "साप्ताहिक निःशुल्क खेल।" } },
+    { "name": "Google Play — free top games", "url": "https://play.google.com/store/games", "kind": "mobile", "desc": { "en": "Official mobile store, free games charts.", "ne": "आधिकारिक मोबाइल स्टोर।" } },
+    { "name": "Apple App Store — games", "url": "https://www.apple.com/app-store/", "kind": "mobile", "desc": { "en": "Official iOS games storefront.", "ne": "आधिकारिक iOS स्टोर।" } }
+  ],
+  "drExtra": [
+    { "slug": "chatgpt", "name": "ChatGPT", "url": "https://chat.openai.com", "category": "AI", "subcategory": "AI Tools", "tags": ["chat", "assistant"], "type": "Platform", "pricing": "Freemium", "official": true, "verification": "verified", "region": "Global", "audience": "Everyone", "language": "en", "featured": true, "presentation": "link", "short": { "en": "OpenAI's conversational assistant — drafts, explanations, code.", "ne": "OpenAI को संवादी सहायक।" }, "full": { "en": "General-purpose AI assistant.", "ne": "सामान्य AI सहायक।" } },
+    { "slug": "claude", "name": "Claude", "url": "https://claude.ai", "category": "AI", "subcategory": "AI Tools", "tags": ["chat", "reasoning"], "type": "Platform", "pricing": "Freemium", "official": true, "verification": "verified", "region": "Global", "audience": "Everyone", "language": "en", "featured": true, "presentation": "link", "short": { "en": "Anthropic's assistant for long-context reading and careful writing.", "ne": "लामो सन्दर्भ पढ्न र लेख्नका लागि।" }, "full": { "en": "Long-context AI assistant.", "ne": "लामो सन्दर्भ AI।" } },
+    { "slug": "gemini", "name": "Gemini", "url": "https://gemini.google.com", "category": "AI", "subcategory": "AI Tools", "tags": ["chat", "multimodal"], "type": "Platform", "pricing": "Freemium", "official": true, "verification": "verified", "region": "Global", "audience": "Everyone", "language": "en", "featured": false, "presentation": "link", "short": { "en": "Google's multimodal assistant tied to Workspace.", "ne": "Google को मल्टिमोडल सहायक।" }, "full": { "en": "Google assistant.", "ne": "Google सहायक।" } },
+    { "slug": "qwen-chat", "name": "Qwen Chat", "url": "https://chat.qwen.ai", "category": "AI", "subcategory": "AI Tools", "tags": ["chat", "open models"], "type": "Platform", "pricing": "Free", "official": true, "verification": "verified", "region": "Global", "audience": "Everyone", "language": "en", "featured": false, "presentation": "link", "short": { "en": "Alibaba's open-model assistant with strong multilingual behaviour.", "ne": "बहुभाषिक खुला मोडेल सहायक।" }, "full": { "en": "Open-model assistant.", "ne": "खुला मोडेल सहायक।" } },
+    { "slug": "perplexity", "name": "Perplexity", "url": "https://www.perplexity.ai", "category": "AI", "subcategory": "AI Search", "tags": ["search", "citations"], "type": "Platform", "pricing": "Freemium", "official": true, "verification": "verified", "region": "Global", "audience": "Researchers", "language": "en", "featured": true, "presentation": "link", "short": { "en": "Answer engine with cited sources — good for fast literature scans.", "ne": "स्रोतसहितको उत्तर इन्जिन।" }, "full": { "en": "Cited answer engine.", "ne": "स्रोतसहित उत्तर।" } },
+    { "slug": "kathmandu-post", "name": "The Kathmandu Post", "url": "https://kathmandupost.com", "category": "News", "subcategory": "Nepal", "tags": ["news", "nepal"], "type": "Publication", "pricing": "Free", "official": true, "verification": "verified", "region": "Nepal", "audience": "Everyone", "language": "en", "featured": false, "presentation": "link", "short": { "en": "English-language daily — politics, economy, society.", "ne": "अंग्रेजी दैनिक — राजनीति, अर्थतन्त्र।" }, "full": { "en": "Nepal daily.", "ne": "नेपाली दैनिक।" } },
+    { "slug": "onlinekhabar", "name": "OnlineKhabar", "url": "https://www.onlinekhabar.com", "category": "News", "subcategory": "Nepal", "tags": ["news", "nepali"], "type": "Publication", "pricing": "Free", "official": true, "verification": "verified", "region": "Nepal", "audience": "Everyone", "language": "ne", "featured": false, "presentation": "link", "short": { "en": "High-frequency Nepali newsroom with data desks.", "ne": "नेपाली समाचार पोर्टल।" }, "full": { "en": "Nepali news.", "ne": "नेपाली समाचार।" } },
+    { "slug": "setopati", "name": "Setopati", "url": "https://setopati.com", "category": "News", "subcategory": "Nepal", "tags": ["news", "nepali"], "type": "Publication", "pricing": "Free", "official": true, "verification": "verified", "region": "Nepal", "audience": "Everyone", "language": "ne", "featured": false, "presentation": "link", "short": { "en": "Visual-first Nepali journalism.", "ne": "दृश्य-केन्द्रित नेपाली पत्रकारिता।" }, "full": { "en": "Nepali news.", "ne": "नेपाली समाचार।" } },
+    { "slug": "bbc-nepali", "name": "BBC Nepali", "url": "https://www.bbc.com/nepali", "category": "News", "subcategory": "International", "tags": ["news", "nepali"], "type": "Broadcaster", "pricing": "Free", "official": true, "verification": "verified", "region": "International", "audience": "Everyone", "language": "ne", "featured": false, "presentation": "link", "short": { "en": "International-standard Nepali service.", "ne": "अन्तर्राष्ट्रिय स्तरको नेपाली सेवा।" }, "full": { "en": "BBC Nepali.", "ne": "BBC नेपाली।" } },
+    { "slug": "npc-plans", "name": "NPC — Periodic Plans & SDG Reports", "url": "https://www.npc.gov.np/en/page/periodic-plan", "category": "Government", "subcategory": "Nepal", "tags": ["development", "plans", "sdg"], "type": "Document", "pricing": "Free", "official": true, "verification": "verified", "region": "Nepal", "audience": "Researchers, Policy", "language": "en", "featured": true, "presentation": "link", "short": { "en": "Nepal's periodic development plans and SDG progress reports — primary policy sources.", "ne": "नेपालका आवधिक योजना र SDG प्रतिवेदन।" }, "full": { "en": "Planning documents.", "ne": "योजना दस्तावेज।" } },
+    { "slug": "freecodecamp", "name": "freeCodeCamp", "url": "https://www.freecodecamp.org", "category": "Education", "subcategory": "Courses", "tags": ["coding", "free"], "type": "Learning platform", "pricing": "Free", "official": true, "verification": "verified", "region": "Global", "audience": "Developers", "language": "en", "featured": false, "presentation": "link", "short": { "en": "Certified free curriculum for web, data and ML skills.", "ne": "निःशुल्क प्रमाणित पाठ्यक्रम।" }, "full": { "en": "Free coding school.", "ne": "निःशुल्क कोडिङ।" } },
+    { "slug": "coursera", "name": "Coursera (audit-free courses)", "url": "https://www.coursera.org", "category": "Education", "subcategory": "Courses", "tags": ["courses", "university"], "type": "Learning platform", "pricing": "Freemium", "official": true, "verification": "verified", "region": "Global", "audience": "Students", "language": "en", "featured": false, "presentation": "link", "short": { "en": "University courses; many audit-free with financial aid available.", "ne": "विश्वविद्यालय पाठ्यक्रम।" }, "full": { "en": "MOOC platform.", "ne": "MOOC प्लेटफर्म।" } },
+    { "slug": "osm", "name": "OpenStreetMap", "url": "https://www.openstreetmap.org", "category": "Databases", "subcategory": "Geo", "tags": ["maps", "open data"], "type": "Database", "pricing": "Free", "official": true, "verification": "verified", "region": "Global", "audience": "Everyone", "language": "en", "featured": true, "presentation": "link", "short": { "en": "The free map of the world — roads, houses, trails; powers the Acttolog Earth explorer.", "ne": "संसारको निःशुल्क नक्सा — सडक, घर।" }, "full": { "en": "Open geodata.", "ne": "खुला भू-डाटा।" } },
+    { "slug": "nominatim", "name": "Nominatim Geocoding", "url": "https://nominatim.openstreetmap.org/ui/", "category": "Databases", "subcategory": "Geo", "tags": ["geocode", "search"], "type": "Service", "pricing": "Free", "official": true, "verification": "verified", "region": "Global", "audience": "Developers", "language": "en", "featured": false, "presentation": "link", "short": { "en": "Address → coordinates search over OSM (the engine behind Find-your-home).", "ne": "ठेगाना → निर्देशाङ्क खोज।" }, "full": { "en": "Geocoder.", "ne": "जियोकोडर।" } }
+  ],
+  "liveCams": [
+    { "name": "EarthCam — global network", "url": "https://www.earthcam.com/", "desc": { "en": "Official publisher network of live cams (Times Square, beaches, airports).", "ne": "आधिकारिक लाइभ क्याम नेटवर्क।" } },
+    { "name": "SkylineWebcams", "url": "https://www.skylinewebcams.com/", "desc": { "en": "Curated HD live cams from cities and nature sites worldwide.", "ne": "शहर र प्रकृतिका HD लाइभ क्याम।" } },
+    { "name": "WebcamTaxi", "url": "https://www.webcamtaxi.com/", "desc": { "en": "Directory of official public live cams by country.", "ne": "देशअनुसार आधिकारिक क्याम।" } },
+    { "name": "Explore.org — nature cams", "url": "https://explore.org/livecams", "desc": { "en": "Wildlife and nature live cams from official conservation feeds.", "ne": "वन्यजीव लाइभ क्याम।" } }
+  ]
+}

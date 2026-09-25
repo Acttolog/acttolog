@@ -5,11 +5,20 @@ import type { ReactNode } from 'react';
 
 /** Theme (dark default) + currency (NPR default) — both remembered. */
 
-type Theme = 'dark' | 'light';
+type Theme = 'dark' | 'light' | 'midnight' | 'aurora' | 'sunset' | 'paper';
+export const THEMES: { id: Theme; label: string; sw: [string, string] }[] = [
+  { id: 'dark', label: 'Obsidian (default)', sw: ['#05060c', '#35e0ff'] },
+  { id: 'light', label: 'Daylight', sw: ['#f4f7fc', '#0aa0cf'] },
+  { id: 'midnight', label: 'Midnight Indigo', sw: ['#020312', '#5ea2ff'] },
+  { id: 'aurora', label: 'Aurora Teal', sw: ['#02100d', '#2dffd0'] },
+  { id: 'sunset', label: 'Sunset Ember', sw: ['#12040a', '#ffb454'] },
+  { id: 'paper', label: 'Himalayan Paper', sw: ['#f6f1e7', '#0a7f8f'] },
+];
 type Currency = 'NPR' | 'USD';
 
 interface PrefsCtx {
   theme: Theme;
+  setTheme: (t: Theme) => void;
   toggleTheme: () => void;
   currency: Currency;
   setCurrency: (c: Currency) => void;
@@ -25,7 +34,7 @@ export function PrefsProvider({ usdToNpr, children }: { usdToNpr: number; childr
   useEffect(() => {
     try {
       const t = localStorage.getItem('act_theme');
-      if (t === 'light' || t === 'dark') setTheme(t);
+      if (THEMES.some((x) => x.id === t)) setTheme(t as Theme);
       const c = localStorage.getItem('act_cur');
       if (c === 'USD' || c === 'NPR') setCurrencyState(c);
     } catch { /* ignore */ }
@@ -41,7 +50,11 @@ export function PrefsProvider({ usdToNpr, children }: { usdToNpr: number; childr
     } catch { /* ignore */ }
   }, [theme]);
 
-  const toggleTheme = useCallback(() => setTheme((t) => (t === 'dark' ? 'light' : 'dark')), []);
+  const setThemeSafe = useCallback((t: Theme) => setTheme(t), []);
+  const toggleTheme = useCallback(() => setTheme((t) => {
+    const i = THEMES.findIndex((x) => x.id === t);
+    return THEMES[(i + 1) % THEMES.length].id;
+  }), []);
 
   const setCurrency = useCallback((c: Currency) => {
     setCurrencyState(c);
@@ -49,8 +62,8 @@ export function PrefsProvider({ usdToNpr, children }: { usdToNpr: number; childr
   }, []);
 
   const value = useMemo(
-    () => ({ theme, toggleTheme, currency, setCurrency, usdToNpr }),
-    [theme, toggleTheme, currency, setCurrency, usdToNpr],
+    () => ({ theme, setTheme: setThemeSafe, toggleTheme, currency, setCurrency, usdToNpr }),
+    [theme, setThemeSafe, toggleTheme, currency, setCurrency, usdToNpr],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

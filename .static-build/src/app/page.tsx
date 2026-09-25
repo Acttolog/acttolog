@@ -60,9 +60,24 @@ export default function HomePage() {
     offers: offers.filter((o) => o.featured).slice(0, 3).length ? offers.filter((o) => o.featured).slice(0, 3) : offers.slice(0, 3),
   };
 
+  const esc = (x: string) => x.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const ticker: string[] = [
+    `<b>LIVE</b> ACTTOLOG WORLD NETWORK`,
+    ...dvs.map((d) => `${esc(d.name.en.toUpperCase())} <b>ONLINE</b>`),
+    `BLOG ENTRIES <b>${posts.length}</b>`,
+    `DARKROOM RESOURCES <b>${drs.length}</b> VERIFIED FEED`,
+    `ACADEMY COURSES <b>${courses.length}</b>`,
+    `GAMES <b>${games.length}</b>`,
+    `OFFERS <b>${offers.length}</b> NPR/USD`,
+    `ENTERTAINMENT <b>${ents.length}</b> ITEMS`,
+    ...posts.slice(0, 3).map((pp) => `NEW · ${esc(pp.title.en.toUpperCase())}`),
+    ...drs.filter((r) => r.featured).slice(0, 4).map((r) => `FEATURED RESOURCE · ${esc(r.name.toUpperCase())}`),
+    `DISCOVER · LEARN · CREATE · CONNECT`,
+  ];
+
   return (
     <>
-      <Hero settings={db.settings} />
+      <Hero settings={db.settings} ticker={ticker} />
       <HomeLayers data={data} />
     </>
   );

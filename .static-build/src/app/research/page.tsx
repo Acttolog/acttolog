@@ -5,6 +5,7 @@ import { Reveal } from '@/components/ui/Reveal';
 import { Icon } from '@/components/ui/Icon';
 import { AccessBadge } from '@/components/ui/Badges';
 import { ResearchBody } from './ResearchBody';
+import { ResearchLibrary } from '@/components/content/Extensions';
 import { getDB, pub, seoFor } from '@/lib/content';
 
 const db = getDB();
@@ -163,6 +164,9 @@ export default function ResearchPage() {
           </Reveal>
         </div>
       </section>
+
+      {/* Research Library — Nepal + international evidence, guides, video labs */}
+      <ResearchLibrary />
 
       {/* Packages + FAQ (client islands: currency, accordion) */}
       <ResearchBody packages={packages} faq={r.faq} />

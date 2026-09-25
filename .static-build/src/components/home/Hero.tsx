@@ -9,7 +9,7 @@ import type { Bi, SiteSettings } from '@/lib/content/types';
 import { Icon } from '@/components/ui/Icon';
 
 /** Layer 01 — 3D Earth Hero (prototype h1, rebuilt on real WebGL). */
-export function Hero({ settings }: { settings: SiteSettings }) {
+export function Hero({ settings, ticker = [] }: { settings: SiteSettings; ticker?: string[] }) {
   const { L, locale } = useI18n();
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
@@ -59,7 +59,20 @@ export function Hero({ settings }: { settings: SiteSettings }) {
         </div>
       </div>
 
-      <div className="cue" aria-hidden="true"><span>SCROLL</span><i /></div>
+      <div className="cue" aria-hidden="true" style={{ bottom: 46 }}><span>SCROLL</span><i /></div>
+      {ticker.length > 0 && (
+        <div className="hero-ticker" aria-hidden="true">
+          <div className="marqt">
+            {[0, 1].map((dup) => (
+              <span key={dup} className="flex" style={{ gap: 0 }}>
+                {ticker.map((t, i) => (
+                  <span key={i} className="tk" dangerouslySetInnerHTML={{ __html: t }} />
+                ))}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
       {mounted && null}
     </section>
   );

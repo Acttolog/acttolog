@@ -61,3 +61,6 @@ qa-shots/
 
 # vercel link artifacts
 .vercel
+
+# ephemeral static export workspace
+.static-build

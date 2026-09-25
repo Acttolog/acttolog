@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Reveal } from '@/components/ui/Reveal';
 import { DarkroomClient } from './DarkroomClient';
+import { DarkroomAgent } from './DarkroomAgent';
 import { getDB, pub, seoFor, divisions as getDivisions } from '@/lib/content';
 
 const db = getDB();
@@ -35,6 +36,7 @@ export default function DarkroomPage() {
 
       <section className="sec pt-2">
         <div className="wrap">
+          <DarkroomAgent />
           <DarkroomClient
             resources={resources}
             cats={cats}

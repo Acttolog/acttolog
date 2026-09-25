@@ -7,7 +7,7 @@ import { dbReady } from '@/lib/db';
 
 export default function Page() {
   const db = getDB();
-  const rows = Object.entries(db.seo.pages).map(([route, p]) => ({ id: route, route, title: p.title, desc: p.desc.slice(0, 90) + '…', canon: p.canon }));
+  const rows = Object.entries(db.seo.pages).map(([route, p]) => ({ id: route, route, title: p.title, desc: p.desc.slice(0, 90) + '…', canon: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.acttolog.com.np'}${route}` }));
   return (
     <div>
       <AHead title="SEO" desc="Per-route title, description, canonical (EN + NE), Open Graph, structured data, sitemap and robots." />

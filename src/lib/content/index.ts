@@ -1,4 +1,5 @@
 import seedJson from './seed.json';
+import extJson from './extensions.json';
 import type {
   ActtologDB, Access, Bi, ContentStatus, Locale,
 } from './types';
@@ -12,6 +13,38 @@ import type {
  * The switch is deliberately invisible to callers.
  */
 const db = seedJson as unknown as ActtologDB;
+
+/* ── extension merge (curated growth content, owner-editable later via CMS) ── */
+const ext = extJson as unknown as {
+  offerPriceOverrides?: Record<string, { npr: number; usd: number }>;
+  newOffers?: ActtologDB['offers'];
+  drExtra?: ActtologDB['dr'];
+  researchLibrary?: Record<string, unknown>;
+  entertainmentChannels?: Record<string, unknown>;
+  academyExtra?: Record<string, unknown>;
+  gamesExtra?: unknown[];
+  liveCams?: unknown[];
+};
+(function mergeExtensions() {
+  const today = new Date().toISOString().slice(0, 10);
+  for (const [slug, price] of Object.entries(ext.offerPriceOverrides || {}) as [string, { npr: number; usd: number }][]) {
+    const o = db.offers.find((x) => x.slug === slug);
+    if (o) { o.npr = price.npr; o.usd = price.usd; }
+  }
+  for (const o of ext.newOffers || []) if (!db.offers.some((x) => x.id === o.id)) db.offers.push(o);
+  for (const r of ext.drExtra || []) {
+    const id = `dr_${r.slug}`;
+    if (!db.dr.some((x) => x.id === id)) {
+      db.dr.push({ ...r, id, status: 'published', visible: true, usage: 0, reviewDate: today, adminNotes: '' });
+    }
+  }
+  const extDb = db as ActtologDB & Record<string, unknown>;
+  extDb.researchLibrary = ext.researchLibrary || {};
+  extDb.entertainmentChannels = ext.entertainmentChannels || {};
+  extDb.academyExtra = ext.academyExtra || {};
+  extDb.gamesExtra = ext.gamesExtra || [];
+  extDb.liveCams = ext.liveCams || [];
+})();
 
 export function getDB(): ActtologDB {
   return db;
