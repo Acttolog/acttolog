@@ -53,14 +53,23 @@ const get = (p) => new Promise((r) => {
     if (rel.includes('[') || rel.includes(']')) continue;
     const dest = path.join(OUT, rel);
     fs.mkdirSync(path.dirname(dest), { recursive: true });
-    fs.copyFileSync(f, dest);
-    // also emit directory-index form so GitHub Pages serves /route/ as well as /route
-    if (rel.endsWith('.html') && !rel.endsWith('index.html')) {
-      const dirIndex = path.join(OUT, rel.slice(0, -5), 'index.html');
-      if (!fs.existsSync(dirIndex)) {
-        fs.mkdirSync(path.dirname(dirIndex), { recursive: true });
-        fs.copyFileSync(f, dirIndex);
+    const MIRROR0 = process.env.PAGES_SITE_URL || 'https://acttolog.github.io';
+    const rewrite = (buf) => buf
+      .replace(/http:\/\/localhost:3000/g, MIRROR0)
+      .replace(/https:\/\/(www\.)?acttolog\.com(\.np)?/g, MIRROR0);
+    if (rel.endsWith('.html')) {
+      const html = rewrite(fs.readFileSync(f, 'utf8'));
+      fs.writeFileSync(dest, html);
+      // also emit directory-index form so GitHub Pages serves /route/ as well as /route
+      if (!rel.endsWith('index.html')) {
+        const dirIndex = path.join(OUT, rel.slice(0, -5), 'index.html');
+        if (!fs.existsSync(dirIndex)) {
+          fs.mkdirSync(path.dirname(dirIndex), { recursive: true });
+          fs.writeFileSync(dirIndex, html);
+        }
       }
+    } else {
+      fs.copyFileSync(f, dest);
     }
     n++;
   }
@@ -84,6 +93,27 @@ const get = (p) => new Promise((r) => {
   };
   walkTxt(APP);
   console.log('flight payloads copied:', t);
+
+  // prerendered metadata bodies (sitemap.xml / robots.txt / manifest.webmanifest)
+  // with origins rewritten to the mirror domain
+  const MIRROR = process.env.PAGES_SITE_URL || 'https://acttolog.github.io';
+  const walkBody = (dir) => {
+    for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+      const p = path.join(dir, e.name);
+      if (e.isDirectory()) walkBody(p);
+      else if (e.name.endsWith('.body')) {
+        const rel = path.relative(APP, p).replace(/\.body$/, '');
+        if (rel.includes('[')) continue;
+        let body = fs.readFileSync(p, 'utf8');
+        body = body.replace(/http:\/\/localhost:3000/g, MIRROR).replace(/https:\/\/(www\.)?acttolog\.com(\.np)?/g, MIRROR);
+        const dest = path.join(OUT, rel);
+        fs.mkdirSync(path.dirname(dest), { recursive: true });
+        fs.writeFileSync(dest, body);
+        console.log('metadata body:', rel);
+      }
+    }
+  };
+  walkBody(APP);
 
   // crawled guest-state dynamic pages
   for (const p of CRAWL) {
