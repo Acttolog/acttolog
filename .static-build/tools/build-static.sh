@@ -9,7 +9,7 @@ cd "$(dirname "$0")/.."
 SB=.static-build
 rm -rf "$SB"
 mkdir -p "$SB"
-tar cf - --exclude=node_modules --exclude=.next --exclude=.git --exclude=.static-build \
+tar cf - --exclude=node_modules --exclude=.next --exclude=.git --exclude=.static-build --exclude=.pages-site \
     --exclude=qa-shots --exclude=out . | (cd "$SB" && tar xf -)
 rm -rf "$SB/src/app/api" "$SB/src/proxy.ts"
 ln -sfn "$(pwd)/node_modules" "$SB/node_modules"

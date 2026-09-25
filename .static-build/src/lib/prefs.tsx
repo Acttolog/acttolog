@@ -5,7 +5,7 @@ import type { ReactNode } from 'react';
 
 /** Theme (dark default) + currency (NPR default) — both remembered. */
 
-type Theme = 'dark' | 'light' | 'midnight' | 'aurora' | 'sunset' | 'paper';
+type Theme = 'dark' | 'light' | 'midnight' | 'aurora' | 'sunset' | 'paper' | 'cyber' | 'royal' | 'ocean' | 'rose';
 export const THEMES: { id: Theme; label: string; sw: [string, string] }[] = [
   { id: 'dark', label: 'Obsidian (default)', sw: ['#05060c', '#35e0ff'] },
   { id: 'light', label: 'Daylight', sw: ['#f4f7fc', '#0aa0cf'] },
@@ -13,6 +13,10 @@ export const THEMES: { id: Theme; label: string; sw: [string, string] }[] = [
   { id: 'aurora', label: 'Aurora Teal', sw: ['#02100d', '#2dffd0'] },
   { id: 'sunset', label: 'Sunset Ember', sw: ['#12040a', '#ffb454'] },
   { id: 'paper', label: 'Himalayan Paper', sw: ['#f6f1e7', '#0a7f8f'] },
+  { id: 'cyber', label: 'Cyber Terminal', sw: ['#030a04', '#49ff8b'] },
+  { id: 'royal', label: 'Royal Violet Gold', sw: ['#0a0618', '#c084fc'] },
+  { id: 'ocean', label: 'Deep Ocean', sw: ['#02121c', '#38dfff'] },
+  { id: 'rose', label: 'Rose Quartz', sw: ['#14060f', '#ff6fa5'] },
 ];
 type Currency = 'NPR' | 'USD';
 

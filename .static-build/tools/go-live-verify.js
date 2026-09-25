@@ -29,7 +29,7 @@ const check = (name, ok, extra = '') => { ok ? pass++ : fail++; console.log(`${o
   console.log('BASE:', BASE, '\n');
 
   // 1. Public routes
-  for (const p of ['/', '/research', '/entertainment', '/academy', '/games', '/darkroom', '/blog', '/offers', '/about', '/contact', '/ai', '/search', '/my', '/sitemap.xml', '/robots.txt', '/manifest.webmanifest']) {
+  for (const p of ['/', '/research', '/entertainment', '/academy', '/games', '/darkroom', '/blog', '/offers', '/about', '/contact', '/ai', '/search', '/explore', '/my', '/sitemap.xml', '/robots.txt', '/manifest.webmanifest']) {
     const r = await req(BASE + p);
     check(`GET ${p}`, r.s === 200, `${r.s}`);
   }

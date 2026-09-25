@@ -563,6 +563,28 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .lockblur { filter: blur(9px) saturate(0.6); pointer-events: none; user-select: none; }
 .kbd { font-family: var(--font-mono); font-size: 10.4px; padding: 2px 7px; border-radius: 6px; border: 1px solid var(--line2); color: var(--dim); background: var(--panel2); }
 
+/* ── mobile command center ── */
+.mobile-cmd {
+  position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 920;
+  display: none; grid-template-columns: repeat(5, 1fr); gap: 4px;
+  padding: 6px; border-radius: 20px;
+  background: color-mix(in srgb, var(--solid) 88%, transparent);
+  border: 1px solid var(--line2); backdrop-filter: blur(16px);
+  box-shadow: var(--shadow);
+}
+.mobile-cmd button {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 8px 2px; border-radius: 14px; border: 0; background: none;
+  color: var(--dim); cursor: pointer; transition: .25s;
+}
+.mobile-cmd button.on, .mobile-cmd button:active { color: var(--cy); background: color-mix(in srgb, var(--cy) 10%, transparent); }
+@media (max-width: 767px) {
+  .mobile-cmd { display: grid; }
+  #aifab { bottom: 84px; }
+  #consent { bottom: 84px; }
+  .foot { padding-bottom: 96px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
   html { scroll-behavior: auto; }

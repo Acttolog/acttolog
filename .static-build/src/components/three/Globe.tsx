@@ -12,7 +12,7 @@ import { KTM, nf } from '@/lib/utils';
 
 const EarthScene = dynamic(() => import('./EarthScene').then((m) => m.EarthScene), { ssr: false });
 
-interface HudState { fps: number; lat: number | null; lon: number | null; zoom: number }
+interface HudState { fps: number; lat: number | null; lon: number | null; zoom: number; alt: string }
 
 const fmtCoord = (v: number, pos: string, neg: string) => `${Math.abs(v).toFixed(2)}°${v >= 0 ? pos : neg}`;
 
@@ -46,7 +46,7 @@ function Hud({ tier, hud, visible, layer }: { tier: QualityTier; hud: HudState; 
       </div>
       <div className="hud hudbl">
         <div>LOCATION · {hud.lat == null ? 'HOVER MAP' : `${fmtCoord(hud.lat, 'N', 'S')} ${fmtCoord(hud.lon as number, 'E', 'W')}`}</div>
-        <div>ZOOM · {hud.zoom.toFixed(2)}×</div>
+        <div>ALT · {hud.alt} · ZOOM · {hud.zoom.toFixed(2)}×</div>
       </div>
     </>
   );
@@ -70,7 +70,7 @@ export function Globe() {
   const cursorRef = useRef<{ lat: number | null; lon: number | null }>({ lat: null, lon: null });
   const [visible, setVisible] = useState(true);
   const [tier, setTier] = useState<QualityTier>('medium');
-  const [hud, setHud] = useState<HudState>({ fps: 0, lat: null, lon: null, zoom: 1 });
+  const [hud, setHud] = useState<HudState>({ fps: 0, lat: null, lon: null, zoom: 1, alt: '—' });
   const [supported, setSupported] = useState<boolean | null>(null);
   const [layer, setLayer] = useState<'blue' | TileLayer>('blue');
   const [camsOpen, setCamsOpen] = useState(false);
@@ -79,6 +79,7 @@ export function Globe() {
   const [findBusy, setFindBusy] = useState(false);
   const [findErr, setFindErr] = useState('');
   const [pin, setPin] = useState<[number, number] | null>(null);
+  const [pointer, setPointer] = useState<{ x: number; y: number; inside: boolean }>({ x: 0, y: 0, inside: false });
   const router = useRouter();
 
   useEffect(() => { setTier(detectTier()); setSupported(webglSupported()); }, []);
@@ -106,7 +107,10 @@ export function Globe() {
   const hudFps = useRef(0);
   useEffect(() => {
     const id = setInterval(() => {
-      setHud({ fps: hudFps.current, lat: cursorRef.current.lat, lon: cursorRef.current.lon, zoom: 3.15 / Math.max(0.001, distRef.current) });
+      const dist = distRef.current ?? 3.15;
+      const altKm = Math.max(0, (dist - 1.002) * 6371);
+      const alt = altKm >= 1000 ? `${Math.round(altKm).toLocaleString('en-US')} km` : altKm >= 1 ? `${altKm.toFixed(1)} km` : `${Math.round(altKm * 1000)} m`;
+      setHud({ fps: hudFps.current, lat: cursorRef.current.lat, lon: cursorRef.current.lon, zoom: 3.15 / Math.max(0.001, dist), alt });
     }, 200);
     return () => clearInterval(id);
   }, []);
@@ -152,7 +156,7 @@ export function Globe() {
       const lat = Number(data[0].lat), lon = Number(data[0].lon);
       setPin([lat, lon]);
       flyRef.current = { lat, lon, token: (flyRef.current?.token ?? 0) + 1 };
-      distTargetRef.current = 1.03; // town-to-street approach
+      distTargetRef.current = 1.004; // town approach; wheel continues to street level
       if (layer === 'blue') setLayer('map');
       setFindOpen(false);
     } catch {
@@ -164,8 +168,15 @@ export function Globe() {
 
   const tileLayer: TileLayer = layer === 'blue' ? 'map' : layer;
 
+  const onMove = (e: React.PointerEvent) => {
+    const r = containerRef.current?.getBoundingClientRect();
+    if (!r) return;
+    setPointer({ x: e.clientX - r.left, y: e.clientY - r.top, inside: true });
+  };
+
   return (
-    <div ref={containerRef} className="absolute inset-0" style={{ touchAction: 'pan-y' }}>
+    <div ref={containerRef} className="absolute inset-0" style={{ touchAction: 'pan-y' }}
+      onPointerMove={onMove} onPointerLeave={() => setPointer((p2) => ({ ...p2, inside: false }))}>
       {supported === false && <Poster />}
       {supported !== false && (
         <EarthScene
@@ -185,6 +196,18 @@ export function Globe() {
         />
       )}
       <Hud tier={tier} hud={hud} visible={visible} layer={layer} />
+
+      {/* visible mouse pointer: targeting ring + live geodetic readout */}
+      {pointer.inside && (
+        <div className="pointer-ring" style={{ left: pointer.x, top: pointer.y }} aria-hidden="true">
+          <span className="pr-dot" />
+          {hud.lat != null && (
+            <span className="pr-chip mono">
+              {Math.abs(hud.lat).toFixed(2)}°{hud.lat >= 0 ? 'N' : 'S'} {Math.abs(hud.lon as number).toFixed(2)}°{(hud.lon as number) >= 0 ? 'E' : 'W'}
+            </span>
+          )}
+        </div>
+      )}
 
       {/* Explorer control deck */}
       <div className="absolute right-4 top-[calc(var(--nav)+16px)] z-[5] flex flex-col gap-2 items-end">

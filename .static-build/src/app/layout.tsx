@@ -7,6 +7,7 @@ import { Footer } from '@/components/layout/Footer';
 import { ConsentBanner } from '@/components/layout/ConsentBanner';
 import { AssistantDock } from '@/components/ai/AssistantDock';
 import { SearchOverlay } from '@/components/layout/SearchOverlay';
+import { MobileNav } from '@/components/layout/MobileNav';
 import { getDB, navItems, divisions } from '@/lib/content';
 
 const spaceGrotesk = Space_Grotesk({
@@ -80,6 +81,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <main id="main">{children}</main>
           <Footer />
           <ConsentBanner />
+          <MobileNav />
           <AssistantDock />
           <SearchOverlay />
         </Providers>

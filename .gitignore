@@ -64,3 +64,5 @@ qa-shots/
 
 # ephemeral static export workspace
 .static-build
+.pages-site/
+.static-build/

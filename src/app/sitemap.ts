@@ -10,7 +10,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const staticRoutes = [
     '', '/research', '/entertainment', '/academy', '/games', '/darkroom',
-    '/blog', '/offers', '/about', '/contact', '/ai', '/search',
+    '/blog', '/offers', '/about', '/contact', '/ai', '/search', '/explore',
   ].map((path) => ({
     url: `${SITE}${path}`,
     lastModified: now,

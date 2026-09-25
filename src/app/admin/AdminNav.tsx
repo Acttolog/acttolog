@@ -56,6 +56,10 @@ const NAV: { group: string; items: [string, string, string][] }[] = [
     ],
   },
   {
+    group: 'World',
+    items: [['/admin/scene', 'Scene Editor', 'spark']],
+  },
+  {
     group: 'AI',
     items: [['/admin/ai', 'AI Configuration / Usage', 'spark']],
   },

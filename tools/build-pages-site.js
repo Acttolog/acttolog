@@ -54,6 +54,14 @@ const get = (p) => new Promise((r) => {
     const dest = path.join(OUT, rel);
     fs.mkdirSync(path.dirname(dest), { recursive: true });
     fs.copyFileSync(f, dest);
+    // also emit directory-index form so GitHub Pages serves /route/ as well as /route
+    if (rel.endsWith('.html') && !rel.endsWith('index.html')) {
+      const dirIndex = path.join(OUT, rel.slice(0, -5), 'index.html');
+      if (!fs.existsSync(dirIndex)) {
+        fs.mkdirSync(path.dirname(dirIndex), { recursive: true });
+        fs.copyFileSync(f, dirIndex);
+      }
+    }
     n++;
   }
   console.log('prerendered pages copied:', n);

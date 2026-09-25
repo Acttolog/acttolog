@@ -66,6 +66,15 @@ export function SearchOverlay() {
   results.forEach((r) => { (groups[r.k] = groups[r.k] || []).push(r); });
   const names = GROUP_NAMES(t);
 
+  const WORLD_COMMANDS: { label: string; run: () => void }[] = [
+    { label: locale === 'ne' ? 'पृथ्वी खोल्नुहोस्' : 'Go to Earth', run: () => router.push('/explore?mode=earth') },
+    { label: locale === 'ne' ? 'नक्सा खोल्नुहोस्' : 'Open Map', run: () => router.push('/explore?mode=map') },
+    { label: 'Open Satellite', run: () => router.push('/explore?mode=sat') },
+    { label: 'Open 360 Worlds', run: () => router.push('/explore?mode=360') },
+    { label: 'Search Kathmandu', run: () => router.push('/explore?mode=map&lat=27.7172&lng=85.3240&zoom=13&place=Kathmandu') },
+    { label: locale === 'ne' ? 'एआई खोल्नुहोस्' : 'Open AI', run: () => router.push('/ai') },
+  ];
+
   const askAI = () => {
     setOpen(false);
     window.dispatchEvent(new CustomEvent('acttolog:ai-open', { detail: q }));
