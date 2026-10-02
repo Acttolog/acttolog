@@ -84,7 +84,7 @@ const check = (name, ok, extra = '') => { ok ? pass++ : fail++; console.log(`${o
   await step('cmdk', async () => {
     await page.evaluate(() => localStorage.setItem('act_welcomed', '1'));
     await page.keyboard.down('Control'); await page.keyboard.press('KeyK'); await page.keyboard.up('Control');
-    await sleep(700);
+    await page.waitForSelector('[role="dialog"][aria-modal="true"] input', { timeout: 40000 }).catch(() => {});
     const cmds = await page.evaluate(() => {
       const d = [...document.querySelectorAll('[role="dialog"][aria-modal="true"]')].pop();
       return d ? d.textContent : '';
@@ -101,7 +101,7 @@ const check = (name, ok, extra = '') => { ok ? pass++ : fail++; console.log(`${o
     check('"Go to Earth" command → /explore?mode=earth (§26)', page.url().includes('/explore?mode=earth'), page.url());
     // palette on /explore: places deep-link re-applies live (§18 + §22)
     await page.keyboard.down('Control'); await page.keyboard.press('KeyK'); await page.keyboard.up('Control');
-    await sleep(700);
+    await page.waitForSelector('[role="dialog"][aria-modal="true"] input', { timeout: 40000 });
     await page.evaluate(() => { const d = [...document.querySelectorAll('[role="dialog"][aria-modal="true"]')].pop(); d.querySelector('input').focus(); });
     await page.keyboard.type('Kathmandu');
     await sleep(4000);
