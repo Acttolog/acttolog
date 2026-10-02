@@ -4,6 +4,7 @@ import { PageHead, SectionHead } from '@/components/ui/Heads';
 import { Reveal } from '@/components/ui/Reveal';
 import { Icon } from '@/components/ui/Icon';
 import { getDB, seoFor, divisions as getDivisions } from '@/lib/content';
+import { WorldPortal } from '@/components/world/WorldPortal';
 
 const db = getDB();
 const s = db.settings;
@@ -25,6 +26,10 @@ export default function AboutPage() {
   return (
     <>
       <PageHead kicker="ABOUT US" title="About Acttolog" body={s.purpose.en} art="academy" />
+
+      <WorldPortal world="world" title="ACTTOLOG World Hub" titleNe="एक्टोलग वर्ल्ड हब"
+        subtitle="The ACTTOLOG world hub in 360° — every division connected by light: research, academy, games, darkroom and the AI core."
+        accent="var(--vi)" earthLink="/explore?mode=earth" />
 
       <section className="sec pt-2">
         <div className="wrap">

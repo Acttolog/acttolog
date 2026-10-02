@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { detectTier, webglSupported, type QualityTier } from './tier';
-import { DIVISION_NODES, ENTITY_COUNT } from './EarthScene';
+import { DIVISION_NODES, ARC_PAIRS, ENTITY_COUNT } from './EarthScene';
 import { TILE_ATTRIBUTION, type TileLayer } from './TileGlobe';
 import { LiveCamsPanel } from '@/components/content/Extensions';
 import { Icon } from '@/components/ui/Icon';
@@ -41,7 +41,7 @@ function Hud({ tier, hud, visible, layer }: { tier: QualityTier; hud: HudState; 
       <div className="hud hudbr">
         <div>QUALITY · {visible ? tier.toUpperCase() : 'PAUSED'}</div>
         <div>RENDER · {visible && hud.fps > 0 ? `${hud.fps} FPS` : '—'}</div>
-        <div>NODES · {nf(DIVISION_NODES.length)} · LINKS · 8 · ENTITIES · {nf(ENTITY_COUNT)}</div>
+        <div>NODES · {nf(DIVISION_NODES.length)} · LINKS · {nf(ARC_PAIRS.length)} · ENTITIES · {nf(ENTITY_COUNT)}</div>
         <div>DRAG ROTATE · SCROLL ZOOM TO STREET · CLICK A NODE</div>
       </div>
       <div className="hud hudbl">
@@ -228,6 +228,14 @@ export function Globe() {
           <button className="ico !w-9 !h-9" title="Reset view" aria-label="Reset view"
             onClick={() => { distTargetRef.current = 3.15; setPin(null); }}>
             <Icon name="refresh" size={15} />
+          </button>
+          <div className="hr w-full" />
+          <button className="chip !px-3 !py-1.5 !text-[9.4px]" title="Open the Earth command center (EARTH · MAP · SAT · 360)"
+            onClick={() => {
+              const f = flyRef.current;
+              router.push(f ? `/explore?mode=earth&lat=${f.lat.toFixed(5)}&lng=${f.lon.toFixed(5)}` : '/explore?mode=earth');
+            }}>
+            COMMAND CENTER
           </button>
         </div>
         {findOpen && (

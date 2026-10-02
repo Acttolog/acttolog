@@ -5,6 +5,8 @@ import { Icon } from '@/components/ui/Icon';
 import { useI18n } from '@/lib/i18n';
 import { usePrefs, THEMES } from '@/lib/prefs';
 import { resolveImage } from '@/lib/utils';
+import { WORLDS_360 } from '@/lib/world/config';
+import Link from 'next/link';
 
 /**
  * Layer 00 · THE LIVING WORLD — one section that presents the interactive
@@ -88,6 +90,33 @@ export function WorldShowcase({ shots }: { shots: string[] }) {
             </Reveal>
           ))}
         </div>
+
+        {/* 360 worlds launcher (spec §23) */}
+        <Reveal>
+          <div className="panel p-6 sm:p-8 mb-12">
+            <div className="flex flex-wrap items-end justify-between gap-4 mb-5">
+              <div>
+                <div className="eyebrow mb-2">{locale === 'ne' ? 'एक्टोलग ३६० संसारहरू' : 'ACTTOLOG 360 WORLDS'}</div>
+                <h3 className="h3">{locale === 'ne' ? 'भित्र पस्नुहोस् — हटस्पटहरूले यात्रा गराउँछन्' : 'Step inside — hotspots travel between worlds'}</h3>
+              </div>
+              <Link className="chip" href="/explore?mode=360">{locale === 'ne' ? 'सबै संसार खोल्नुहोस्' : 'OPEN WORLD HUB'} →</Link>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {WORLDS_360.map((w) => (
+                <Link key={w.id} className="chip !py-2 !px-3.5 !text-[11px]" href={`/explore?mode=360&world=${w.id}`}
+                  style={{ borderColor: `color-mix(in srgb, ${w.palette[1]} 45%, transparent)` }}>
+                  <span className="inline-block w-2 h-2 rounded-full mr-2 align-middle" style={{ background: w.palette[1], boxShadow: `0 0 8px ${w.palette[1]}` }} />
+                  {w.name.toUpperCase()}
+                </Link>
+              ))}
+            </div>
+            <p className="dim text-[11px] mt-4">
+              {locale === 'ne'
+                ? 'प्रक्रियागत रूपमा बनाइएका एक्टोलगका आफ्नै वातावरणहरू — कुनै तेस्रो-पक्ष पैनोरामा होइन।'
+                : 'Procedurally generated ACTTOLOG-owned environments — not third-party panoramas. Google Street View activates when a Maps key is configured.'}
+            </p>
+          </div>
+        </Reveal>
 
         {/* theme gallery */}
         <Reveal>

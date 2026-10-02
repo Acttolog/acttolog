@@ -56,6 +56,7 @@ export function Header({ nav, divisions: divs, brand }: {
   const items = [
     { id: 'home', label: { en: 'Home', ne: 'गृहपृष्ठ' }, route: '/', order: 1, visible: true },
     { id: 'div', label: { en: 'Divisions', ne: 'विभागहरू' }, route: '', order: 2, visible: true, mega: true },
+    { id: 'world', label: { en: 'World', ne: 'वर्ल्ड' }, route: '/explore', order: 2.5, visible: true },
     ...nav,
     { id: 'ai', label: { en: 'AI', ne: 'एआई' }, route: '/ai', order: 7, visible: true },
   ].sort((a, b) => (a.order || 9) - (b.order || 9)) as (NavItem & { mega?: boolean })[];
@@ -92,8 +93,10 @@ export function Header({ nav, divisions: divs, brand }: {
             ) : (
               <Link key={n.id} href={n.route || '/'}
                 className={`nlink${isOn(n.route) ? ' on' : ''}`}
-                style={n.route === '/ai' ? { color: 'var(--cy)' } : undefined}
-                onMouseEnter={() => setMegaOpen(false)}>
+                style={n.route === '/ai' ? { color: 'var(--cy)' } : n.id === 'world' ? { color: 'var(--cy)' } : undefined}
+                onMouseEnter={() => setMegaOpen(false)}
+                onClick={() => { if (n.id === 'world') track('earth_open', { via: 'nav' }); }}>
+                {n.id === 'world' && <span aria-hidden="true" style={{ marginRight: 5, verticalAlign: '-2px' }}><Icon name="globe" size={13} /></span>}
                 {L(n.label)}
               </Link>
             ))}

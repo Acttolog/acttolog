@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Reveal } from '@/components/ui/Reveal';
 import { AiPageClient } from './AiPageClient';
+import { WorldPortal } from '@/components/world/WorldPortal';
 import { seoFor } from '@/lib/content';
 
 export const metadata: Metadata = {
@@ -11,6 +12,7 @@ export const metadata: Metadata = {
 
 export default function AiPage() {
   return (
+    <>
     <section className="pt-[calc(var(--nav)+44px)] pb-16">
       <div className="wrap">
         <Reveal>
@@ -45,5 +47,9 @@ export default function AiPage() {
         </Reveal>
       </div>
     </section>
+      <WorldPortal world="ai" title="Intelligence Core" titleNe="इन्टेलिजेन्स कोर"
+        subtitle="The Intelligence Core in 360° — travel to the Research Lab or the ACTTOLOG world hub through live hotspots."
+        accent="var(--ok)" earthLink="/explore?mode=earth&lat=37.77400&lng=-122.41900" />
+    </>
   );
 }

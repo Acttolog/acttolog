@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Icon } from '@/components/ui/Icon';
 import { useI18n } from '@/lib/i18n';
 import { useSaved } from '@/lib/saved';
 import { track } from '@/lib/analytics';
 import { useToast } from '@/lib/toast';
+import { googleMapsConfigured, googlePlaceLocation, googlePlaceSuggestions } from '@/lib/world/google';
 
 export interface Place {
   id: string;
@@ -14,19 +15,25 @@ export interface Place {
   lon: number;
   category?: string;
   address?: string;
-  source: 'NOMINATIM' | 'ACTTOLOG';
+  source: 'NOMINATIM' | 'ACTTOLOG' | 'GOOGLE';
   raw?: Record<string, unknown>;
 }
 
 const NEARBY: [string, string, string][] = [
   ['Food', 'amenity=restaurant|amenity=cafe|amenity=fast_food', 'chat'],
-  ['Hotels', 'tourism=hotel|tourism=guest_house', 'home'],
-  ['Education', 'amenity=school|amenity=college|amenity=university', 'book'],
-  ['Hospitals', 'amenity=hospital|amenity=clinic', 'shield'],
+  ['Hotels', 'tourism=hotel|tourism=guest_house|tourism=hostel', 'home'],
+  ['Education', 'amenity=school|amenity=college', 'screen'],
+  ['Universities', 'amenity=university', 'book'],
+  ['Research', 'amenity=research_institute|office=research', 'sigma'],
+  ['Libraries', 'amenity=library', 'doc'],
+  ['Museums', 'tourism=museum', 'star'],
+  ['Shopping', 'shop=supermarket|shop=department_store|shop=mall|shop=convenience', 'grid'],
+  ['Hospitals', 'amenity=hospital|amenity=clinic|amenity=pharmacy', 'shield'],
   ['Transport', 'aeroway=aerodrome|railway=station|amenity=bus_station', 'compass'],
-  ['Tourism', 'tourism=attraction|tourism=viewpoint|tourism=museum', 'star'],
-  ['Finance', 'amenity=bank|amenity=atm', 'chart'],
+  ['Tourism', 'tourism=attraction|tourism=viewpoint|tourism=information', 'eye'],
+  ['Entertainment', 'amenity=cinema|amenity=theatre|amenity=arts_centre|leisure=nightclub', 'play'],
   ['Parks', 'leisure=park|leisure=garden', 'spark'],
+  ['Finance', 'amenity=bank|amenity=atm', 'chart'],
 ];
 
 /** Place Explorer panel — renders only fields the source returned (§11/§26/§77). */
@@ -62,11 +69,10 @@ export function PlacePanel({ place, onClose, onExplore, onAskAi }: {
     setNearCat(cat); setNear(null); setNearErr('');
     track('place_open', { place: place.name, section: 'nearby', cat });
     const filter = NEARBY.find(([n]) => n === cat)?.[1] || '';
-    const q = `[out:json][timeout:12];node(${place.lat - 0.02},${place.lon - 0.02},${place.lat + 0.02},${place.lon + 0.02})[${filter.replace(/\|/g, '][').replace('][', ']||[')}];out 12;`;
-    // simpler robust query: union of selectors
-    const selectors = filter.split('|').map((f) => `node[${f}](${(place.lat - 0.015).toFixed(4)},${(place.lon - 0.015).toFixed(4)},${(place.lat + 0.015).toFixed(4)},${(place.lon + 0.015).toFixed(4)});`).join('');
-    const query = `[out:json][timeout:12];(${selectors});out tags 14;`;
-    void q;
+    // union of selectors — nodes + ways (malls/hospitals are often mapped as ways)
+    const bbox = `${(place.lat - 0.015).toFixed(4)},${(place.lon - 0.015).toFixed(4)},${(place.lat + 0.015).toFixed(4)},${(place.lon + 0.015).toFixed(4)}`;
+    const selectors = filter.split('|').map((f) => `node[${f}](${bbox});way[${f}](${bbox});`).join('');
+    const query = `[out:json][timeout:12];(${selectors});out tags center 14;`;
     try {
       const res = await fetch('https://overpass-api.de/api/interpreter', {
         method: 'POST',
@@ -77,7 +83,7 @@ export function PlacePanel({ place, onClose, onExplore, onAskAi }: {
       const data = await res.json();
       const els = (data.elements || []).map((e: { tags?: Record<string, string> }) => ({
         name: e.tags?.name || e.tags?.brand || 'Unnamed',
-        kind: Object.entries(e.tags || {}).find(([k]) => ['amenity', 'tourism', 'leisure', 'railway', 'aeroway'].includes(k))?.[1] || '',
+        kind: Object.entries(e.tags || {}).find(([k]) => ['amenity', 'tourism', 'leisure', 'railway', 'aeroway', 'shop', 'office'].includes(k))?.[1] || '',
       })).slice(0, 10);
       setNear(els);
       if (!els.length) setNearErr('none');
@@ -117,6 +123,10 @@ export function PlacePanel({ place, onClose, onExplore, onAskAi }: {
             {m.toUpperCase()}
           </button>
         ))}
+        <a className="chip" href={`https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&to=${place.lat.toFixed(5)},${place.lon.toFixed(5)}`}
+          target="_blank" rel="noopener noreferrer" onClick={() => track('cta_interaction', { cta: 'directions', place: place.name })}>
+          <Icon name="arrow" size={12} />Directions
+        </a>
         <button className={`chip${saved ? ' on' : ''}`} onClick={() => toggleSave('place', place.id, place.name, `/explore?mode=map&lat=${place.lat}&lng=${place.lon}`)}>
           <Icon name="heart" size={12} />{saved ? 'Saved' : 'Save'}
         </button>
@@ -169,7 +179,7 @@ export function PlacePanel({ place, onClose, onExplore, onAskAi }: {
   );
 }
 
-/** Search command bar — Nominatim autocomplete + ACTTOLOG content categories. */
+/** Search command bar — Google Places when configured, else Nominatim; + ACTTOLOG content. */
 export function SearchCmd({ onPick, onContent }: {
   onPick: (p: Place) => void;
   onContent: (q: string) => void;
@@ -178,11 +188,31 @@ export function SearchCmd({ onPick, onContent }: {
   const [q, setQ] = useState('');
   const [res, setRes] = useState<Place[]>([]);
   const [state, setState] = useState<'idle' | 'loading' | 'error'>('idle');
+  const [gPending, setGPending] = useState<{ id: string; name: string; address: string } | null>(null);
+  const googleOn = useMemo(() => googleMapsConfigured(), []);
+  const toast = useToast();
+
+  const pickGoogle = async (s: { id: string; name: string; address: string }) => {
+    setGPending(s);
+    const loc = await googlePlaceLocation(s.id);
+    setGPending(null);
+    if (loc) onPick({ id: `g-${s.id}`, name: loc.name, lat: loc.lat, lon: loc.lon, address: s.address, source: 'GOOGLE' });
+    else toast('Google could not resolve that place. Try another result.', 'err');
+  };
 
   useEffect(() => {
     const t = setTimeout(async () => {
       if (q.trim().length < 3) { setRes([]); setState('idle'); return; }
       setState('loading');
+      if (googleOn) {
+        const g = await googlePlaceSuggestions(q);
+        if (g) {
+          setRes(g.map((x) => ({ id: `g-${x.id}`, name: x.name, lat: 0, lon: 0, address: x.address, source: 'GOOGLE' as const, raw: { googlePlaceId: x.id } })));
+          setState('idle');
+          track('place_search', { q: q.trim(), provider: 'google' });
+          return;
+        }
+      }
       try {
         const r = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=6&q=${encodeURIComponent(q)}`);
         if (!r.ok) throw new Error(String(r.status));
@@ -196,13 +226,13 @@ export function SearchCmd({ onPick, onContent }: {
           source: 'NOMINATIM' as const,
         })));
         setState('idle');
-        track('place_search', { q: q.trim() });
+        track('place_search', { q: q.trim(), provider: 'nominatim' });
       } catch {
         setState('error');
       }
     }, 600);
     return () => clearTimeout(t);
-  }, [q]);
+  }, [q, googleOn]);
 
   return (
     <div className="panel p-3.5" style={{ borderRadius: 16 }}>
@@ -224,10 +254,17 @@ export function SearchCmd({ onPick, onContent }: {
         <div className="mt-3 space-y-1" style={{ borderTop: '1px solid var(--line)', paddingTop: 8 }}>
           {res.map((p) => (
             <button key={p.id} className="w-full text-left rounded-xl px-3 py-2.5 transition-colors hover:bg-[color-mix(in_srgb,var(--cy)_8%,transparent)]"
-              onClick={() => { onPick(p); setRes([]); }}>
-              <div className="text-[13.4px] font-medium truncate">{p.name}</div>
+              onClick={() => {
+                setRes([]);
+                const gid = p.raw?.googlePlaceId;
+                if (typeof gid === 'string') { void pickGoogle({ id: gid, name: p.name, address: p.address || '' }); }
+                else onPick(p);
+              }}>
+              <div className="text-[13.4px] font-medium truncate">{p.name}{gPending?.id === String(p.raw?.googlePlaceId || '') ? ' …' : ''}</div>
               <div className="dim mono text-[9.8px] tracking-[.14em] mt-0.5 truncate">
-                {p.category?.toUpperCase()} · {p.lat.toFixed(3)}, {p.lon.toFixed(3)} · NOMINATIM
+                {p.source === 'GOOGLE'
+                  ? `${(p.address || '').toUpperCase()} · GOOGLE PLACES`
+                  : `${p.category?.toUpperCase() ?? ''} · ${p.lat.toFixed(3)}, ${p.lon.toFixed(3)} · NOMINATIM`}
               </div>
             </button>
           ))}

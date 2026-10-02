@@ -7,6 +7,7 @@ import { Footer } from '@/components/layout/Footer';
 import { ConsentBanner } from '@/components/layout/ConsentBanner';
 import { AssistantDock } from '@/components/ai/AssistantDock';
 import { SearchOverlay } from '@/components/layout/SearchOverlay';
+import { FirstVisit } from '@/components/world/FirstVisit';
 import { MobileNav } from '@/components/layout/MobileNav';
 import { getDB, navItems, divisions } from '@/lib/content';
 
@@ -84,6 +85,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <MobileNav />
           <AssistantDock />
           <SearchOverlay />
+          <FirstVisit />
         </Providers>
         <JsonLd />
       </body>

@@ -6,6 +6,7 @@ import { Icon } from '@/components/ui/Icon';
 import { AccessBadge } from '@/components/ui/Badges';
 import { getDB, pub, seoFor } from '@/lib/content';
 import { resolveImage, fdate, rt } from '@/lib/utils';
+import { WorldPortal } from '@/components/world/WorldPortal';
 
 const db = getDB();
 
@@ -25,6 +26,10 @@ export default function BlogPage() {
       <PageHead kicker="ACTTOLOG · BLOG" title="Blog"
         body="Research practice, technology craft, education design and creative systems from the Acttolog world."
         art="editorial" />
+      <WorldPortal world="blog" title="Editorial World" titleNe="ब्लग वर्ल्ड"
+        subtitle="A digital editorial environment in 360° — floating stories and reading paths, linked to the Digital Library."
+        accent="var(--cy)" earthLink="/explore?mode=earth&lat=48.85600&lng=2.35200" />
+
       <section className="sec pt-2">
         <div className="wrap">
           {/* Category rail (static links keep SEO honest) */}

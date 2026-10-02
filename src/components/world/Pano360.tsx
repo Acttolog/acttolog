@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import * as THREE from 'three';
 import { WORLDS_360 } from '@/lib/world/config';
 
@@ -69,13 +70,87 @@ function panoTexture(worldId: string, palette: readonly string[]): THREE.Texture
   return tex;
 }
 
-const HOTSPOTS: { world: string; dir: [number, number, number]; label: string; route?: string }[] = [
-  { world: 'lab', dir: [0.9, 0.05, 0.4], label: 'RESEARCH' },
-  { world: 'academy', dir: [-0.8, 0.1, 0.6], label: 'ACADEMY' },
-  { world: 'arena', dir: [0.2, 0.05, -0.95], label: 'GAMES' },
-  { world: 'darkroom', dir: [-0.4, -0.05, -0.9], label: 'DARKROOM' },
-  { world: 'library', dir: [0.6, 0.2, -0.7], label: 'LIBRARY' },
+/**
+ * Hotspots per world (spec §23). `world` = travel to another ACTTOLOG 360
+ * environment; `route` = travel to an information layer (section page).
+ * Every world gets at least two ways out — nobody is ever trapped.
+ */
+const HOTSPOTS: { in: string; dir: [number, number, number]; label: string; target?: string; route?: string }[] = [
+  // ACTTOLOG World — the hub
+  { in: 'world', dir: [0.9, 0.05, 0.4], label: 'RESEARCH LAB', target: 'lab' },
+  { in: 'world', dir: [-0.85, 0.08, 0.5], label: 'ACADEMY', target: 'academy' },
+  { in: 'world', dir: [0.1, 0.05, -0.95], label: 'GAMES ARENA', target: 'arena' },
+  { in: 'world', dir: [-0.3, -0.05, -0.9], label: 'DARKROOM', target: 'darkroom' },
+  { in: 'world', dir: [0.55, 0.25, -0.75], label: 'AI CORE', target: 'ai' },
+  // Research Lab
+  { in: 'lab', dir: [0.4, 0.05, 0.9], label: 'THESYN RESEARCH', route: '/research' },
+  { in: 'lab', dir: [-0.9, 0.05, -0.3], label: 'DIGITAL LIBRARY', target: 'library' },
+  { in: 'lab', dir: [0.95, 0.1, -0.2], label: 'ACTTOLOG WORLD', target: 'world' },
+  // Academy
+  { in: 'academy', dir: [0.3, 0.05, 0.95], label: 'OPEN ACADEMY', route: '/academy' },
+  { in: 'academy', dir: [-0.95, 0.05, 0.2], label: 'DIGITAL LIBRARY', target: 'library' },
+  { in: 'academy', dir: [0.9, 0.1, -0.35], label: 'ACTTOLOG WORLD', target: 'world' },
+  // Games Arena
+  { in: 'arena', dir: [0.2, 0.05, -0.95], label: 'ENTER GAMES', route: '/games' },
+  { in: 'arena', dir: [-0.9, 0.05, 0.4], label: 'ENTERTAINMENT', target: 'cinema' },
+  { in: 'arena', dir: [0.95, 0.1, 0.25], label: 'ACTTOLOG WORLD', target: 'world' },
+  // Darkroom
+  { in: 'darkroom', dir: [-0.4, -0.05, -0.9], label: 'OPEN DARKROOM', route: '/darkroom' },
+  { in: 'darkroom', dir: [0.85, 0.05, 0.5], label: 'AI CORE', target: 'ai' },
+  { in: 'darkroom', dir: [-0.95, 0.1, 0.1], label: 'ACTTOLOG WORLD', target: 'world' },
+  // Digital Library
+  { in: 'library', dir: [0.6, 0.2, -0.7], label: 'OPEN BLOG', route: '/blog' },
+  { in: 'library', dir: [-0.7, 0.05, 0.65], label: 'RESEARCH LAB', target: 'lab' },
+  { in: 'library', dir: [0.95, -0.1, -0.2], label: 'ACTTOLOG WORLD', target: 'world' },
+  // Entertainment
+  { in: 'cinema', dir: [0.15, 0.05, 0.95], label: 'ENTERTAINMENT', route: '/entertainment' },
+  { in: 'cinema', dir: [-0.9, 0.08, -0.35], label: 'GAMES ARENA', target: 'arena' },
+  { in: 'cinema', dir: [0.9, 0.05, -0.4], label: 'ACTTOLOG WORLD', target: 'world' },
+  // Editorial
+  { in: 'blog', dir: [-0.2, 0.05, 0.95], label: 'READ THE BLOG', route: '/blog' },
+  { in: 'blog', dir: [0.9, 0.08, 0.35], label: 'DIGITAL LIBRARY', target: 'library' },
+  { in: 'blog', dir: [-0.95, 0.05, -0.2], label: 'ACTTOLOG WORLD', target: 'world' },
+  // Offers Showcase
+  { in: 'offers', dir: [0.25, 0.05, -0.95], label: 'VIEW OFFERS', route: '/offers' },
+  { in: 'offers', dir: [-0.9, 0.05, 0.4], label: 'ENTERTAINMENT', target: 'cinema' },
+  { in: 'offers', dir: [0.95, 0.1, 0.2], label: 'ACTTOLOG WORLD', target: 'world' },
+  // Intelligence Core
+  { in: 'ai', dir: [-0.1, 0.05, 0.95], label: 'ASK ACTTOLOG AI', route: '/ai' },
+  { in: 'ai', dir: [0.9, 0.1, -0.4], label: 'RESEARCH LAB', target: 'lab' },
+  { in: 'ai', dir: [-0.95, 0.05, -0.25], label: 'ACTTOLOG WORLD', target: 'world' },
+  // Global Contact
+  { in: 'contact', dir: [0.2, 0.05, 0.95], label: 'CONTACT ACTTOLOG', route: '/contact' },
+  { in: 'contact', dir: [-0.9, 0.05, 0.4], label: 'OFFERS SHOWCASE', target: 'offers' },
+  { in: 'contact', dir: [0.95, 0.1, -0.2], label: 'ACTTOLOG WORLD', target: 'world' },
 ];
+
+function makeHotspotLabel(text: string): THREE.CanvasTexture {
+  const c = document.createElement('canvas'); c.width = 320; c.height = 96;
+  const x = c.getContext('2d')!;
+  x.fillStyle = 'rgba(5,6,12,.74)';
+  x.strokeStyle = 'rgba(53,224,255,.85)'; x.lineWidth = 3;
+  x.beginPath(); x.roundRect(8, 20, 304, 56, 26); x.fill(); x.stroke();
+  x.fillStyle = '#e8eeff'; x.font = '600 26px "Space Grotesk", sans-serif';
+  x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.fillText(text, 160, 49, 292);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+
+/** Builds only the hotspots that belong to `worldId` (spec §23). */
+function buildHotspots(scene: THREE.Scene, worldId: string): THREE.Sprite[] {
+  return HOTSPOTS.filter((h) => h.in === worldId).map((h) => {
+    const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: makeHotspotLabel(h.label), depthTest: false, transparent: true }));
+    sp.position.set(...h.dir).normalize().multiplyScalar(6);
+    sp.scale.set(1.9, 0.57, 1);
+    sp.userData.hot = h;
+    scene.add(sp);
+    return sp;
+  });
+}
+
+function disposeHotspots(scene: THREE.Scene, hotspots: THREE.Sprite[]) {
+  hotspots.forEach((h) => { scene.remove(h); (h.material.map as THREE.Texture)?.dispose(); h.material.dispose(); });
+}
 
 /**
  * 360° ACTTOLOG Worlds — procedural, owned environments with hotspots.
@@ -92,6 +167,9 @@ export function Pano360({ world, onWorld, reduced }: {
   const worldRef = useRef(world);
   const onWorldRef = useRef(onWorld);
   onWorldRef.current = onWorld;
+  const router = useRouter();
+  const routerRef = useRef(router);
+  routerRef.current = router;
 
   useEffect(() => {
     const mount = mountRef.current;
@@ -109,32 +187,28 @@ export function Pano360({ world, onWorld, reduced }: {
     const sphere = new THREE.Mesh(geo, mat);
     scene.add(sphere);
 
-    // hotspot sprites
-    const makeLabel = (text: string) => {
-      const c = document.createElement('canvas'); c.width = 256; c.height = 96;
-      const x = c.getContext('2d')!;
-      x.fillStyle = 'rgba(5,6,12,.72)';
-      x.strokeStyle = 'rgba(53,224,255,.8)'; x.lineWidth = 3;
-      x.beginPath(); x.roundRect(8, 20, 240, 56, 26); x.fill(); x.stroke();
-      x.fillStyle = '#e8eeff'; x.font = '600 30px "Space Grotesk", sans-serif';
-      x.textAlign = 'center'; x.textBaseline = 'middle';
-      x.fillText(text, 128, 49);
-      const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
-    };
-    st.hotspots = HOTSPOTS.map((h) => {
-      const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: makeLabel(h.label), depthTest: false, transparent: true }));
-      sp.position.set(...(h.dir as [number, number, number])).normalize().multiplyScalar(6);
-      sp.scale.set(1.7, 0.64, 1);
-      sp.userData.hot = h;
-      scene.add(sp);
-      return sp;
-    });
+    // hotspot sprites — only the current world's exits
+    st.hotspots = buildHotspots(scene, worldRef.current);
 
     st.renderer = renderer; st.scene = scene; st.camera = camera; st.sphere = sphere;
 
     const ray = new THREE.Raycaster();
-    const down = (e: PointerEvent) => { st.drag = true; st.lx = e.clientX; st.ly = e.clientY; };
+    const ptrs = new Map<number, { x: number; y: number }>();
+    let pinchDist = 0;
+    const down = (e: PointerEvent) => {
+      ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      st.drag = ptrs.size === 1; st.lx = e.clientX; st.ly = e.clientY;
+      if (ptrs.size === 2) { const [a, b] = [...ptrs.values()]; pinchDist = Math.hypot(a.x - b.x, a.y - b.y); }
+    };
     const move = (e: PointerEvent) => {
+      if (ptrs.has(e.pointerId)) ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (ptrs.size === 2) { // pinch → zoom (§14 touch)
+        const [a, b] = [...ptrs.values()];
+        const d = Math.hypot(a.x - b.x, a.y - b.y);
+        if (pinchDist > 0) st.tFov = Math.max(35, Math.min(90, st.tFov + (pinchDist - d) * 0.08));
+        pinchDist = d;
+        return;
+      }
       if (!st.drag) return;
       st.tLon -= (e.clientX - st.lx) * 0.12;
       st.tLat = Math.max(-70, Math.min(70, st.tLat + (e.clientY - st.ly) * 0.1));
@@ -142,14 +216,20 @@ export function Pano360({ world, onWorld, reduced }: {
     };
     const up = (e: PointerEvent) => {
       const wasDrag = st.drag && (Math.abs(e.clientX - st.lx) + Math.abs(e.clientY - st.ly)) > 4;
-      st.drag = false;
+      ptrs.delete(e.pointerId);
+      if (ptrs.size < 2) pinchDist = 0;
+      st.drag = ptrs.size === 1;
       if (wasDrag) return;
       // click → hotspot?
       const r = mount.getBoundingClientRect();
       const ndc = new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
       ray.setFromCamera(ndc, camera);
       const hits = ray.intersectObjects(st.hotspots, false);
-      if (hits.length) onWorldRef.current((hits[0].object.userData.hot as { world: string }).world);
+      if (hits.length) {
+        const hot = hits[0].object.userData.hot as { target?: string; route?: string; label: string };
+        if (hot.route) routerRef.current?.push(hot.route);
+        else if (hot.target) onWorldRef.current(hot.target);
+      }
     };
     const wheel = (e: WheelEvent) => { e.preventDefault(); st.tFov = Math.max(35, Math.min(90, st.tFov + e.deltaY * 0.03)); };
     const el = renderer.domElement;
@@ -190,7 +270,7 @@ export function Pano360({ world, onWorld, reduced }: {
       window.removeEventListener('pointermove', move);
       window.removeEventListener('pointerup', up);
       el.removeEventListener('wheel', wheel);
-      st.hotspots.forEach((h) => { (h.material.map as THREE.Texture)?.dispose(); h.material.dispose(); });
+      disposeHotspots(scene, st.hotspots); st.hotspots = [];
       st.tex?.dispose(); geo.dispose(); mat.dispose(); renderer.dispose();
       mount.removeChild(renderer.domElement);
     };
@@ -207,6 +287,7 @@ export function Pano360({ world, onWorld, reduced }: {
     const next = panoTexture(def.id, def.palette);
     st.tex = next;
     mat.transparent = true; mat.opacity = 0; mat.map = next; mat.needsUpdate = true;
+    if (st.scene) { disposeHotspots(st.scene, st.hotspots); st.hotspots = buildHotspots(st.scene, world); }
     let o = 0;
     const fade = setInterval(() => {
       o += 0.12; mat.opacity = Math.min(1, o);

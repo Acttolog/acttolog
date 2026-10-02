@@ -5,6 +5,7 @@ import { Reveal } from '@/components/ui/Reveal';
 import { Icon } from '@/components/ui/Icon';
 import { OffersClient } from './OffersClient';
 import { getDB, pub, seoFor } from '@/lib/content';
+import { WorldPortal } from '@/components/world/WorldPortal';
 
 const db = getDB();
 
@@ -23,6 +24,10 @@ export default function OffersPage() {
       <PageHead kicker="ACTTOLOG · OFFERS" title="Offers"
         body="Selected commercial opportunities across the Acttolog ecosystem. Transparent scope, honest pricing in NPR and USD."
         art="offers" />
+      <WorldPortal world="offers" title="Offers World" titleNe="अफर वर्ल्ड"
+        subtitle="A premium service presentation environment — showcases and hotspots into the ACTTOLOG world."
+        accent="var(--gold)" earthLink="/explore?mode=earth&lat=27.71700&lng=85.32400" />
+
       <section className="sec pt-2">
         <div className="wrap">
           <OffersClient offers={offers} divisions={divisions} />

@@ -41,15 +41,19 @@ export function Hero({ settings, ticker = [] }: { settings: SiteSettings; ticker
             ))}
           </div>
           <p className="lead mt-5" style={{ opacity: 0, animation: 'lin .9s .9s forwards' }}>{L(settings.purpose)}</p>
-          <div className="flex flex-wrap gap-3 mt-8" style={{ opacity: 0, animation: 'lin .9s 1s forwards', pointerEvents: 'auto' }}>
-            <a className="btn btn-p btn-lg" href="#intro"
-              onClick={() => track('cta_interaction', { cta: 'hero_explore' })}>
-              {locale === 'ne' ? 'Acttolog अन्वेषण गर्नुहोस्' : 'Explore Acttolog'} <Icon name="arrow" size={17} />
-            </a>
-            <Link className="btn btn-g btn-lg" href="/darkroom"
-              onClick={() => track('cta_interaction', { cta: 'hero_enter' })}>
-              <Icon name="globe" size={17} />{locale === 'ne' ? 'संसारमा प्रवेश' : 'Enter the World'}
+          <div className="flex flex-wrap gap-3 mt-8" style={{ opacity: 0, animation: 'lin 1s 1s forwards', pointerEvents: 'auto' }}>
+            <Link className="btn btn-p btn-lg" href="/explore?mode=earth"
+              onClick={() => track('earth_open', { via: 'hero' })}>
+              <Icon name="globe" size={17} />{locale === 'ne' ? 'पृथ्वी अन्वेषण गर्नुहोस्' : 'Explore Earth'}
             </Link>
+            <a className="btn btn-g btn-lg" href="#intro"
+              onClick={() => track('cta_interaction', { cta: 'hero_explore' })}>
+              {locale === 'ne' ? 'एक्टोलगमा प्रवेश' : 'Enter Acttolog'} <Icon name="arrow" size={17} />
+            </a>
+            <button className="btn btn-g btn-lg" type="button"
+              onClick={() => { track('cta_interaction', { cta: 'hero_search' }); window.dispatchEvent(new CustomEvent('acttolog:search-open')); }}>
+              <Icon name="search" size={17} />{locale === 'ne' ? 'संसार खोज्नुहोस्' : 'Search World'}
+            </button>
           </div>
           <div className="flex flex-wrap gap-2 mt-7" style={{ opacity: 0, animation: 'lin .9s 1.1s forwards' }}>
             {(settings.values || []).slice(0, 6).map((v, i) => (

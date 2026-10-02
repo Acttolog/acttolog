@@ -4,6 +4,7 @@ import { Reveal } from '@/components/ui/Reveal';
 import { Icon } from '@/components/ui/Icon';
 import { ContactForm } from './ContactForm';
 import { getDB, seoFor } from '@/lib/content';
+import { WorldPortal } from '@/components/world/WorldPortal';
 
 const db = getDB();
 const s = db.settings;
@@ -22,6 +23,10 @@ export default function ContactPage() {
       <PageHead kicker="CONTACT US" title="Contact Acttolog"
         body="Public contact — no login required. Messages route to the private admin inbox."
         art="editorial" />
+      <WorldPortal world="contact" title="Global Contact World" titleNe="ग्लोबल कन्टाक्ट वर्ल्ड"
+        subtitle="A global contact world — reach ACTTOLOG from anywhere; hotspots connect to the Offers showcase and the world hub."
+        accent="var(--cy)" earthLink="/explore?mode=earth&lat=27.71700&lng=85.32400" />
+
       <section className="sec pt-2">
         <div className="wrap">
           <div className="grid lg:grid-cols-[1.1fr_.9fr] gap-6 items-start">

@@ -3,6 +3,7 @@ import { Reveal } from '@/components/ui/Reveal';
 import { DarkroomClient } from './DarkroomClient';
 import { DarkroomAgent } from './DarkroomAgent';
 import { getDB, pub, seoFor, divisions as getDivisions } from '@/lib/content';
+import { WorldPortal } from '@/components/world/WorldPortal';
 
 const db = getDB();
 
@@ -33,6 +34,10 @@ export default function DarkroomPage() {
           </Reveal>
         </div>
       </section>
+
+      <WorldPortal world="darkroom" title="Darkroom World" titleNe="डार्करूम वर्ल्ड"
+        subtitle="The dark cinematic knowledge environment — discovery, verified resources and the AI core, connected by hotspots."
+        accent="var(--gold)" earthLink="/explore?mode=earth&lat=52.52000&lng=13.40500" />
 
       <section className="sec pt-2">
         <div className="wrap">

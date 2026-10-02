@@ -6,6 +6,7 @@ import { Icon } from '@/components/ui/Icon';
 import { EntertainmentGrid } from './EntertainmentGrid';
 import { EntertainmentChannels } from '@/components/content/Extensions';
 import { getDB, pub, seoFor } from '@/lib/content';
+import { WorldPortal } from '@/components/world/WorldPortal';
 
 const db = getDB();
 
@@ -24,6 +25,10 @@ export default function EntertainmentPage() {
     <>
       <PageHead kicker={`ACTTOLOG DIVISION · ENTERTAINMENT`} title={d ? d.name.en : 'Entertainment'}
         body={d ? d.desc.en : ''} art="stage" />
+      <WorldPortal world="cinema" title="Entertainment World" titleNe="मनोरञ्जन वर्ल्ड"
+        subtitle="A cinematic media environment in 360° — stories, drama and sound, with hotspots into the Games Arena and the world hub."
+        accent="var(--mg)" earthLink="/explore?mode=earth&lat=34.05200&lng=-118.24400" />
+
       <section className="sec pt-2">
         <div className="wrap">
           <EntertainmentGrid items={items} cats={cats} />

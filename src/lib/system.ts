@@ -97,7 +97,30 @@ export function integrationStatus(): IntegrationRow[] {
       : 'Set OWNER_EMAIL so the Owner account resolves server-side at first sign-in.',
   };
 
-  return [database, oauth, openai, ga4, drive, storage, email, payments, authSecret, owner];
+  const googleMaps: IntegrationRow = {
+    key: 'googleMaps',
+    label: 'Google Maps Platform (Maps · Places · Street View)',
+    status: has(process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY) ? 'healthy' : 'not_configured',
+    note: has(process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY)
+      ? 'Maps key present — Google map/satellite/photorealistic-3D, Places Autocomplete and Street View surfaces activate in /explore.'
+      : 'Requires NEXT_PUBLIC_GOOGLE_MAPS_API_KEY (referrer-restricted) + optionally NEXT_PUBLIC_GOOGLE_MAP_ID for Photorealistic 3D. Until configured, the world runs on the key-free stack below and every Google surface honestly reports NOT CONFIGURED.',
+  };
+
+  const osm: IntegrationRow = {
+    key: 'osm',
+    label: 'OpenStreetMap (tiles · Nominatim · Overpass)',
+    status: 'healthy',
+    note: 'Key-free and active: OSM standard tiles (MAP), Nominatim place search, Overpass nearby queries. Public endpoints — usage kept light (debounced searches, small radii) with attribution preserved per OSM policy.',
+  };
+
+  const esri: IntegrationRow = {
+    key: 'esri',
+    label: 'Esri World Imagery (satellite tiles)',
+    status: 'healthy',
+    note: 'Key-free satellite imagery for SAT mode and the Earth tile layer; attribution shown on every surface.',
+  };
+
+  return [database, oauth, googleMaps, osm, esri, openai, ga4, drive, storage, email, payments, authSecret, owner];
 }
 
 /** Aggregate health for the dashboard header. */

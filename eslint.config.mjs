@@ -3,7 +3,9 @@ import typescript from 'eslint-config-next/typescript';
 
 /** @type {import('eslint').Linter.Config[]} */
 const lintConfig = [
-  { ignores: ['node_modules/**', '.next/**', 'out/**', 'build/**', 'next-env.d.ts', 'tools/**'] },
+  { ignores: ['node_modules/**', '.next/**', 'out/**', 'build/**', 'next-env.d.ts', 'tools/**',
+    // generated artifacts (harvested mirror + ephemeral static workspace) — never lint copies
+    '.pages-site/**', '.static-build/**', '_next/**'] },
   ...coreWebVitals,
   ...typescript,
   {

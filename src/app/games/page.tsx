@@ -6,6 +6,7 @@ import { Icon } from '@/components/ui/Icon';
 import { GamesClient } from './GamesClient';
 import { GamesExtraGrid } from '@/components/content/Extensions';
 import { getDB, pub, seoFor } from '@/lib/content';
+import { WorldPortal } from '@/components/world/WorldPortal';
 
 const db = getDB();
 
@@ -23,6 +24,10 @@ export default function GamesPage() {
     <>
       <PageHead kicker="ACTTOLOG DIVISION · GAMES" title={d?.name.en || 'Games'}
         body={d?.desc.en} art="games" />
+      <WorldPortal world="arena" title="Games World" titleNe="गेम्स वर्ल्ड"
+        subtitle="A futuristic game lobby in 360° — hotspots lead into Entertainment and back to the ACTTOLOG world hub."
+        accent="var(--ok)" earthLink="/explore?mode=earth&lat=35.68100&lng=139.76700" />
+
       <section className="sec pt-2">
         <div className="wrap">
           <GamesClient games={games} />

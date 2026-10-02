@@ -6,6 +6,7 @@ import { Icon } from '@/components/ui/Icon';
 import { AcademyClient } from './AcademyClient';
 import { AcademyExtraSections } from '@/components/content/Extensions';
 import { getDB, pub, seoFor } from '@/lib/content';
+import { WorldPortal } from '@/components/world/WorldPortal';
 
 const db = getDB();
 
@@ -24,6 +25,10 @@ export default function AcademyPage() {
     <>
       <PageHead kicker="ACTTOLOG DIVISION · ACADEMY" title={d?.name.en || 'Academy'}
         body={d?.desc.en} art="academy" />
+      <WorldPortal world="academy" title="Academy World" titleNe="एकेडेमी वर्ल्ड"
+        subtitle="Digital classrooms and learning portals in 360° — hotspots lead into the Digital Library and back to the ACTTOLOG world hub."
+        accent="var(--vi)" earthLink="/explore?mode=earth&lat=42.36100&lng=-71.05800" />
+
       <section className="sec pt-2">
         <div className="wrap">
           {/* Public introduction (guests always see this) */}

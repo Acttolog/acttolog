@@ -19,7 +19,31 @@ export function SearchClient() {
     try { setQ(new URLSearchParams(window.location.search).get('q') || ''); } catch { /* ignore */ }
   }, []);
   const [results, setResults] = useState<Result[]>([]);
+  const [places, setPlaces] = useState<Result[]>([]);
   const [loaded, setLoaded] = useState(false);
+
+  /* PLACES — real-world locations via Nominatim, deep-linked into /explore (spec §18) */
+  useEffect(() => {
+    const query = q.trim();
+    if (query.length < 3) { setPlaces([]); return; }
+    const tId = setTimeout(async () => {
+      try {
+        const r = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&q=${encodeURIComponent(query)}`);
+        if (!r.ok) return;
+        const j = await r.json();
+        setPlaces(j.map((x: { place_id: number; name?: string; display_name?: string; lat: string; lon: string }) => {
+          const name = x.name || x.display_name?.split(',')[0] || 'Unnamed';
+          return {
+            k: 'places',
+            title: name,
+            sub: `${(x.display_name || '').split(',').slice(1, 4).join(',').trim() || 'World'} · ${Number(x.lat).toFixed(3)}, ${Number(x.lon).toFixed(3)} · © OSM`,
+            route: `/explore?mode=map&lat=${Number(x.lat).toFixed(5)}&lng=${Number(x.lon).toFixed(5)}&zoom=13&place=${encodeURIComponent(name)}`,
+          } as Result;
+        }));
+      } catch { /* offline — content results still work */ }
+    }, 500);
+    return () => clearTimeout(tId);
+  }, [q]);
 
   const run = useCallback(async (query: string) => {
     try {
@@ -44,8 +68,10 @@ export function SearchClient() {
   };
 
   const groups: Record<string, Result[]> = {};
+  places.forEach((r) => { (groups[r.k] = groups[r.k] || []).push(r); });
   results.forEach((r) => { (groups[r.k] = groups[r.k] || []).push(r); });
   const names: Record<string, string> = {
+    places: 'Places',
     division: t('nav.div'), blog: t('nav.blog'), darkroom: 'Darkroom', games: t('games'),
     entertainment: 'Entertainment', academy: 'Academy', research: 'Thesyn Research', offers: t('nav.offers'),
   };
@@ -61,7 +87,7 @@ export function SearchClient() {
         </div>
       </div>
 
-      {loaded && !results.length && (
+      {loaded && !results.length && !places.length && (
         <div className="panel p-12 text-center">
           <div className="dim mb-4">{t('none')}</div>
           <button className="btn btn-g btn-sm"

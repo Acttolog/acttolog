@@ -13,19 +13,22 @@ interface Result {
 }
 
 const GROUP_NAMES = (t: (k: string) => string) => ({
+  command: 'World Commands', places: 'Places',
   division: t('nav.div'), blog: t('nav.blog'), darkroom: 'Darkroom', games: t('games'),
   entertainment: 'Entertainment', academy: 'Academy', research: 'Thesyn Research', offers: t('nav.offers'),
 });
 
-/** Global search overlay (spec §55) — ⌘K, grouped results, AI fallback. */
+/** Global search overlay (spec §18/§26/§55) — ⌘K: world commands + places + content + AI. */
 export function SearchOverlay() {
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState('');
   const [results, setResults] = useState<Result[]>([]);
+  const [places, setPlaces] = useState<Result[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const { t, locale } = useI18n();
   const router = useRouter();
   const searched = useRef('');
+  const placeReq = useRef(0);
 
   useEffect(() => {
     const on = () => { setOpen(true); };
@@ -35,7 +38,7 @@ export function SearchOverlay() {
 
   useEffect(() => {
     if (open) setTimeout(() => inputRef.current?.focus(), 60);
-    else { setQ(''); searched.current = ''; }
+    else { setQ(''); setPlaces([]); searched.current = ''; }
   }, [open]);
 
   useEffect(() => {
@@ -55,6 +58,30 @@ export function SearchOverlay() {
     if (query.trim()) track('search', { q: query.trim(), where: 'global' });
   }, [locale]);
 
+  /* PLACES — Nominatim (key-free), deep-links into /explore (spec §18). */
+  useEffect(() => {
+    const query = q.trim();
+    if (query.length < 3) { setPlaces([]); return; }
+    const req = ++placeReq.current;
+    const tId = setTimeout(async () => {
+      try {
+        const r = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=4&q=${encodeURIComponent(query)}`);
+        if (!r.ok || req !== placeReq.current) return;
+        const j = await r.json();
+        setPlaces(j.map((x: { place_id: number; name?: string; display_name?: string; lat: string; lon: string; category?: string; type?: string }) => {
+          const name = x.name || x.display_name?.split(',')[0] || 'Unnamed';
+          return {
+            k: 'places',
+            title: name,
+            sub: `${(x.display_name || '').split(',').slice(1, 4).join(',').trim() || 'World'} · ${Number(x.lat).toFixed(3)}, ${Number(x.lon).toFixed(3)}`,
+            route: `/explore?mode=map&lat=${Number(x.lat).toFixed(5)}&lng=${Number(x.lon).toFixed(5)}&zoom=13&place=${encodeURIComponent(name)}`,
+          } as Result;
+        }));
+      } catch { setPlaces([]); } // offline/blocked → content search still works
+    }, 500);
+    return () => clearTimeout(tId);
+  }, [q]);
+
   useEffect(() => {
     if (open && !results.length && !searched.current) search('');
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -62,18 +89,26 @@ export function SearchOverlay() {
 
   if (!open) return null;
 
+  const ql = q.trim().toLowerCase();
+  const WORLD_COMMANDS: { label: string; hint: string; run: () => void }[] = [
+    { label: locale === 'ne' ? 'पृथ्वी खोल्नुहोस्' : 'Go to Earth', hint: 'EARTH', run: () => router.push('/explore?mode=earth') },
+    { label: locale === 'ne' ? 'नक्सा खोल्नुहोस्' : 'Open Map', hint: 'MAP', run: () => router.push('/explore?mode=map') },
+    { label: 'Open Satellite', hint: 'SAT', run: () => router.push('/explore?mode=sat') },
+    { label: 'Open 360 Worlds', hint: '360', run: () => router.push('/explore?mode=360') },
+    { label: 'Search Kathmandu', hint: 'PLACE', run: () => router.push('/explore?mode=map&lat=27.71720&lng=85.32400&zoom=13&place=Kathmandu') },
+    { label: 'Search Pokhara', hint: 'PLACE', run: () => router.push('/explore?mode=map&lat=28.20960&lng=83.98560&zoom=12&place=Pokhara') },
+    { label: 'Open Research', hint: 'WORLD', run: () => router.push('/research') },
+    { label: 'Open Academy', hint: 'WORLD', run: () => router.push('/academy') },
+    { label: 'Open Games', hint: 'WORLD', run: () => router.push('/games') },
+    { label: 'Open Darkroom', hint: 'WORLD', run: () => router.push('/darkroom') },
+    { label: locale === 'ne' ? 'एआई खोल्नुहोस्' : 'Open AI', hint: 'AI', run: () => router.push('/ai') },
+    { label: 'Open My ACTTOLOG', hint: 'ACCOUNT', run: () => router.push('/my') },
+  ].filter((c) => !ql || c.label.toLowerCase().includes(ql) || c.hint.toLowerCase().includes(ql));
+
   const groups: Record<string, Result[]> = {};
+  places.forEach((r) => { (groups[r.k] = groups[r.k] || []).push(r); });
   results.forEach((r) => { (groups[r.k] = groups[r.k] || []).push(r); });
   const names = GROUP_NAMES(t);
-
-  const WORLD_COMMANDS: { label: string; run: () => void }[] = [
-    { label: locale === 'ne' ? 'पृथ्वी खोल्नुहोस्' : 'Go to Earth', run: () => router.push('/explore?mode=earth') },
-    { label: locale === 'ne' ? 'नक्सा खोल्नुहोस्' : 'Open Map', run: () => router.push('/explore?mode=map') },
-    { label: 'Open Satellite', run: () => router.push('/explore?mode=sat') },
-    { label: 'Open 360 Worlds', run: () => router.push('/explore?mode=360') },
-    { label: 'Search Kathmandu', run: () => router.push('/explore?mode=map&lat=27.7172&lng=85.3240&zoom=13&place=Kathmandu') },
-    { label: locale === 'ne' ? 'एआई खोल्नुहोस्' : 'Open AI', run: () => router.push('/ai') },
-  ];
 
   const askAI = () => {
     setOpen(false);
@@ -88,11 +123,26 @@ export function SearchOverlay() {
           <span style={{ color: 'var(--cy)' }}><Icon name="search" size={19} /></span>
           <input ref={inputRef} className="inp !border-0 !bg-transparent !px-0 !py-1 !text-[16px] !shadow-none"
             value={q} onChange={(e) => search(e.target.value)}
-            placeholder={t('search.ph')} aria-label={t('search')} autoComplete="off" />
+            placeholder={locale === 'ne' ? 'संसार खोज्नुहोस् — ठाउँ, सामग्री, आदेशहरू…' : 'Search the world — places, content, commands…'}
+            aria-label={t('search')} autoComplete="off" />
           <span className="kbd hidden sm:inline">ESC</span>
         </div>
         <div className="p-4 sm:p-5 max-h-[60vh] overflow-auto">
-          {results.length ? (
+          {WORLD_COMMANDS.length > 0 && (
+            <div className="mb-5">
+              <div className="mono text-[10px] tracking-[.2em] dim mb-2.5">WORLD COMMANDS · {WORLD_COMMANDS.length}</div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
+                {WORLD_COMMANDS.map((c) => (
+                  <button key={c.label} className="rowlink !grid-cols-[1fr_auto] !py-2.5 text-left"
+                    onClick={() => { setOpen(false); track('cta_interaction', { cta: 'world_command', label: c.label }); c.run(); }}>
+                    <div className="text-[13px] font-medium truncate">{c.label}</div>
+                    <span className="mono text-[9px] tracking-[.16em] dim">{c.hint}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+          {(places.length > 0 || results.length > 0) ? (
             Object.keys(groups).map((k) => (
               <div className="mb-5" key={k}>
                 <div className="mono text-[10px] tracking-[.2em] dim mb-2.5">
@@ -108,9 +158,11 @@ export function SearchOverlay() {
                     <Icon name="arrow" size={15} />
                   </a>
                 ) : (
-                  <Link key={i} className="rowlink !grid-cols-[1fr_auto] !py-3" href={r.route} onClick={() => setOpen(false)}>
+                  <Link key={i} className="rowlink !grid-cols-[1fr_auto] !py-3" href={r.route}
+                    onClick={() => { setOpen(false); if (k === 'places') track('place_search', { q: q.trim(), where: 'global' }); }}>
                     <div>
                       <div className="text-[14px] font-medium flex items-center gap-2">
+                        {k === 'places' && <span style={{ color: 'var(--cy)' }}><Icon name="globe" size={14} /></span>}
                         {r.title}
                         {r.mem && <span className="badge b-vi"><Icon name="lock" size={10} />{t('members')}</span>}
                       </div>
@@ -132,8 +184,8 @@ export function SearchOverlay() {
         </div>
         <div className="px-5 py-3 flex items-center justify-between gap-3 text-[11.4px] dim mono"
           style={{ borderTop: '1px solid var(--line)' }}>
-          <span>{locale === 'ne' ? 'खोजले प्रकाशित सामग्री मात्र देखाउँछ' : 'Search shows published content only'}</span>
-          <span>ACTTOLOG INDEX</span>
+          <span>{locale === 'ne' ? 'प्रकाशित सामग्री + ठाउँ मात्र' : 'Published content + real places only'}</span>
+          <span>ACTTOLOG INDEX · PLACES © OSM</span>
         </div>
       </div>
     </div>

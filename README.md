@@ -39,6 +39,7 @@ ACTTOLOG
 | Auth | Google OAuth 2.0 code flow · server-side ID-token verification (jose + Google JWKS) · httpOnly JWT cookie |
 | AI | OpenAI (server-side only) with Acttolog-first retrieval fallback — honest, never fabricates |
 | Analytics | First-party consent-gated events (PostgreSQL) + GA4 after consent |
+| World layer | `/explore` command center (EARTH·MAP·SAT·360·SEARCH), OSM/Esri/Nominatim/Overpass key-free stack, Google Maps Platform behind an honest key gate, procedural ACTTOLOG 360 worlds with hotspots, DISCOVER registry, camera presets, world portals on every section |
 
 ## Quick start
 
@@ -73,6 +74,7 @@ npx prisma db push          # or prisma migrate deploy
 | `npm test` | typecheck + lint + build |
 | `npm run db:push` | Prisma schema → database |
 | `npm run db:seed` | Re-extract prototype content → `src/lib/content/seed.json` |
+| `node tools/world-qa.js [base]` | Targeted browser QA for the world layer (first visit, ⌘K commands + places, modes/keyboard/discover, deep links, portals, mobile) |
 
 ## Architecture notes
 
@@ -88,6 +90,8 @@ npx prisma db push          # or prisma migrate deploy
   personalised; account deletion is a reviewed admin workflow.
 - **i18n**: manual EN | नेपाली switch (never browser-auto), persisted; bilingual content model
   `{en, ne}` with fallback flagging (`नेपाली बाँकी`).
+- **World layer** (`/explore`, spec §3–§30): EARTH (3D globe with tile zoom to street level) · MAP (OSM) · SAT (Esri imagery) · 360 (11 procedural ACTTOLOG worlds with hotspots that travel between worlds and into sections) · SEARCH (Nominatim, Google Places when a key exists). Synced location/camera/URL state across modes (deep links restore exactly), WASD/arrow movement, 1–4 mode keys, Space recenter, 9 camera presets, DISCOVER registry of 18 real places, Place Explorer with 14 nearby categories + directions + save/share/Ask-AI, mobile bottom command bar + bottom sheets, honest boot + Street View "CONFIGURATION REQUIRED" states. Section pages carry WorldPortals into their 360 environment; the ⌘K palette exposes world commands and a PLACES group.
+- **Google Maps Platform**: fully wired but dormant until `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` (referrer-restricted) is set — Maps JS loader, Places Autocomplete, Street View embed, admin integration rows, help-dialog setup steps. Without it every Google surface reports NOT CONFIGURED and the key-free stack runs.
 - **3D Earth**: day/night terminator shader, fresnel atmosphere, stars, dust, orbital rings,
   great-circle arcs, 5 clickable division nodes, scroll-linked dolly, drag inertia, pointer parallax,
   IntersectionObserver pause, `prefers-reduced-motion` still frame, WebGL-failure poster fallback.
@@ -103,6 +107,7 @@ See `.env.example` — every variable is optional for local runs; production req
 
 ## Remaining (tracked, honest)
 
+- **Google Maps Platform key** (`NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`, optional `NEXT_PUBLIC_GOOGLE_MAP_ID`) — activates Street View / Places Autocomplete / Google map layers in `/explore`; see `.env.example` for the four setup steps.
 - CMS write flows (admin CRUD mutations) — schema + admin console ready; editors activate with DB
 - Google Drive backup jobs — policy/records modeled; service account pending authorization
 - Payment adapters — modular, disabled until a provider is authorized

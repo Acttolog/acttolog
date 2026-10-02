@@ -9,7 +9,7 @@
  *  · procedural starfield + drifting dust
  *  · tilted orbital rings with dash-flow energy
  *  · great-circle connection arcs with travelling pulses (high tier)
- *  · five division nodes (sprite labels, click → division route)
+ *  · seven world nodes (sprite labels, click → division route)
  *  · idle auto-rotation + drag inertia + pointer parallax + scroll-linked dolly
  *  · performance tiers (High/Medium/Low), reduced-motion respect,
  *    frustum/idle pause via frameloop control, WebGL poster fallback (parent)
@@ -270,9 +270,11 @@ export const DIVISION_NODES: GlobeNode[] = [
   { id: 'academy', name: 'Academy', sub: 'LEARNING & KNOWLEDGE', route: '/academy', color: '#7c5cff', lat: 42.361, lon: -71.058 },
   { id: 'games', name: 'Games', sub: 'INTERACTIVE EXPERIENCES', route: '/games', color: '#3ddc97', lat: 35.681, lon: 139.767 },
   { id: 'darkroom', name: 'Darkroom', sub: 'DIGITAL DISCOVERY & RESOURCES', route: '/darkroom', color: '#f5c26b', lat: 52.52, lon: 13.405 },
+  { id: 'blog', name: 'Blog', sub: 'DIGITAL EDITORIAL', route: '/blog', color: '#9be8ff', lat: 48.856, lon: 2.352 },
+  { id: 'ai', name: 'Acttolog AI', sub: 'INTELLIGENCE DOCK', route: '/ai', color: '#3ddc97', lat: 37.774, lon: -122.419 },
 ];
 
-const ARC_PAIRS: [number, number][] = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 0], [0, 2], [1, 3], [2, 4]];
+export const ARC_PAIRS: [number, number][] = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 0], [0, 2], [1, 3], [2, 4], [0, 5], [2, 5], [3, 6], [5, 6]];
 
 export function latLonToVec3(lat: number, lon: number, r: number): THREE.Vector3 {
   const phi = ((90 - lat) * Math.PI) / 180;

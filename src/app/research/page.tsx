@@ -7,6 +7,7 @@ import { AccessBadge } from '@/components/ui/Badges';
 import { ResearchBody } from './ResearchBody';
 import { ResearchLibrary } from '@/components/content/Extensions';
 import { getDB, pub, seoFor } from '@/lib/content';
+import { WorldPortal } from '@/components/world/WorldPortal';
 
 const db = getDB();
 
@@ -35,6 +36,10 @@ export default function ResearchPage() {
             </div>
           </Reveal>
         } />
+
+      <WorldPortal world="lab" title="Thesyn Research World" titleNe="थेसिन रिसर्च वर्ल्ड"
+        subtitle="Step through the portal into the Research Lab — a 360° ACTTOLOG environment of methodology pathways and knowledge nodes, with hotspots into the Digital Library and back to the world hub."
+        accent="var(--cy)" earthLink="/explore?mode=earth&lat=27.71700&lng=85.32400" />
 
       {/* Position lines */}
       <section className="sec pt-2">
