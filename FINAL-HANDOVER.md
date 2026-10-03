@@ -123,3 +123,26 @@ directly on top of the verified production app (no rebuild, no parallel demo).
 - Google-gated runtime paths are compiled + type-checked but not exercised end-to-end
   (no key exists anywhere); they stay dormant and labelled until configured.
 
+---
+
+# ADDENDUM 2 — FIELD WORLDS, DIVISION 3D ART & FOUNDER GUIDE (2026-10-03)
+
+- **360 field worlds (§23 extension)**: generated equirectangular environments you can
+  actually travel — UNIVERSITY VISIT, DIGITAL LIBRARY, RESEARCH LAB, MUSEUM GALLERY
+  (`/media/pano/*.jpg`, 182–315 KB each) with procedural fallback if an asset is missing;
+  world count 11 → 13 (university + museum), each with field hotspots (courses, library,
+  lab, museum, archive) plus exits back to the hub.
+- **Division 3D art (§31)**: generated cinematic 3D renders for entertainment, games, blog,
+  offers and the world hub; `PageHead` now serves real media art per division
+  (research/academy/darkroom/entertainment/games/blog/offers/world) with procedural SVG
+  fallback; home gallery picks them up automatically.
+- **Founder guide (owner-requested photos)**: owner-provided portraits published at
+  `/media/founder-pro.jpg`, `/media/founder-casual.jpg`, `/media/founder-avatar.jpg`.
+  A guide ring (real photo sprite) floats in every 360 world; GUIDE chip + panel introduce
+  "Pramod Ghimire — Founder & Guide" with University Visit / Ask-AI / About / Contact actions.
+  About page carries a founder panel (both photos); Contact shows a guide strip with the
+  existing public contacts only (owner email stays server-side, never rendered).
+- **Performance**: legacy 4–5 MB division JPGs recompressed to 97–240 KB (same filenames,
+  zero code changes); all new media committed web-optimized.
+- VERIFIED: npm test green · world-qa 50/50 · smoke 46/46 (local, pre-push).
+

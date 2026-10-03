@@ -129,11 +129,18 @@ export const DEFAULT_SCENE: SceneConfig = {
   qualityDefault: 'auto',
 };
 
-/** ACTTOLOG-owned 360 worlds (procedural; Google Street View = NOT CONFIGURED until a Maps key exists). */
+/**
+ * ACTTOLOG-owned 360 worlds. `pano` = generated equirectangular environment
+ * (field worlds you can travel — university, library, lab, museum); worlds
+ * without `pano` stay fully procedural. Google Street View remains NOT
+ * CONFIGURED until a Maps key exists. Every world carries the founder-guide.
+ */
 export const WORLDS_360 = [
   { id: 'world', name: 'ACTTOLOG World', palette: ['#04060f', '#35e0ff', '#7c5cff', '#ff4ecd'] },
-  { id: 'lab', name: 'Research Lab', palette: ['#04080f', '#35e0ff', '#4f7dff', '#9be8ff'] },
-  { id: 'library', name: 'Digital Library', palette: ['#07080c', '#e8eeff', '#7c5cff', '#35e0ff'] },
+  { id: 'university', name: 'University Visit', palette: ['#04080f', '#35e0ff', '#7c5cff', '#9be8ff'], pano: '/media/pano/university.jpg' },
+  { id: 'lab', name: 'Research Lab', palette: ['#04080f', '#35e0ff', '#4f7dff', '#9be8ff'], pano: '/media/pano/lab.jpg' },
+  { id: 'library', name: 'Digital Library', palette: ['#07080c', '#e8eeff', '#7c5cff', '#35e0ff'], pano: '/media/pano/library.jpg' },
+  { id: 'museum', name: 'Museum Gallery', palette: ['#0a0610', '#ff4ecd', '#7c5cff', '#35e0ff'], pano: '/media/pano/museum.jpg' },
   { id: 'darkroom', name: 'Darkroom', palette: ['#0a0805', '#f5c26b', '#35e0ff', '#ff4ecd'] },
   { id: 'arena', name: 'Games Arena', palette: ['#04120a', '#3ddc97', '#35e0ff', '#7c5cff'] },
   { id: 'academy', name: 'Academy', palette: ['#05081a', '#7c5cff', '#35e0ff', '#c9b6ff'] },

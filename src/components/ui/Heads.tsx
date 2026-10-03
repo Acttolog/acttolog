@@ -2,6 +2,21 @@ import { Reveal } from './Reveal';
 import { resolveImage } from '@/lib/utils';
 import type { ReactNode } from 'react';
 
+/**
+ * art id → generated 3D-render photo committed in /media.
+ * Static map (no fs): Heads is shared with client components, and the media
+ * files ship with every deployment; unknown ids fall back to procedural SVG.
+ */
+const MEDIA_ART: Record<string, string> = {
+  research: 'research', academy: 'academy', darkroom: 'darkroom',
+  stage: 'entertainment', games: 'games', editorial: 'blog', offers: 'offers', nebula: 'world',
+};
+function mediaArt(art?: string): string | null {
+  if (!art) return null;
+  const id = MEDIA_ART[art];
+  return id ? `/media/${id}.jpg` : null;
+}
+
 /** Division/page hero header (prototype `head()`): art backdrop + kicker + title + lead. */
 export function PageHead({ kicker, title, body, art, extra }: {
   kicker: string; title: string; body?: string; art?: string; extra?: ReactNode;
@@ -10,7 +25,7 @@ export function PageHead({ kicker, title, body, art, extra }: {
     <section className="relative pt-[calc(var(--nav)+50px)] pb-12 overflow-hidden">
       <div className="absolute inset-0 -z-10 opacity-40">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={resolveImage(art ? `art:${art}` : '')} alt="" className="w-full h-full object-cover"
+        <img src={mediaArt(art) || resolveImage(art ? `art:${art}` : '')} alt="" className="w-full h-full object-cover"
           style={{ maskImage: 'linear-gradient(180deg,#000,transparent 86%)', WebkitMaskImage: 'linear-gradient(180deg,#000,transparent 86%)' }} />
       </div>
       <div className="wrap">

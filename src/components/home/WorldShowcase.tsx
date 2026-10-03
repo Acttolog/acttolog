@@ -112,8 +112,8 @@ export function WorldShowcase({ shots }: { shots: string[] }) {
             </div>
             <p className="dim text-[11px] mt-4">
               {locale === 'ne'
-                ? 'प्रक्रियागत रूपमा बनाइएका एक्टोलगका आफ्नै वातावरणहरू — कुनै तेस्रो-पक्ष पैनोरामा होइन।'
-                : 'Procedurally generated ACTTOLOG-owned environments — not third-party panoramas. Google Street View activates when a Maps key is configured.'}
+                ? 'एक्टोलगका आफ्नै वातावरणहरू — उत्पन्न ३६०° पैनोरामा + प्रक्रियागत संसार; कुनै तेस्रो-पक्ष पैनोरामा होइन।'
+                : 'ACTTOLOG-owned environments — generated 360° field panoramas (university, library, lab, museum) plus procedural worlds. Not third-party panoramas; Google Street View activates when a Maps key is configured.'}
             </p>
           </div>
         </Reveal>

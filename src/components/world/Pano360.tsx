@@ -1,9 +1,46 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import * as THREE from 'three';
+import { Icon } from '@/components/ui/Icon';
 import { WORLDS_360 } from '@/lib/world/config';
+import { track } from '@/lib/analytics';
+
+/** Loads a generated equirectangular environment; null → procedural art. */
+function loadPanoTexture(url: string, onDone: (tex: THREE.Texture | null) => void): void {
+  const loader = new THREE.TextureLoader();
+  loader.load(
+    url,
+    (tex) => { tex.colorSpace = THREE.SRGBColorSpace; tex.mapping = THREE.EquirectangularReflectionMapping; onDone(tex); },
+    undefined,
+    () => onDone(null), // missing/blocked asset → procedural fallback, never a broken screen
+  );
+}
+
+/** Circular founder-guide sprite texture (real photo, owner-provided). */
+function makeGuideTexture(): THREE.CanvasTexture {
+  const c = document.createElement('canvas'); c.width = 256; c.height = 256;
+  const x = c.getContext('2d')!;
+  const ring = () => {
+    x.lineWidth = 8; x.strokeStyle = 'rgba(53,224,255,.95)';
+    x.beginPath(); x.arc(128, 116, 86, 0, Math.PI * 2); x.stroke();
+    x.fillStyle = '#e8eeff'; x.font = '700 26px "JetBrains Mono", monospace'; x.textAlign = 'center';
+    x.fillText('GUIDE', 128, 236);
+  };
+  const img = new Image();
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  img.onload = () => {
+    x.save(); x.beginPath(); x.arc(128, 116, 82, 0, Math.PI * 2); x.clip();
+    x.drawImage(img, 128 - 82, 116 - 82, 164, 164); x.restore(); ring();
+    tex.needsUpdate = true;
+  };
+  img.onerror = () => { x.fillStyle = 'rgba(53,224,255,.25)'; x.beginPath(); x.arc(128, 116, 82, 0, Math.PI * 2); x.fill(); ring(); tex.needsUpdate = true; };
+  img.src = '/media/founder-avatar.jpg';
+  return tex;
+}
 
 /** Procedural equirectangular panorama for an ACTTOLOG-owned 360 world. */
 function panoTexture(worldId: string, palette: readonly string[]): THREE.Texture {
@@ -122,6 +159,17 @@ const HOTSPOTS: { in: string; dir: [number, number, number]; label: string; targ
   { in: 'contact', dir: [0.2, 0.05, 0.95], label: 'CONTACT ACTTOLOG', route: '/contact' },
   { in: 'contact', dir: [-0.9, 0.05, 0.4], label: 'OFFERS SHOWCASE', target: 'offers' },
   { in: 'contact', dir: [0.95, 0.1, -0.2], label: 'ACTTOLOG WORLD', target: 'world' },
+  // University Visit — travel the field (§23 field worlds)
+  { in: 'university', dir: [0.15, 0.02, 0.95], label: 'ACADEMY COURSES', route: '/academy' },
+  { in: 'university', dir: [-0.85, 0.06, 0.5], label: 'DIGITAL LIBRARY', target: 'library' },
+  { in: 'university', dir: [0.9, 0.08, -0.4], label: 'RESEARCH LAB', target: 'lab' },
+  { in: 'university', dir: [-0.3, 0.02, -0.92], label: 'MUSEUM GALLERY', target: 'museum' },
+  { in: 'university', dir: [0.6, 0.3, 0.7], label: 'ACTTOLOG WORLD', target: 'world' },
+  // Museum Gallery
+  { in: 'museum', dir: [0.2, 0.03, 0.95], label: 'DARKROOM ARCHIVE', target: 'darkroom' },
+  { in: 'museum', dir: [-0.9, 0.06, 0.4], label: 'BLOG STORIES', route: '/blog' },
+  { in: 'museum', dir: [0.9, 0.08, -0.4], label: 'UNIVERSITY VISIT', target: 'university' },
+  { in: 'museum', dir: [-0.3, 0.02, -0.92], label: 'ACTTOLOG WORLD', target: 'world' },
 ];
 
 function makeHotspotLabel(text: string): THREE.CanvasTexture {
@@ -152,6 +200,23 @@ function disposeHotspots(scene: THREE.Scene, hotspots: THREE.Sprite[]) {
   hotspots.forEach((h) => { scene.remove(h); (h.material.map as THREE.Texture)?.dispose(); h.material.dispose(); });
 }
 
+/** The founder-guide presence — a real photo ring in every 360 world. */
+function buildGuide(scene: THREE.Scene): THREE.Sprite {
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: makeGuideTexture(), depthTest: false, transparent: true }));
+  sp.position.set(0.42, -0.14, 0.9).normalize().multiplyScalar(5.4);
+  sp.scale.set(1.15, 1.15, 1);
+  sp.userData.guide = true;
+  scene.add(sp);
+  return sp;
+}
+
+function disposeGuide(scene: THREE.Scene, guide: THREE.Sprite | null | undefined) {
+  if (!guide) return;
+  scene.remove(guide);
+  (guide.material.map as THREE.Texture)?.dispose();
+  guide.material.dispose();
+}
+
 /**
  * 360° ACTTOLOG Worlds — procedural, owned environments with hotspots.
  * Google Street View integration activates only when a Maps key is
@@ -163,13 +228,14 @@ export function Pano360({ world, onWorld, reduced }: {
   reduced: boolean;
 }) {
   const mountRef = useRef<HTMLDivElement>(null);
-  const stateRef = useRef<{ renderer?: THREE.WebGLRenderer; scene?: THREE.Scene; camera?: THREE.PerspectiveCamera; sphere?: THREE.Mesh; hotspots: THREE.Sprite[]; tex?: THREE.Texture; raf: number; lon: number; lat: number; tLon: number; tLat: number; fov: number; tFov: number; drag: boolean; lx: number; ly: number }>({ hotspots: [], raf: 0, lon: 0, lat: 0, tLon: 0, tLat: 0, fov: 72, tFov: 72, drag: false, lx: 0, ly: 0 });
+  const stateRef = useRef<{ renderer?: THREE.WebGLRenderer; scene?: THREE.Scene; camera?: THREE.PerspectiveCamera; sphere?: THREE.Mesh; hotspots: THREE.Sprite[]; guide?: THREE.Sprite | null; tex?: THREE.Texture; raf: number; lon: number; lat: number; tLon: number; tLat: number; fov: number; tFov: number; drag: boolean; lx: number; ly: number }>({ hotspots: [], guide: null, raf: 0, lon: 0, lat: 0, tLon: 0, tLat: 0, fov: 72, tFov: 72, drag: false, lx: 0, ly: 0 });
   const worldRef = useRef(world);
   const onWorldRef = useRef(onWorld);
   onWorldRef.current = onWorld;
   const router = useRouter();
   const routerRef = useRef(router);
   routerRef.current = router;
+  const [guideOpen, setGuideOpen] = useState(false);
 
   useEffect(() => {
     const mount = mountRef.current;
@@ -187,8 +253,9 @@ export function Pano360({ world, onWorld, reduced }: {
     const sphere = new THREE.Mesh(geo, mat);
     scene.add(sphere);
 
-    // hotspot sprites — only the current world's exits
+    // hotspot sprites — only the current world's exits — plus the guide
     st.hotspots = buildHotspots(scene, worldRef.current);
+    st.guide = buildGuide(scene);
 
     st.renderer = renderer; st.scene = scene; st.camera = camera; st.sphere = sphere;
 
@@ -224,6 +291,10 @@ export function Pano360({ world, onWorld, reduced }: {
       const r = mount.getBoundingClientRect();
       const ndc = new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
       ray.setFromCamera(ndc, camera);
+      if (st.guide) {
+        const gh = ray.intersectObject(st.guide, false);
+        if (gh.length) { setGuideOpen(true); track('cta_interaction', { cta: 'guide_sprite' }); return; }
+      }
       const hits = ray.intersectObjects(st.hotspots, false);
       if (hits.length) {
         const hot = hits[0].object.userData.hot as { target?: string; route?: string; label: string };
@@ -271,6 +342,7 @@ export function Pano360({ world, onWorld, reduced }: {
       window.removeEventListener('pointerup', up);
       el.removeEventListener('wheel', wheel);
       disposeHotspots(scene, st.hotspots); st.hotspots = [];
+      disposeGuide(scene, st.guide); st.guide = null;
       st.tex?.dispose(); geo.dispose(); mat.dispose(); renderer.dispose();
       mount.removeChild(renderer.domElement);
     };
@@ -284,15 +356,21 @@ export function Pano360({ world, onWorld, reduced }: {
     const def = WORLDS_360.find((w) => w.id === world) || WORLDS_360[0];
     const mat = (st.sphere as THREE.Mesh).material as THREE.MeshBasicMaterial;
     const old = st.tex;
-    const next = panoTexture(def.id, def.palette);
-    st.tex = next;
-    mat.transparent = true; mat.opacity = 0; mat.map = next; mat.needsUpdate = true;
-    if (st.scene) { disposeHotspots(st.scene, st.hotspots); st.hotspots = buildHotspots(st.scene, world); }
-    let o = 0;
-    const fade = setInterval(() => {
-      o += 0.12; mat.opacity = Math.min(1, o);
-      if (o >= 1) { clearInterval(fade); mat.transparent = false; old?.dispose(); }
-    }, 40);
+    const apply = (next: THREE.Texture) => {
+      st.tex = next;
+      mat.transparent = true; mat.opacity = 0; mat.map = next; mat.needsUpdate = true;
+      let o = 0;
+      const fade = setInterval(() => {
+        o += 0.12; mat.opacity = Math.min(1, o);
+        if (o >= 1) { clearInterval(fade); mat.transparent = false; old?.dispose(); }
+      }, 40);
+    };
+    if ('pano' in def && def.pano) loadPanoTexture(def.pano, (t) => apply(t || panoTexture(def.id, def.palette)));
+    else apply(panoTexture(def.id, def.palette));
+    if (st.scene) {
+      disposeHotspots(st.scene, st.hotspots); st.hotspots = buildHotspots(st.scene, world);
+      disposeGuide(st.scene, st.guide); st.guide = buildGuide(st.scene);
+    }
   }, [world]);
 
   // initial texture
@@ -300,11 +378,56 @@ export function Pano360({ world, onWorld, reduced }: {
     const st = stateRef.current;
     if (!st.sphere || st.tex) return;
     const def = WORLDS_360.find((w) => w.id === world) || WORLDS_360[0];
-    st.tex = panoTexture(def.id, def.palette);
     const mat = (st.sphere as THREE.Mesh).material as THREE.MeshBasicMaterial;
-    mat.map = st.tex; mat.needsUpdate = true;
+    const def0 = WORLDS_360.find((w) => w.id === world) || WORLDS_360[0];
+    const apply0 = (t: THREE.Texture) => { st.tex = t; mat.map = t; mat.needsUpdate = true; };
+    if ('pano' in def0 && def0.pano) loadPanoTexture(def0.pano, (t) => apply0(t || panoTexture(def0.id, def0.palette)));
+    else apply0(panoTexture(def0.id, def0.palette));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return <div ref={mountRef} className="absolute inset-0" style={{ cursor: 'grab' }} />;
+  return (
+    <div className="absolute inset-0">
+      <div ref={mountRef} className="absolute inset-0" style={{ cursor: 'grab' }} />
+      <button className="chip absolute right-3 bottom-3 z-10 !py-1.5 !px-3 !text-[9.6px]"
+        style={{ background: 'color-mix(in srgb, var(--bg) 72%, transparent)' }}
+        onClick={() => { setGuideOpen((v) => !v); track('cta_interaction', { cta: 'guide_chip' }); }}
+        aria-label="Meet your guide">
+        <span className="inline-block w-4 h-4 rounded-full align-[-3px] mr-1.5"
+          style={{ backgroundImage: 'url(/media/founder-avatar.jpg)', backgroundSize: 'cover', border: '1px solid var(--cy)' }} />
+        GUIDE
+      </button>
+      {guideOpen && (
+        <div className="absolute left-3 bottom-3 z-10 panel p-5 w-[min(360px,88vw)]" role="dialog" aria-label="Your guide in the Acttolog world"
+          style={{ maxHeight: '62vh', overflow: 'auto' }}>
+          <div className="flex items-start gap-4">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/media/founder-pro.jpg" alt="The founder and guide of the Acttolog world"
+              className="w-20 h-20 rounded-2xl object-cover flex-none" style={{ border: '1px solid color-mix(in srgb,var(--cy) 55%,transparent)', boxShadow: '0 0 22px color-mix(in srgb,var(--cy) 25%,transparent)' }} />
+            <div>
+              <div className="eyebrow mb-1">YOUR GUIDE · संस्थापक</div>
+              <div className="font-display font-bold text-[16px] leading-tight">The Founder & Guide</div>
+              <div className="dim mono text-[9.6px] tracking-[.18em] mt-1">FOUNDER · ACTTOLOG WORLD</div>
+            </div>
+            <button className="ico !w-8 !h-8 ml-auto flex-none" aria-label="Close guide" onClick={() => setGuideOpen(false)}>✕</button>
+          </div>
+          <p className="mut text-[12.6px] leading-relaxed mt-4">
+            The founder built Acttolog as one connected digital world — Earth, map, satellite, 360 field
+            worlds, research, academy and more. His ring floats in every 360° environment: tap it any time
+            to travel with a guide, or step into the field worlds below.
+          </p>
+          <div className="flex flex-wrap gap-2 mt-4">
+            <button className="chip" onClick={() => { setGuideOpen(false); onWorldRef.current('university'); }}>
+              <Icon name="book" size={11} />UNIVERSITY VISIT
+            </button>
+            <button className="chip" onClick={() => { setGuideOpen(false); window.dispatchEvent(new CustomEvent('acttolog:ai-open', { detail: 'Introduce the Acttolog world and what I can explore' })); }}>
+              <Icon name="brain" size={11} />ASK WITH THE GUIDE
+            </button>
+            <Link className="chip" href="/about"><Icon name="users" size={11} />ABOUT</Link>
+            <Link className="chip" href="/contact"><Icon name="mail" size={11} />CONTACT</Link>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }

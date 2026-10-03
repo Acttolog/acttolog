@@ -28,12 +28,6 @@ const check = (name, ok, extra = '') => { ok ? pass++ : fail++; console.log(`${o
   page.setDefaultTimeout(120000);
   page.on('pageerror', (e) => errors.push('pageerror: ' + String(e).slice(0, 160)));
   page.on('console', (m) => { if (m.type() === 'error' && !/tile\.openstreetmap|nominatim|overpass|arcgisonline|unpkg|Failed to load resource|net::ERR/i.test(m.text())) errors.push('console: ' + m.text().slice(0, 160)); });
-  await page.setRequestInterception(true);
-  page.on('request', (r) => {
-    const u = r.url();
-    if (/\/media\/.*\.jpg/.test(u)) return r.abort().catch(() => {}); // 5MB hero imagery — not under test
-    r.continue().catch(() => {});
-  });
   const shot = (n) => page.screenshot({ path: `${OUT}/${n}.png` }).catch(() => {});
   const ensurePage = async () => {
     if (page && !page.isClosed()) return;
@@ -42,8 +36,6 @@ const check = (name, ok, extra = '') => { ok ? pass++ : fail++; console.log(`${o
     await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 1 });
     page.setDefaultTimeout(120000);
     page.on('pageerror', (e) => errors.push('pageerror: ' + String(e).slice(0, 160)));
-    await page.setRequestInterception(true);
-    page.on('request', (r) => { const u = r.url(); if (/\/media\/.*\.jpg/.test(u)) return r.abort().catch(() => {}); r.continue().catch(() => {}); });
   };
   const step = async (label, fn) => {
     try { await fn(); } catch (e) { fail++; console.log(`❌ STEP ${label} crashed — ${String(e.message || e).slice(0, 140)}`); await ensurePage().catch(() => {}); }
@@ -77,7 +69,7 @@ const check = (name, ok, extra = '') => { ok ? pass++ : fail++; console.log(`${o
     check('Header nav has World → /explore', nav.some((x) => x.t === 'World' && x.h === '/explore'), nav.map((x) => x.t).join('|'));
     check('Hero deck COMMAND CENTER button', await page.evaluate(() => [...document.querySelectorAll('.chip')].some((c) => /COMMAND CENTER/i.test(c.textContent))));
     const worlds = await page.evaluate(() => [...document.querySelectorAll('a.chip')].filter((a) => (a.getAttribute('href') || '').includes('mode=360&world=')).length);
-    check('Home lists all 11 ACTTOLOG 360 worlds', worlds === 11, `${worlds} chips`);
+    check('Home lists all 13 ACTTOLOG 360 worlds', worlds === 13, `${worlds} chips`);
   });
 
   // ── 2. ⌘K palette: world commands + places ────────────────────────
@@ -104,12 +96,16 @@ const check = (name, ok, extra = '') => { ok ? pass++ : fail++; console.log(`${o
     await page.waitForSelector('[role="dialog"][aria-modal="true"] input', { timeout: 40000 });
     await page.evaluate(() => { const d = [...document.querySelectorAll('[role="dialog"][aria-modal="true"]')].pop(); d.querySelector('input').focus(); });
     await page.keyboard.type('Kathmandu');
-    await sleep(4000);
-    const res = await page.evaluate(() => {
-      const d = [...document.querySelectorAll('[role="dialog"][aria-modal="true"]')].pop();
-      const links = [...(d ? d.querySelectorAll('a') : [])].map((a) => a.getAttribute('href') || '');
-      return { text: d ? d.textContent : '', links };
-    });
+    let res = { text: '', links: [] };
+    for (let t = 0; t < 3; t++) { // Nominatim can be slow/rate-limited — retry before judging
+      await sleep(4000);
+      res = await page.evaluate(() => {
+        const d = [...document.querySelectorAll('[role="dialog"][aria-modal="true"]')].pop();
+        const links = [...(d ? d.querySelectorAll('a') : [])].map((a) => a.getAttribute('href') || '');
+        return { text: d ? d.textContent : '', links };
+      });
+      if (/PLACES/.test(res.text) && res.links.some((h) => h.includes('/explore?mode=map&lat='))) break;
+    }
     const hasPlaces = /PLACES/.test(res.text) && res.links.some((h) => h.includes('/explore?mode=map&lat=27.7'));
     check('⌘K "Kathmandu" → PLACES with /explore deep links', hasPlaces, hasPlaces ? '' : '(Nominatim may be blocked in sandbox)');
     await shot('04-cmdk-places');
@@ -185,7 +181,7 @@ const check = (name, ok, extra = '') => { ok ? pass++ : fail++; console.log(`${o
       canvas: !!document.querySelector('canvas'),
       worlds: [...document.querySelectorAll('.chip')].filter((x) => /RESEARCH LAB|GAMES ARENA|INTELLIGENCE CORE|EDITORIAL/i.test(x.textContent)).length,
     }));
-    check('360 mode: canvas + world switcher (11 worlds)', pano.canvas && pano.worlds >= 4, JSON.stringify(pano));
+    check('360 mode: canvas + world switcher (13 worlds)', pano.canvas && pano.worlds >= 4, JSON.stringify(pano));
     await shot('10-explore-360');
     await page.keyboard.down('Shift'); await page.keyboard.press('Slash'); await page.keyboard.up('Shift');
     await sleep(900);
@@ -218,12 +214,54 @@ const check = (name, ok, extra = '') => { ok ? pass++ : fail++; console.log(`${o
       await page.goto(BASE + route, { waitUntil: 'domcontentloaded' });
       await sleep(900);
       const p = await page.evaluate((title) => {
-        const a = [...document.querySelectorAll('a.btn')].find((x) => (x.getAttribute('href') || '').includes('mode=360&world='));
+        const a = [...document.querySelectorAll('a.btn')].find((x) => /ENTER THE PORTAL/i.test(x.textContent) && (x.getAttribute('href') || '').includes('mode=360&world='));
         return { hasTitle: document.body.textContent.includes(title), href: a ? a.getAttribute('href') : null };
       }, title);
       check(`${route} portal "${title}" → world=${world}`, p.href === `/explore?mode=360&world=${world}` && p.hasTitle, String(p.href));
       if (route === '/research') await shot('14-research-portal');
     }
+  });
+
+  // ── 5b. Field worlds + guide + media art ──────────────────────────
+  await step('field-worlds', async () => {
+    await ensurePage();
+    await page.goto(BASE + '/explore?mode=360&world=university', { waitUntil: 'domcontentloaded' });
+    await sleep(4500);
+    const st = await page.evaluate(() => ({
+      chipOn: [...document.querySelectorAll('.chip.on')].some((c) => /UNIVERSITY VISIT/.test(c.textContent)),
+      guideChip: [...document.querySelectorAll('.chip')].some((c) => /GUIDE/.test(c.textContent)),
+      pano: performance.getEntriesByType('resource').some((e) => e.name.includes('/media/pano/university.jpg')),
+      canvas: !!document.querySelector('canvas'),
+    }));
+    check('University field world: chip + canvas + generated pano loaded', st.chipOn && st.guideChip && st.pano && st.canvas, JSON.stringify(st));
+    await shot('20-university-360');
+    await page.evaluate(() => [...document.querySelectorAll('.chip')].find((c) => /GUIDE/.test(c.textContent) && c.querySelector('span'))?.click());
+    await sleep(900);
+    const g = await page.evaluate(() => {
+      const d = document.querySelector('[role="dialog"][aria-label*="guide"]');
+      return d ? { name: d.textContent.includes('The Founder & Guide'), img: !!d.querySelector('img[src*="founder-pro"]') } : null;
+    });
+    check('Guide panel opens with founder photo + name', !!g && g.name && g.img, JSON.stringify(g));
+    await shot('21-guide-panel');
+    await page.goto(BASE + '/about', { waitUntil: 'domcontentloaded' });
+    await sleep(1200);
+    const ab = await page.evaluate(() => ({
+      founder: document.body.textContent.includes('The Founder & Guide of Acttolog World'),
+      img: !!document.querySelector('img[src="/media/founder-pro.jpg"]'),
+      casual: !!document.querySelector('img[src="/media/founder-casual.jpg"]'),
+    }));
+    check('About: founder panel with both photos', ab.founder && ab.img && ab.casual, JSON.stringify(ab));
+    await shot('22-about-founder');
+    for (const [route, media] of [['/games', '/media/games.jpg'], ['/entertainment', '/media/entertainment.jpg'], ['/blog', '/media/blog.jpg'], ['/offers', '/media/offers.jpg']]) {
+      await page.goto(BASE + route, { waitUntil: 'domcontentloaded' });
+      await sleep(800);
+      const has = await page.evaluate((m) => !!document.querySelector(`img[src="${m}"]`), media);
+      check(`${route} header uses generated 3D art ${media}`, has);
+    }
+    await page.goto(BASE + '/contact', { waitUntil: 'domcontentloaded' });
+    await sleep(800);
+    check('Contact: guide strip with avatar + public contacts', await page.evaluate(() => !!document.querySelector('img[src="/media/founder-avatar.jpg"]') && document.body.textContent.includes('thesynresearch@gmail.com')));
+    await shot('23-contact-guide');
   });
 
   // ── 6. Mobile (§27/§28) ────────────────────────────────────────────
@@ -256,11 +294,15 @@ const check = (name, ok, extra = '') => { ok ? pass++ : fail++; console.log(`${o
   await step('search-page', async () => {
     await ensurePage();
     await page.goto(BASE + '/search?q=Pokhara', { waitUntil: 'domcontentloaded' });
-    await sleep(4000);
-    const s = await page.evaluate(() => {
-      const links = [...document.querySelectorAll('a')].map((a) => a.getAttribute('href') || '');
-      return { places: document.body.textContent.includes('PLACES'), deep: links.some((h) => h.includes('/explore?mode=map&lat=')) };
-    });
+    let s = { places: false, deep: false };
+    for (let t = 0; t < 3; t++) {
+      await sleep(4000);
+      s = await page.evaluate(() => {
+        const links = [...document.querySelectorAll('a')].map((a) => a.getAttribute('href') || '');
+        return { places: document.body.textContent.includes('PLACES'), deep: links.some((h) => h.includes('/explore?mode=map&lat=')) };
+      });
+      if (s.places && s.deep) break;
+    }
     check('/search?q=Pokhara → PLACES deep links (§18)', s.places && s.deep, JSON.stringify(s));
     await shot('18-search-places');
   });

@@ -25,7 +25,46 @@ export default function AboutPage() {
 
   return (
     <>
-      <PageHead kicker="ABOUT US" title="About Acttolog" body={s.purpose.en} art="academy" />
+      <PageHead kicker="ABOUT US" title="About Acttolog" body={s.purpose.en} art="nebula" />
+
+      {/* The guide — founder photos published at the owner's request */}
+      <section className="sec pt-2">
+        <div className="wrap">
+          <Reveal>
+            <div className="panel p-7 sm:p-9 grid md:grid-cols-[auto_1fr] gap-7 items-start">
+              <div className="flex md:flex-col gap-4">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/media/founder-pro.jpg" alt="The founder and guide of Acttolog World"
+                  className="w-36 h-36 md:w-44 md:h-44 rounded-3xl object-cover"
+                  style={{ border: '1px solid color-mix(in srgb,var(--cy) 50%,transparent)', boxShadow: '0 0 34px color-mix(in srgb,var(--cy) 22%,transparent)' }} />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/media/founder-casual.jpg" alt="The founder on site"
+                  className="w-36 h-36 md:w-44 md:h-28 rounded-3xl object-cover"
+                  style={{ border: '1px solid color-mix(in srgb,var(--vi) 45%,transparent)' }} />
+              </div>
+              <div>
+                <div className="eyebrow mb-2">THE GUIDE · संस्थापक</div>
+                <h2 className="font-display font-bold text-[clamp(1.4rem,3vw,2rem)] tracking-[-.02em] gtext">The Founder & Guide of Acttolog World</h2>
+                <p className="mut text-[13.6px] leading-relaxed mt-4 max-w-[70ch]">
+                  Acttolog was built by one person with one idea: technology, research, education,
+                  entertainment and discovery should feel like a single connected world — not scattered
+                  pages. The founder still guides visitors himself: his ring floats inside every 360°
+                  environment, from the University Visit to the Research Lab.
+                </p>
+                <p className="dim text-[12.6px] leading-relaxed mt-3 max-w-[70ch]">
+                  {`"One World. Endless Possibilities." — Explore the Digital World.`}
+                </p>
+                <div className="flex flex-wrap gap-3 mt-6">
+                  <Link className="btn btn-p" href="/explore?mode=360&world=university">
+                    <Icon name="compass" size={15} />Travel with the guide
+                  </Link>
+                  <Link className="btn btn-g" href="/contact"><Icon name="mail" size={15} />Contact</Link>
+                </div>
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </section>
 
       <WorldPortal world="world" title="ACTTOLOG World Hub" titleNe="एक्टोलग वर्ल्ड हब"
         subtitle="The ACTTOLOG world hub in 360° — every division connected by light: research, academy, games, darkroom and the AI core."

@@ -22,10 +22,29 @@ export default function ContactPage() {
     <>
       <PageHead kicker="CONTACT US" title="Contact Acttolog"
         body="Public contact — no login required. Messages route to the private admin inbox."
-        art="editorial" />
+        art="nebula" />
       <WorldPortal world="contact" title="Global Contact World" titleNe="ग्लोबल कन्टाक्ट वर्ल्ड"
         subtitle="A global contact world — reach ACTTOLOG from anywhere; hotspots connect to the Offers showcase and the world hub."
         accent="var(--cy)" earthLink="/explore?mode=earth&lat=27.71700&lng=85.32400" />
+
+      <section className="sec pt-2">
+        <div className="wrap">
+          <div className="panel p-5 flex flex-wrap items-center gap-4">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/media/founder-avatar.jpg" alt="Your guide — the founder of Acttolog World"
+              className="w-12 h-12 rounded-full object-cover flex-none"
+              style={{ border: '1px solid color-mix(in srgb,var(--cy) 60%,transparent)', boxShadow: '0 0 16px color-mix(in srgb,var(--cy) 30%,transparent)' }} />
+            <div className="min-w-[220px] flex-1">
+              <div className="mono text-[9.6px] tracking-[.2em] dim mb-1">YOUR GUIDE REPLIES · PERSONALLY</div>
+              <div className="text-[13.6px] font-medium">Your guide — the founder of Acttolog World</div>
+            </div>
+            <div className="flex gap-2 flex-wrap mono text-[10.6px]">
+              <span className="chip">9802336200</span>
+              <span className="chip">thesynresearch@gmail.com</span>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <section className="sec pt-2">
         <div className="wrap">
