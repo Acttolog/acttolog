@@ -398,8 +398,9 @@ export function Pano360({ world, onWorld, reduced }: {
         GUIDE
       </button>
       {guideOpen && (
-        <div className="absolute left-3 bottom-3 z-10 panel p-5 w-[min(360px,88vw)]" role="dialog" aria-label="Your guide in the Acttolog world"
-          style={{ maxHeight: '62vh', overflow: 'auto' }}>
+        <div className="absolute left-3 bottom-14 z-10 w-[min(360px,88vw)]">
+        <div className="panel p-5" role="dialog" aria-label="Your guide in the Acttolog world"
+          style={{ maxHeight: '58vh', overflow: 'auto' }}>
           <div className="flex items-start gap-4">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/media/founder-pro.jpg" alt="The founder and guide of the Acttolog world"
@@ -426,6 +427,7 @@ export function Pano360({ world, onWorld, reduced }: {
             <Link className="chip" href="/about"><Icon name="users" size={11} />ABOUT</Link>
             <Link className="chip" href="/contact"><Icon name="mail" size={11} />CONTACT</Link>
           </div>
+        </div>
         </div>
       )}
     </div>
