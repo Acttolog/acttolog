@@ -10,7 +10,8 @@ const Pano360 = dynamic(() => import('./Pano360').then((m) => ({ default: m.Pano
 import { PlacePanel, SearchCmd, type Place } from './Panels';
 import { useI18n } from '@/lib/i18n';
 import { track } from '@/lib/analytics';
-import { detectTier, prefersReducedMotion, webglSupported, type QualityTier } from '@/components/three/tier';
+import { prefersReducedMotion, webglSupported, QUALITY_SETTINGS, QUALITY_LABEL } from '@/components/three/tier';
+import { useQuality } from '@/components/three/QualityProvider';
 import { WORLDS_360, WORLD_360_IDS, CAMERA_PRESETS, DISCOVERY_CARDS, type DiscoveryCategory } from '@/lib/world/config';
 import { googleMapsConfigured, googleStatusText, GOOGLE_SETUP_STEPS, streetViewEmbedUrl } from '@/lib/world/google';
 import { KTM } from '@/lib/utils';
@@ -46,7 +47,7 @@ export function ExploreClient() {
   const [discoveryCat, setDiscoveryCat] = useState<DiscoveryCategory | 'all'>('all');
   const [world360, setWorld360] = useState<string>('world');
   const [streetView, setStreetView] = useState(false);
-  const [quality, setQuality] = useState<'auto' | QualityTier>('auto');
+  const { tier, setting: quality, setSetting: setQuality } = useQuality();
   const [help, setHelp] = useState(false);
   const [boot, setBoot] = useState<Boot | null>(null);
   const [booted, setBooted] = useState(false);
@@ -67,7 +68,6 @@ export function ExploreClient() {
   useEffect(() => { modeRef.current = mode; }, [mode]);
   useEffect(() => { zoomRef.current = mapZoom; }, [mapZoom]);
 
-  const tier: QualityTier = quality === 'auto' ? detectTier() : quality;
   const googleOn = useMemo(() => googleMapsConfigured(), []);
 
   /* deep-link init + live re-application on in-app navigation (§22/§30).
@@ -102,14 +102,6 @@ export function ExploreClient() {
     const pl = sp.get('place');
     if (pl && !isNaN(lat) && !isNaN(lng)) setPlace({ id: `link-${lat}-${lng}`, name: pl, lat, lon: lng, source: 'NOMINATIM' });
   }, [params]);
-
-  /* restore remembered quality preference once (§29) */
-  useEffect(() => {
-    try {
-      const q = localStorage.getItem('act_quality');
-      if (q === 'high' || q === 'medium' || q === 'low' || q === 'auto') setQuality(q);
-    } catch { /* ignore */ }
-  }, []);
 
   const syncUrl = useCallback((m: Mode, l: [number, number], z: number, pname?: string, w?: string) => {
     const sp = new URLSearchParams(window.location.search);
@@ -359,10 +351,11 @@ export function ExploreClient() {
       {/* right rail: quality + worlds + street view + help */}
       <div className="absolute right-2 sm:right-4 top-4 z-20 flex flex-col gap-2 items-end" style={{ zIndex: 22 }}>
         <div className="panel p-1.5 flex sm:flex-col gap-1">
-          {(['auto', 'high', 'medium', 'low'] as const).map((q) => (
+          {QUALITY_SETTINGS.map((q) => (
             <button key={q} className={`chip !px-2 sm:!px-2.5 !py-1 !text-[9px] sm:!text-[9.4px]${quality === q ? ' on' : ''}`}
-              onClick={() => { setQuality(q); try { localStorage.setItem('act_quality', q); } catch { /* ignore */ } }}>
-              {q === 'auto' ? 'AUTO' : q[0].toUpperCase()}
+              onClick={() => setQuality(q)} aria-pressed={quality === q}
+              title={q === 'auto' ? `Auto — rendering ${tier.toUpperCase()}` : `Force ${q.toUpperCase()}`}>
+              {QUALITY_LABEL[q]}
             </button>
           ))}
         </div>

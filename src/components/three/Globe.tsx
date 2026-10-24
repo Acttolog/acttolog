@@ -3,7 +3,8 @@
 import dynamic from 'next/dynamic';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { detectTier, webglSupported, type QualityTier } from './tier';
+import { webglSupported, QUALITY_SETTINGS, type QualityTier } from './tier';
+import { useQuality } from './QualityProvider';
 import { DIVISION_NODES, ARC_PAIRS, ENTITY_COUNT } from './EarthScene';
 import { TILE_ATTRIBUTION, type TileLayer } from './TileGlobe';
 import { LiveCamsPanel } from '@/components/content/Extensions';
@@ -48,6 +49,14 @@ function Hud({ tier, hud, visible, layer }: { tier: QualityTier; hud: HudState; 
         <div>LOCATION · {hud.lat == null ? 'HOVER MAP' : `${fmtCoord(hud.lat, 'N', 'S')} ${fmtCoord(hud.lon as number, 'E', 'W')}`}</div>
         <div>ALT · {hud.alt} · ZOOM · {hud.zoom.toFixed(2)}×</div>
       </div>
+      {/* Compact strip for viewports where the three HUD groups are hidden —
+          without it a phone shows no render state at all. */}
+      <div className="hud hudm">
+        <div>
+          {visible ? tier.toUpperCase() : 'PAUSED'} · {visible && hud.fps > 0 ? `${hud.fps} FPS` : '—'} · NPT {clocks.npt}
+        </div>
+        <div>{nf(DIVISION_NODES.length)} NODES · {nf(ARC_PAIRS.length)} LINKS · LAYER {layer.toUpperCase()}</div>
+      </div>
     </>
   );
 }
@@ -69,7 +78,7 @@ export function Globe() {
   const dragRef = useRef({ dx: 0, vel: 0, dragging: false });
   const cursorRef = useRef<{ lat: number | null; lon: number | null }>({ lat: null, lon: null });
   const [visible, setVisible] = useState(true);
-  const [tier, setTier] = useState<QualityTier>('medium');
+  const { tier, setting, setSetting } = useQuality();
   const [hud, setHud] = useState<HudState>({ fps: 0, lat: null, lon: null, zoom: 1, alt: '—' });
   const [supported, setSupported] = useState<boolean | null>(null);
   const [layer, setLayer] = useState<'blue' | TileLayer>('blue');
@@ -82,7 +91,7 @@ export function Globe() {
   const [pointer, setPointer] = useState<{ x: number; y: number; inside: boolean }>({ x: 0, y: 0, inside: false });
   const router = useRouter();
 
-  useEffect(() => { setTier(detectTier()); setSupported(webglSupported()); }, []);
+  useEffect(() => { setSupported(webglSupported()); }, []);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -218,6 +227,20 @@ export function Globe() {
               {label}
             </button>
           ))}
+          <div className="hr w-full" />
+          <div className="grid grid-cols-2 gap-1 w-full" role="group" aria-label="Visual quality level">
+            {QUALITY_SETTINGS.map((q) => (
+              <button key={q}
+                className={`chip !px-1.5 !py-1 !text-[8.6px] !justify-center${setting === q ? ' on' : ''}`}
+                onClick={() => setSetting(q)}
+                aria-pressed={setting === q}
+                title={q === 'auto'
+                  ? `Auto — currently rendering ${tier.toUpperCase()}`
+                  : `Force ${q.toUpperCase()} (auto-detect picked ${tier.toUpperCase()})`}>
+                {q.toUpperCase()}
+              </button>
+            ))}
+          </div>
           <div className="hr w-full" />
           <button className="ico !w-9 !h-9" title="Find your home" aria-label="Find your home" onClick={() => setFindOpen((v) => !v)}>
             <Icon name="home" size={16} />

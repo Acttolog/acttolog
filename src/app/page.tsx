@@ -1,10 +1,12 @@
 import type { Metadata } from 'next';
 import { Hero } from '@/components/home/Hero';
 import { WorldShowcase } from '@/components/home/WorldShowcase';
+import { NepalPromo } from '@/components/home/NepalPromo';
 import fs from 'node:fs';
 import path from 'node:path';
 import { HomeLayers, type HomeData, type LatestItem } from '@/components/home/HomeLayers';
 import { getDB, pub, homeSection, seoFor, divisions as getDivisions } from '@/lib/content';
+import { nepalGuide } from '@/lib/content/nepal';
 import type { Bi } from '@/lib/content/types';
 
 export const metadata: Metadata = {
@@ -16,6 +18,7 @@ export const metadata: Metadata = {
 
 export default function HomePage() {
   const db = getDB();
+  const ng = nepalGuide();
   const dvs = getDivisions();
   const posts = pub(db.posts).slice().sort((a, b) => String(b.publishedAt).localeCompare(String(a.publishedAt)));
   const ents = pub(db.entertainment);
@@ -37,7 +40,7 @@ export default function HomePage() {
   feed.sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
 
   const sections: HomeData['sections'] = {};
-  for (const id of ['intro', 'eco', 'divisions', 'featured', 'latest', 'academy', 'darkroom', 'offers', 'about', 'cta']) {
+  for (const id of ['nepal', 'intro', 'eco', 'divisions', 'featured', 'latest', 'academy', 'darkroom', 'offers', 'about', 'cta']) {
     sections[id] = homeSection(id);
   }
 
@@ -72,6 +75,7 @@ export default function HomePage() {
   const ticker: string[] = [
     `<b>LIVE</b> ACTTOLOG WORLD NETWORK`,
     ...dvs.map((d) => `${esc(d.name.en.toUpperCase())} <b>ONLINE</b>`),
+    `NEPAL GUIDE <b>${ng.places.length}</b> PLACES · <b>${ng.regions.length}</b> REGIONS <b>LIVE</b>`,
     `BLOG ENTRIES <b>${posts.length}</b>`,
     `DARKROOM RESOURCES <b>${drs.length}</b> VERIFIED FEED`,
     `ACADEMY COURSES <b>${courses.length}</b>`,
@@ -87,6 +91,7 @@ export default function HomePage() {
     <>
       <Hero settings={db.settings} ticker={ticker} />
       <WorldShowcase shots={shots} />
+      <NepalPromo section={data.sections.nepal} />
       <HomeLayers data={data} />
     </>
   );

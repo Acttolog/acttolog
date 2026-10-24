@@ -57,6 +57,10 @@ const PALETTES: Record<string, [string, string, string, string]> = {
   horror: ['#0a0410', '#ff5f7a', '#7c5cff', '#35e0ff'],
   music: ['#04060f', '#ff4ecd', '#35e0ff', '#7c5cff'],
   games: ['#04120a', '#3ddc97', '#35e0ff', '#7c5cff'],
+  himalaya: ['#03070f', '#9be8ff', '#4f7dff', '#ff4ecd'],
+  terai: ['#060d07', '#3ddc97', '#f5c26b', '#9be8ff'],
+  mithila: ['#0c0509', '#ff5f7a', '#f5c26b', '#35e0ff'],
+  newar: ['#0a0607', '#f5c26b', '#ff4ecd', '#7c5cff'],
 };
 
 function artSvg(kind: string, w = 1200, h = 675): string {

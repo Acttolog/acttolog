@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { Reveal } from '@/components/ui/Reveal';
 import { Icon } from '@/components/ui/Icon';
 import { AccessBadge } from '@/components/ui/Badges';
+import { SaveButton } from '@/components/ui/SaveButton';
 import { PostBody } from './PostBody';
 import { getDB, pub } from '@/lib/content';
 import { resolveImage, fdate, rt } from '@/lib/utils';
@@ -66,10 +67,13 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
               </div>
               <h1 className="h1 !text-[clamp(1.8rem,4.6vw,3.1rem)] max-w-[24ch] mb-4">{post.title.en}</h1>
               {post.title.ne && <p className="font-display font-semibold text-[17px] mut mb-5 max-w-[52ch]">{post.title.ne}</p>}
-              <div className="mono text-[10.3px] tracking-[.2em] dim mb-8 flex flex-wrap items-center gap-3">
+              <div className="mono text-[10.3px] tracking-[.2em] dim mb-5 flex flex-wrap items-center gap-3">
                 <span>{post.author.toUpperCase()}</span><span>·</span>
                 <span>{fdate(post.publishedAt)}</span><span>·</span>
                 <span>{rt(post.content.en)} MIN READ</span>
+              </div>
+              <div className="mb-8">
+                <SaveButton kind="post" id={post.slug} title={post.title.en} route={`/blog/${post.slug}`} />
               </div>
             </Reveal>
 

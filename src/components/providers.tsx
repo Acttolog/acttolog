@@ -8,6 +8,7 @@ import { PrefsProvider } from '@/lib/prefs';
 import { SessionProvider } from '@/lib/session';
 import { ConsentProvider, useConsent } from '@/lib/consent';
 import { ToastProvider } from '@/lib/toast';
+import { QualityProvider } from '@/components/three/QualityProvider';
 import { loadGA, track } from '@/lib/analytics';
 
 /** Bridges consent state → analytics gate + GA4 bootstrap (spec §63, §73). */
@@ -40,15 +41,17 @@ export function Providers({ usdToNpr, gaId, children }: {
   return (
     <LocaleProvider>
       <PrefsProvider usdToNpr={usdToNpr}>
-        <ConsentProvider>
-          <ToastProvider>
-            <SessionProvider>
-              <ConsentBridge gaId={gaId} />
-              <PageViewTracker />
-              {children}
-            </SessionProvider>
-          </ToastProvider>
-        </ConsentProvider>
+        <QualityProvider>
+          <ConsentProvider>
+            <ToastProvider>
+              <SessionProvider>
+                <ConsentBridge gaId={gaId} />
+                <PageViewTracker />
+                {children}
+              </SessionProvider>
+            </ToastProvider>
+          </ConsentProvider>
+        </QualityProvider>
       </PrefsProvider>
     </LocaleProvider>
   );

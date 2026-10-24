@@ -97,6 +97,16 @@
  },
  "nav": [
   {
+   "id": "n0",
+   "label": {
+    "en": "Nepal",
+    "ne": "नेपाल"
+   },
+   "route": "/nepal",
+   "order": 2,
+   "visible": true
+  },
+  {
    "id": "n1",
    "label": {
     "en": "Blog",
@@ -3341,6 +3351,13 @@
     "titleNe": "डार्करूम — डिजिटल खोज र स्रोत | ACTTOLOG",
     "descNe": "आधिकारिक वेबसाइट, सफ्टवेयर, औजार र डाटाबेसको प्रमाणित खोज केन्द्र।"
    },
+   "/nepal": {
+    "title": "Nepal Tourism — Places, Cultures, Treks & Travel Guidelines | ACTTOLOG",
+    "desc": "An interactive guide to Nepal: Himalayan regions and places to visit, festivals, cultures, cuisine, wildlife, trekking permits, seasons and travel etiquette.",
+    "canon": "https://www.acttolog.com/nepal",
+    "titleNe": "नेपाल पर्यटन — स्थान, संस्कृति, ट्रेक र मार्गदर्शन | ACTTOLOG",
+    "descNe": "नेपालको अन्तरक्रियात्मक मार्गदर्शन: हिमाली क्षेत्र, घुम्ने ठाउँ, चाडपर्व, संस्कृति, खाना, वन्यजन्तु, ट्रेक अनुमति र यात्रा आचरण।"
+   },
    "/blog": {
     "title": "Blog | ACTTOLOG",
     "desc": "Research practice, technology craft, education design and creative systems from the Acttolog world.",
@@ -3576,6 +3593,18 @@
  "session": null,
  "release": "RELEASE 3 · Public MVP",
  "homeSections": [
+  {
+   "id": "nepal",
+   "title": {
+    "en": "Nepal — the country ACTTOLOG calls home",
+    "ne": "नेपाल — एक्टोलगको आफ्नै देश"
+   },
+   "body": {
+    "en": "Eight of the world's fourteen peaks above 8,000 metres, four UNESCO World Heritage properties, and a festival in almost every week of the year. ACTTOLOG maps the regions, places, cultures, treks and travel rules of Nepal in one interactive guide — free, bilingual, and written for people who actually intend to go.",
+    "ne": "संसारका १४ अठ्ठहजारी शिखरमध्ये आठ, चार युनेस्को विश्व सम्पदा, र प्रायः हरेक हप्तामा कुनै न कुनै चाड। एक्टोलगले नेपालका क्षेत्र, स्थान, संस्कृति, ट्रेक र यात्रा नियम एकै अन्तरक्रियात्मक मार्गदर्शनमा झिकेको छ — निःशुल्क, द्विभाषी।"
+   },
+   "visible": true
+  },
   {
    "id": "intro",
    "title": {

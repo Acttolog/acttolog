@@ -387,6 +387,18 @@ button, input, select, textarea { font: inherit; color: inherit; }
 @keyframes cu { 0% { top: -42px; } 60%, 100% { top: 42px; } }
 @media (max-width: 1099px) { .hudtl, .hudbr { display: none; } }
 
+/* Compact mobile render-state strip. Hidden on desktop, where the three
+   detailed HUD groups already carry this information. */
+.hudm { display: none; }
+@media (max-width: 1099px) {
+  .hudm {
+    display: flex; flex-direction: column; gap: 3px; align-items: flex-start;
+    top: calc(var(--nav) + 10px); left: 14px; right: 14px;
+    font-size: 8.8px; letter-spacing: 0.14em;
+  }
+}
+@media (prefers-reduced-motion: reduce) { .hudm { animation: none; } }
+
 /* ── globe pointer ring (visible mouse readout) ── */
 .pointer-ring {
   position: absolute; z-index: 6; pointer-events: none;

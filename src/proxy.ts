@@ -9,16 +9,32 @@ import { jwtVerify } from 'jose';
  * obviously-unauthenticated traffic.
  */
 
-const secret = () => new TextEncoder().encode(process.env.AUTH_SECRET || 'acttolog-dev-secret-do-not-use-in-production');
+const DEV_FALLBACK = 'acttolog-dev-secret-do-not-use-in-production';
+
+/**
+ * Returns null in production when AUTH_SECRET is absent or left at the
+ * published dev value. Verifying signatures against a secret that is committed
+ * to this repository would let a forged cookie clear the /my and /admin gates,
+ * so the gate stays shut instead. Server-side handlers re-check independently.
+ */
+const secret = (): Uint8Array | null => {
+  const v = process.env.AUTH_SECRET;
+  if (!v || (v === DEV_FALLBACK && process.env.NODE_ENV === 'production')) {
+    if (process.env.NODE_ENV === 'production') return null;
+    return new TextEncoder().encode(DEV_FALLBACK);
+  }
+  return new TextEncoder().encode(v);
+};
 
 export default async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const token = req.cookies.get('atl_session')?.value;
+  const key = secret();
 
   let user: { sub?: string; role?: string; email?: string } | null = null;
-  if (token) {
+  if (token && key) {
     try {
-      const { payload } = await jwtVerify(token, secret(), { issuer: 'acttolog', audience: 'acttolog-web' });
+      const { payload } = await jwtVerify(token, key, { issuer: 'acttolog', audience: 'acttolog-web' });
       user = payload as { sub?: string; role?: string; email?: string };
     } catch {
       user = null;

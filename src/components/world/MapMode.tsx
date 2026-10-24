@@ -2,37 +2,13 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useRef, useState } from 'react';
+import { loadLeaflet, TILE_URLS, TILE_ATTR, LEAFLET_SKIN } from '@/lib/leaflet';
 
 /**
  * MAP / SAT modes — Leaflet loaded at runtime from CDN (keeps the memory-
  * constrained static build light; MIT licensed, attribution preserved §121).
  * MAP: OSM standard · SAT: Esri World Imagery.
  */
-
-const LEAFLET_VERSION = '1.9.4';
-const CSS_HREF = `https://unpkg.com/leaflet@${LEAFLET_VERSION}/dist/leaflet.css`;
-const JS_SRC = `https://unpkg.com/leaflet@${LEAFLET_VERSION}/dist/leaflet.js`;
-
-let leafletPromise: Promise<any> | null = null;
-function loadLeaflet(): Promise<any> {
-  if (typeof window === 'undefined') return Promise.reject(new Error('ssr'));
-  const w = window as any;
-  if (w.L) return Promise.resolve(w.L);
-  if (leafletPromise) return leafletPromise;
-  leafletPromise = new Promise((resolve, reject) => {
-    if (!document.querySelector(`link[href="${CSS_HREF}"]`)) {
-      const link = document.createElement('link');
-      link.rel = 'stylesheet'; link.href = CSS_HREF;
-      document.head.appendChild(link);
-    }
-    const s = document.createElement('script');
-    s.src = JS_SRC; s.async = true;
-    s.onload = () => resolve((window as any).L);
-    s.onerror = () => { leafletPromise = null; reject(new Error('leaflet-cdn')); };
-    document.head.appendChild(s);
-  });
-  return leafletPromise;
-}
 
 export function MapMode({ center, zoom, layer, onMove, onPick, marker }: {
   center: [number, number];
@@ -65,11 +41,7 @@ export function MapMode({ center, zoom, layer, onMove, onPick, marker }: {
         cbRef.current.onMove([cc.lat, cc.lng], map.getZoom());
       });
       map.on('click', (e: any) => cbRef.current.onPick(e.latlng.lat, e.latlng.lng));
-      const url = layer === 'sat'
-        ? 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
-        : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-      const attrib = layer === 'sat' ? 'Imagery © Esri, Maxar, Earthstar Geographics' : '© OpenStreetMap contributors';
-      tileRef.current = L.tileLayer(url, { attribution: attrib, maxZoom: 19, crossOrigin: true }).addTo(map);
+      tileRef.current = L.tileLayer(TILE_URLS[layer], { attribution: TILE_ATTR[layer], maxZoom: 19, crossOrigin: true }).addTo(map);
     }).catch(() => { if (!cancelled) setFailed(true); });
     return () => {
       cancelled = true;
@@ -84,14 +56,10 @@ export function MapMode({ center, zoom, layer, onMove, onPick, marker }: {
     if (!map) return;
     const L = (window as any).L;
     if (!L) return;
-    const url = layer === 'sat'
-      ? 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
-      : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-    const attrib = layer === 'sat' ? 'Imagery © Esri, Maxar, Earthstar Geographics' : '© OpenStreetMap contributors';
     if (tileRef.current) map.removeLayer(tileRef.current);
     const el = divRef.current;
     if (el) el.style.opacity = '0.25';
-    const t = L.tileLayer(url, { attribution: attrib, maxZoom: 19, crossOrigin: true });
+    const t = L.tileLayer(TILE_URLS[layer], { attribution: TILE_ATTR[layer], maxZoom: 19, crossOrigin: true });
     t.on('load', () => { if (el) el.style.opacity = '1'; });
     t.addTo(map);
     tileRef.current = t;
@@ -145,10 +113,7 @@ export function MapMode({ center, zoom, layer, onMove, onPick, marker }: {
         .atl-pin-ring { position:absolute; left:3px; top:3px; width:20px; height:20px; border-radius:50%;
           border:1px solid color-mix(in srgb, var(--mg, #ff4ecd) 70%, transparent); animation: atlpin 1.8s ease-out infinite; }
         @keyframes atlpin { 0% { transform: scale(.6); opacity:.9 } 100% { transform: scale(1.9); opacity:0 } }
-        .leaflet-container { font: inherit; }
-        .leaflet-control-attribution { background: color-mix(in srgb, var(--bg, #05060c) 72%, transparent) !important;
-          color: var(--dim, #6c7899) !important; font-family: var(--font-mono, monospace); font-size: 9px !important; }
-        .leaflet-control-attribution a { color: var(--mut, #93a0c4) !important; }
+        ${LEAFLET_SKIN}
       `}</style>
     </div>
   );

@@ -17,7 +17,28 @@ export interface SessionUser {
 }
 
 const COOKIE = 'atl_session';
-const secret = () => new TextEncoder().encode(process.env.AUTH_SECRET || 'acttolog-dev-secret-do-not-use-in-production');
+
+/**
+ * AUTH_SECRET is mandatory in production. The literal fallback is published in
+ * this repository, so signing with it would let anyone mint a valid session
+ * cookie for any `sub` — reading another user's saved items and clearing
+ * members-only gates. Roles stay safe (resolveRole trusts email+env, never the
+ * claim), but identity does not. Fail closed at boot instead.
+ */
+const DEV_FALLBACK = 'acttolog-dev-secret-do-not-use-in-production';
+const secret = () => {
+  const v = process.env.AUTH_SECRET;
+  if (!v) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('AUTH_SECRET is required in production — refusing to sign sessions with a public key');
+    }
+    return new TextEncoder().encode(DEV_FALLBACK);
+  }
+  if (v === DEV_FALLBACK && process.env.NODE_ENV === 'production') {
+    throw new Error('AUTH_SECRET is set to the published dev fallback — generate a new secret');
+  }
+  return new TextEncoder().encode(v);
+};
 
 export async function createSessionCookie(user: SessionUser): Promise<void> {
   const token = await new SignJWT({ role: user.role, name: user.name, picture: user.picture || '', email: user.email })

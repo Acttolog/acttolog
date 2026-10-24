@@ -66,3 +66,6 @@ qa-shots/
 .static-build
 .pages-site/
 .static-build/
+
+# Nepal photography originals (120 MB, never served or committed)
+media-source/
