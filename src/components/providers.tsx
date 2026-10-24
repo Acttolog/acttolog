@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { LocaleProvider } from '@/lib/i18n';
@@ -10,6 +10,7 @@ import { ConsentProvider, useConsent } from '@/lib/consent';
 import { ToastProvider } from '@/lib/toast';
 import { useSession } from '@/lib/session';
 import { QualityProvider } from '@/components/three/QualityProvider';
+import { AuthNotice } from '@/components/auth/AuthNotice';
 import { loadGA, track } from '@/lib/analytics';
 
 /** Bridges consent state → analytics gate + GA4 bootstrap (spec §63, §73). */
@@ -63,6 +64,9 @@ export function Providers({ usdToNpr, gaId, children }: {
                 <ConsentBridge gaId={gaId} />
                 <PageViewTracker />
                 {children}
+                <Suspense fallback={null}>
+                  <AuthNotice />
+                </Suspense>
               </SessionProvider>
             </ToastProvider>
           </ConsentProvider>
