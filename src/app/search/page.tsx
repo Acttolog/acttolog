@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { SearchClient } from './SearchClient';
 
 export const metadata: Metadata = {
-  title: 'Search | ACTTOLOG',
+  title: 'Search',
   description: 'Search across divisions, blog, Darkroom, Academy, Games, Entertainment, Thesyn Research and Offers.',
   alternates: { canonical: '/search' },
   robots: { index: false, follow: true },

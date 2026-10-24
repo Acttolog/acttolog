@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-export const metadata: Metadata = { title: 'AI | ACTTOLOG Admin', robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: 'AI | Admin', robots: { index: false, follow: false } };
 
 import { AHead } from '../AdminUi';
 import { getDB } from '@/lib/content';

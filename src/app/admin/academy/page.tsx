@@ -3,7 +3,7 @@ import { AHead, CollectionTable, DbNotice } from '../AdminUi';
 import { getDB } from '@/lib/content';
 import { dbReady } from '@/lib/db';
 
-export const metadata: Metadata = { title: 'Academy | ACTTOLOG Admin', robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: 'Academy | Admin', robots: { index: false, follow: false } };
 
 export default function Page() {
   const db = getDB();

@@ -3,7 +3,7 @@ import { AHead, DbNotice } from '../AdminUi';
 import { SceneEditorClient } from './SceneEditorClient';
 import { dbReady } from '@/lib/db';
 
-export const metadata: Metadata = { title: 'Scene Editor | ACTTOLOG Admin', robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: 'Scene Editor | Admin', robots: { index: false, follow: false } };
 
 export default function Page() {
   return (

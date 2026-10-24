@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-export const metadata: Metadata = { title: 'Users | ACTTOLOG Admin', robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: 'Users | Admin', robots: { index: false, follow: false } };
 
 import { AHead } from '../AdminUi';
 import { UsersClient } from './UsersClient';
