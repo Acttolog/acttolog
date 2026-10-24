@@ -12,11 +12,20 @@ import type { SessionUser } from '@/lib/auth/session';
 
 type Tab = 'profile' | 'saved' | 'recent' | 'academy' | 'games' | 'darkroom' | 'ai' | 'notifications' | 'settings';
 
+/** Static mirrors can never complete OAuth, so the dashboard shows the device-local store instead of a dead sign-in wall. */
+const STATIC_HOST = process.env.NEXT_PUBLIC_STATIC === '1';
+
 /** My Acttolog — simple private dashboard, no profile forms (spec §48–51). */
 export function MyDashboard({ serverUser, initialTab }: { serverUser: SessionUser | null; initialTab?: Tab }) {
   const { user, loading, signOut } = useSession();
   const { t, locale } = useI18n();
-  const me = user || serverUser;
+  const local: SessionUser = {
+    uid: 'guest',
+    name: locale === 'ne' ? 'स्थानीय अतिथि' : 'Local guest',
+    email: locale === 'ne' ? 'यही यन्त्रमा सुरक्षित' : 'Stored on this device',
+    role: 'Member',
+  };
+  const me = user || serverUser || (STATIC_HOST ? local : null);
 
   if (loading && !me) {
     return (
@@ -48,10 +57,10 @@ export function MyDashboard({ serverUser, initialTab }: { serverUser: SessionUse
     );
   }
 
-  return <DashboardTabs me={me} onSignOut={signOut} initialTab={initialTab} />;
+  return <DashboardTabs me={me} onSignOut={signOut} local={me.uid === 'guest'} initialTab={initialTab} />;
 }
 
-function DashboardTabs({ me, onSignOut, initialTab }: { me: SessionUser; onSignOut: () => void; initialTab?: Tab }) {
+function DashboardTabs({ me, onSignOut, initialTab, local }: { me: SessionUser; onSignOut: () => void; initialTab?: Tab; local?: boolean }) {
   const { t, locale } = useI18n();
   const toast = useToast();
   const { items: saved } = useSaved();
@@ -111,7 +120,7 @@ function DashboardTabs({ me, onSignOut, initialTab }: { me: SessionUser; onSignO
             </div>
             <div className="flex gap-2 mt-2.5">
               <span className="badge b-info">{me.role}</span>
-              <span className="badge b-mut">Google</span>
+              <span className="badge b-mut">{local ? (locale === 'ne' ? 'यो यन्त्र' : 'THIS DEVICE') : 'Google'}</span>
               <span className="badge b-mut">{locale === 'ne' ? 'खाता निजी' : 'PROFILE PRIVATE'}</span>
             </div>
           </div>
@@ -119,7 +128,7 @@ function DashboardTabs({ me, onSignOut, initialTab }: { me: SessionUser; onSignO
             {(me.role === 'Owner' || me.role === 'Admin') && (
               <Link className="btn btn-g btn-sm" href="/admin">{t('admin')}</Link>
             )}
-            <button className="btn btn-g btn-sm" onClick={onSignOut}>{t('signout')}</button>
+            {!local && <button className="btn btn-g btn-sm" onClick={onSignOut}>{t('signout')}</button>}
           </div>
         </div>
 
@@ -145,12 +154,16 @@ function DashboardTabs({ me, onSignOut, initialTab }: { me: SessionUser; onSignO
                   <div className="flex justify-between gap-4"><span className="dim">Name</span><span>{me.name}</span></div>
                   <div className="flex justify-between gap-4"><span className="dim">Email</span><span className="mono text-[12.6px]">{me.email}</span></div>
                   <div className="flex justify-between gap-4"><span className="dim">Role</span><span>{me.role}</span></div>
-                  <div className="flex justify-between gap-4"><span className="dim">Provider</span><span>Google</span></div>
+                  <div className="flex justify-between gap-4"><span className="dim">Provider</span><span>{local ? 'Local' : 'Google'}</span></div>
                 </div>
                 <p className="mut text-[12.8px] leading-relaxed mt-6">
-                  {locale === 'ne'
-                    ? 'Acttolog ले Google पहिचानबाट नाम, इमेल र फोटो मात्र राख्छ। कुनै प्रोफाइल फारम भर्नु पर्दैन। तपाईंको प्रोफाइल सधैं निजी हुन्छ — कुनै सार्वजनिक निर्देशिका छैन।'
-                    : 'Acttolog keeps only name, email and photo from your Google identity. There is no profile form to complete, and your profile is private by default — no public directory, no activity feed.'}
+                  {local
+                    ? (locale === 'ne'
+                      ? 'यो स्थिर पूर्वावलोकनमा खाता सर्भर छैन। सुरक्षित सामग्री र भर्खरै हेरेका पृष्ठहरू यही ब्राउजरमा रहन्छन् — कुनै सर्भरमा पठाइँदैन।'
+                      : 'This static preview has no account server. Saved items and recently viewed pages live in this browser only — nothing is sent anywhere.')
+                    : (locale === 'ne'
+                      ? 'Acttolog ले Google पहिचानबाट नाम, इमेल र फोटो मात्र राख्छ। कुनै प्रोफाइल फारम भर्नु पर्दैन। तपाईंको प्रोफाइल सधैं निजी हुन्छ — कुनै सार्वजनिक निर्देशिका छैन।'
+                      : 'Acttolog keeps only name, email and photo from your Google identity. There is no profile form to complete, and your profile is private by default — no public directory, no activity feed.')}
                 </p>
               </div>
             )}
@@ -249,15 +262,21 @@ function DashboardTabs({ me, onSignOut, initialTab }: { me: SessionUser; onSignO
                 <div className="panel p-6 sm:p-8" style={{ borderColor: 'color-mix(in srgb,var(--err) 26%,transparent)' }}>
                   <div className="eyebrow mb-4" style={{ color: 'var(--err)' }}>ACCOUNT</div>
                   <p className="mut text-[13px] leading-relaxed mb-5">
-                    {locale === 'ne'
-                      ? 'खाता मेटाउने अनुरोध निजी प्रशासन वर्कफ्लोमा जान्छ। तत्काल आत्म-मेटाउने सुविधा छैन — सुरक्षाका लागि।'
-                      : 'Account deletion goes through a private admin workflow — there is no instant self-delete, for your safety. Requests are reviewed before processing.'}
+                    {local
+                      ? (locale === 'ne'
+                        ? 'यहाँ कुनै खाता छैन। यो ब्राउजरको सुरक्षित सामग्री मेट्न ब्राउजर डाटा खाली गर्नुहोस्।'
+                        : 'There is no account here. To clear what this browser holds, erase this site’s browsing data.')
+                      : (locale === 'ne'
+                        ? 'खाता मेटाउने अनुरोध निजी प्रशासन वर्कफ्लोमा जान्छ। तत्काल आत्म-मेटाउने सुविधा छैन — सुरक्षाका लागि।'
+                        : 'Account deletion goes through a private admin workflow — there is no instant self-delete, for your safety. Requests are reviewed before processing.')}
                   </p>
-                  <button className="btn btn-g btn-sm" style={{ color: 'var(--err)', borderColor: 'color-mix(in srgb,var(--err) 40%,transparent)' }}
-                    onClick={requestDeletion}>
-                    <Icon name="trash" size={14} />
-                    {locale === 'ne' ? 'खाता मेटाउने अनुरोध' : 'Request Account Deletion'}
-                  </button>
+                  {!local && (
+                    <button className="btn btn-g btn-sm" style={{ color: 'var(--err)', borderColor: 'color-mix(in srgb,var(--err) 40%,transparent)' }}
+                      onClick={requestDeletion}>
+                      <Icon name="trash" size={14} />
+                      {locale === 'ne' ? 'खाता मेटाउने अनुरोध' : 'Request Account Deletion'}
+                    </button>
+                  )}
                 </div>
               </div>
             )}

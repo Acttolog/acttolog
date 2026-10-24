@@ -8,6 +8,7 @@ import { PrefsProvider } from '@/lib/prefs';
 import { SessionProvider } from '@/lib/session';
 import { ConsentProvider, useConsent } from '@/lib/consent';
 import { ToastProvider } from '@/lib/toast';
+import { useSession } from '@/lib/session';
 import { QualityProvider } from '@/components/three/QualityProvider';
 import { loadGA, track } from '@/lib/analytics';
 
@@ -24,14 +25,28 @@ function ConsentBridge({ gaId }: { gaId?: string }) {
 /** page_view + division_view on every route change (spec §64). */
 function PageViewTracker() {
   const pathname = usePathname();
+  const { user } = useSession();
   useEffect(() => {
     track('page_view', { path: pathname });
     const div = (pathname.split('/')[1] || 'home');
     if (['research', 'entertainment', 'academy', 'games', 'darkroom'].includes(div)) {
       track('division_view', { division: div });
     }
+    // Every route change also feeds My Acttolog → Recently Viewed, which had a
+    // reader but no writer. Guest history shares the same `guest` key as saved items.
+    const privateRoute = pathname === '/' || /^\/(my|admin|search|contact)(\/|$)/.test(pathname);
+    if (!privateRoute) {
+      try {
+        const key = `act_recent_${user?.uid || 'guest'}`;
+        const prev = JSON.parse(localStorage.getItem(key) || '[]');
+        const title = document.title.replace(/\s*\|\s*ACTTOLOG\s*$/, '').trim() || pathname;
+        const rest = Array.isArray(prev) ? prev.filter((x) => x && x.id !== pathname) : [];
+        const next = [{ kind: 'page', id: pathname, title, at: new Date().toISOString() }, ...rest].slice(0, 30);
+        localStorage.setItem(key, JSON.stringify(next));
+      } catch { /* private mode */ }
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname]);
+  }, [pathname, user?.uid]);
   return null;
 }
 
