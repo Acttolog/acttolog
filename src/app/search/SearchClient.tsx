@@ -1,10 +1,11 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Icon } from '@/components/ui/Icon';
 import { useI18n } from '@/lib/i18n';
+import { useSaved } from '@/lib/saved';
 import { track } from '@/lib/analytics';
 import { searchAnywhere } from '@/lib/search-client';
 
@@ -13,11 +14,9 @@ interface Result { k: string; title: string; sub: string; route: string; ext?: b
 /** Full search page — global index across every content kind (spec §55). */
 export function SearchClient() {
   const { t, locale } = useI18n();
+  const { toggleSave, isSaved } = useSaved();
   const router = useRouter();
   const [q, setQ] = useState('');
-  useEffect(() => {
-    try { setQ(new URLSearchParams(window.location.search).get('q') || ''); } catch { /* ignore */ }
-  }, []);
   const [results, setResults] = useState<Result[]>([]);
   const [places, setPlaces] = useState<Result[]>([]);
   const [loaded, setLoaded] = useState(false);
@@ -47,15 +46,26 @@ export function SearchClient() {
 
   const run = useCallback(async (query: string) => {
     try {
-      const res = await fetch(`/api/search?q=${encodeURIComponent(query)}&locale=${locale}`);
-      const data = await res.json();
-      setResults(data.results || []);
+      const { results: found } = await searchAnywhere(query, locale);
+      setResults(found);
       setLoaded(true);
       if (query.trim()) track('search', { q: query.trim(), where: 'page' });
     } catch { setLoaded(true); }
   }, [locale]);
 
-  useEffect(() => { run(q); /* initial */ }, [locale]); // eslint-disable-line react-hooks/exhaustive-deps
+  /* Deep links (/search?q=…) set the field AND run it — a filled box with no
+     results is what a saved search used to land on. */
+  const initialised = useRef(false);
+  useEffect(() => {
+    let start = q;
+    if (!initialised.current) {
+      initialised.current = true;
+      try { start = new URLSearchParams(window.location.search).get('q') || ''; } catch { /* ignore */ }
+      if (start) setQ(start);
+    }
+    run(start);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [locale]);
 
   const onChange = (v: string) => {
     setQ(v);
@@ -65,6 +75,13 @@ export function SearchClient() {
       if (v) params.set('q', v); else params.delete('q');
       window.history.replaceState(null, '', `/search${params.toString() ? `?${params}` : ''}`);
     } catch { /* ignore */ }
+  };
+
+  const savedSearch = q.trim().length > 1 && isSaved('search', q.trim().toLowerCase());
+  const saveSearch = () => {
+    const term = q.trim();
+    if (term.length < 2) return;
+    toggleSave('search', term.toLowerCase(), term, `/search?q=${encodeURIComponent(term)}`);
   };
 
   const groups: Record<string, Result[]> = {};
@@ -84,6 +101,18 @@ export function SearchClient() {
           <input className="inp !border-0 !bg-transparent !px-0 !py-1 !text-[16px] !shadow-none" autoFocus
             value={q} onChange={(e) => onChange(e.target.value)}
             placeholder={t('search.ph')} aria-label={t('search')} />
+          {q.trim().length > 1 && (
+            <button className="btn btn-g btn-sm shrink-0" aria-pressed={savedSearch} onClick={saveSearch}
+              aria-label={locale === 'ne' ? 'यो खोज सुरक्षित गर्नुहोस्' : 'Save this search'}
+              title={locale === 'ne' ? 'यो खोज सुरक्षित गर्नुहोस्' : 'Save this search'}>
+              <Icon name="heart" size={13} />
+              <span className="hidden sm:inline">
+                {savedSearch
+                  ? (locale === 'ne' ? 'सुरक्षित' : 'Saved')
+                  : (locale === 'ne' ? 'खोज सुरक्षित' : 'Save search')}
+              </span>
+            </button>
+          )}
         </div>
       </div>
 

@@ -92,7 +92,13 @@ const check = (name, ok, extra = '') => { ok ? pass++ : fail++; console.log(`${o
     for (let i2 = 0; i2 < 24 && !page.url().includes('/explore'); i2++) await sleep(500);
     check('"Go to Earth" command → /explore?mode=earth (§26)', page.url().includes('/explore?mode=earth'), page.url());
     // palette on /explore: places deep-link re-applies live (§18 + §22)
-    await page.keyboard.down('Control'); await page.keyboard.press('KeyK'); await page.keyboard.up('Control');
+    // SPA nav to /explore hydrates its 3D bundle late; a Ctrl+K sent before
+    // hydration is lost. Retry until the shortcut is actually live.
+    for (let i2 = 0; i2 < 20; i2++) {
+      await page.keyboard.down('Control'); await page.keyboard.press('KeyK'); await page.keyboard.up('Control');
+      if (await page.$('[role="dialog"][aria-modal="true"] input')) break;
+      await sleep(1000);
+    }
     await page.waitForSelector('[role="dialog"][aria-modal="true"] input', { timeout: 40000 });
     await page.evaluate(() => { const d = [...document.querySelectorAll('[role="dialog"][aria-modal="true"]')].pop(); d.querySelector('input').focus(); });
     await page.keyboard.type('Kathmandu');

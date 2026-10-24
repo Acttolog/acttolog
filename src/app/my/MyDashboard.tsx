@@ -173,16 +173,28 @@ function DashboardTabs({ me, onSignOut, initialTab, local }: { me: SessionUser; 
                 <div className="eyebrow mb-5">SAVED ITEMS</div>
                 {saved.length ? (
                   <div className="space-y-2">
-                    {saved.map((s) => (
-                      <div key={`${s.kind}_${s.id}`} className="flex items-center justify-between gap-3 rounded-xl border p-3.5"
-                        style={{ borderColor: 'var(--line)', background: 'var(--panel2)' }}>
-                        <div className="min-w-0">
-                          <div className="text-[13.6px] font-medium truncate">{s.title}</div>
-                          <div className="dim mono text-[9.8px] tracking-[.14em] mt-0.5">{s.kind.toUpperCase()}</div>
-                        </div>
-                        <Icon name="heart" size={15} />
-                      </div>
-                    ))}
+                    {saved.map((s) => {
+                      const rowClass = 'flex items-center justify-between gap-3 rounded-xl border p-3.5';
+                      const rowStyle = { borderColor: 'var(--line)', background: 'var(--panel2)' };
+                      const body = (
+                        <>
+                          <div className="min-w-0">
+                            <div className="text-[13.6px] font-medium truncate">{s.title}</div>
+                            <div className="dim mono text-[9.8px] tracking-[.14em] mt-0.5">{s.kind.toUpperCase()}</div>
+                          </div>
+                          <Icon name={s.kind === 'search' ? 'search' : 'heart'} size={15} />
+                        </>
+                      );
+                      if (!s.route) {
+                        return <div key={`${s.kind}_${s.id}`} className={rowClass} style={rowStyle}>{body}</div>;
+                      }
+                      return s.route.startsWith('/') ? (
+                        <Link key={`${s.kind}_${s.id}`} href={s.route} className={rowClass} style={rowStyle}>{body}</Link>
+                      ) : (
+                        <a key={`${s.kind}_${s.id}`} href={s.route} target="_blank" rel="noopener noreferrer"
+                          className={rowClass} style={rowStyle}>{body}</a>
+                      );
+                    })}
                   </div>
                 ) : (
                   <EmptyNote text={locale === 'ne' ? 'अझै केही सुरक्षित छैन।' : 'Nothing saved yet.'} />

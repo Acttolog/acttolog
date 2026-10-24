@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Icon } from '@/components/ui/Icon';
 import { useI18n } from '@/lib/i18n';
+import { useSaved } from '@/lib/saved';
 import { track } from '@/lib/analytics';
 import { searchAnywhere } from '@/lib/search-client';
 
@@ -26,9 +27,12 @@ export function SearchOverlay() {
   const [places, setPlaces] = useState<Result[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const { t, locale } = useI18n();
+  const { toggleSave, isSaved } = useSaved();
   const router = useRouter();
   const searched = useRef('');
   const placeReq = useRef(0);
+  const trimmed = q.trim();
+  const savedSearch = trimmed.length > 1 && isSaved('search', trimmed.toLowerCase());
 
   useEffect(() => {
     const on = () => { setOpen(true); };
@@ -125,6 +129,19 @@ export function SearchOverlay() {
             value={q} onChange={(e) => search(e.target.value)}
             placeholder={locale === 'ne' ? 'संसार खोज्नुहोस् — ठाउँ, सामग्री, आदेशहरू…' : 'Search the world — places, content, commands…'}
             aria-label={t('search')} autoComplete="off" />
+          {trimmed.length > 1 && (
+            <button className="btn btn-g btn-sm shrink-0" aria-pressed={savedSearch}
+              aria-label={locale === 'ne' ? 'यो खोज सुरक्षित गर्नुहोस्' : 'Save this search'}
+              title={locale === 'ne' ? 'यो खोज सुरक्षित गर्नुहोस्' : 'Save this search'}
+              onClick={() => toggleSave('search', trimmed.toLowerCase(), trimmed, `/search?q=${encodeURIComponent(trimmed)}`)}>
+              <Icon name="heart" size={13} />
+              <span className="hidden sm:inline">
+                {savedSearch
+                  ? (locale === 'ne' ? 'सुरक्षित' : 'Saved')
+                  : (locale === 'ne' ? 'खोज सुरक्षित' : 'Save search')}
+              </span>
+            </button>
+          )}
           <span className="kbd hidden sm:inline">ESC</span>
         </div>
         <div className="p-4 sm:p-5 max-h-[60vh] overflow-auto">

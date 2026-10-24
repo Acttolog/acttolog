@@ -5,7 +5,7 @@ import { useSession } from '@/lib/session';
 import { useToast } from '@/lib/toast';
 import { track } from '@/lib/analytics';
 
-export interface SavedEntry { kind: string; id: string; title: string; at: string }
+export interface SavedEntry { kind: string; id: string; title: string; at: string; route?: string }
 
 /** Saved items (spec §48) — private per user; guests get browser-local storage. */
 export function useSaved() {
@@ -32,7 +32,7 @@ export function useSaved() {
   const toggleSave = useCallback((kind: string, id: string, title: string, route?: string) => {
     setItems((prev) => {
       const i = prev.findIndex((x) => x.kind === kind && x.id === id);
-      const next = i >= 0 ? prev.filter((_, j) => j !== i) : [{ kind, id, title, at: new Date().toISOString() }, ...prev];
+      const next = i >= 0 ? prev.filter((_, j) => j !== i) : [{ kind, id, title, at: new Date().toISOString(), route }, ...prev];
       try { localStorage.setItem(key, JSON.stringify(next)); } catch { /* ignore */ }
       if (i < 0) {
         track('resource_save', { kind, id });
