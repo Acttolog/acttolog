@@ -177,8 +177,8 @@ function RowIcon({ k }: { k: string }) {
 function RowBody({ title, sub, mem, t }: { title: string; sub: string; mem?: boolean; t: (k: string) => string }) {
   return (
     <div className="min-w-0">
-      <div className="text-[14.4px] font-medium truncate flex items-center gap-2">
-        {title}
+      <div className="flex items-center gap-2 min-w-0">
+        <span className="text-[14.4px] font-medium truncate">{title}</span>
         {mem && <span className="badge b-vi flex-none"><Icon name="lock" size={10} />{t('members')}</span>}
       </div>
       <div className="dim text-[12px] mt-0.5 truncate">{sub}</div>

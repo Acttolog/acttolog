@@ -389,8 +389,8 @@ function RowIcon({ color, icon }: { color: string; icon: string }) {
 function RowBody({ title, kind, date, mem }: { title: string; kind: string; date: string; mem: boolean }) {
   return (
     <div className="min-w-0">
-      <div className="text-[14.4px] font-medium truncate flex items-center gap-2">
-        {title}
+      <div className="flex items-center gap-2 min-w-0">
+        <span className="text-[14.4px] font-medium truncate">{title}</span>
         {mem && <span className="badge b-vi flex-none"><Icon name="lock" size={10} />Members</span>}
       </div>
       <div className="dim mono text-[10px] tracking-[.16em] mt-1">{kind.toUpperCase()} · {fdate(date)}</div>

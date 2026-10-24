@@ -9,7 +9,9 @@ const path = require('path');
 const http = require('http');
 
 const ROOT = process.cwd();
-const OUT = path.join(ROOT, '.pages-site');
+// PAGES_OUT lets a run avoid a locked .pages-site (e.g. a stray local server);
+// the default stays the path the deploy scripts expect.
+const OUT = process.env.PAGES_OUT ? path.resolve(process.env.PAGES_OUT) : path.join(ROOT, '.pages-site');
 const APP = path.join(ROOT, '.next/server/app');
 const PORT = 3100;
 
