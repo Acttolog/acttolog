@@ -3317,80 +3317,80 @@
     "descNe": "Acttolog एउटा डिजिटल इकोसिस्टम हो जसले प्रविधि, अनुसन्धान, शिक्षा, मनोरञ्जन र उपयोगी स्रोतहरूलाई जोड्छ।"
    },
    "/research": {
-    "title": "Thesyn Research | ACTTOLOG",
+    "title": "Thesyn Research",
     "desc": "Research support from topic selection to viva preparation. SPSS, STATA, EViews and Excel analysis support for MBS, MBA, MPA and MA programmes.",
     "canon": "https://www.acttolog.com/research",
-    "titleNe": "थेसिन रिसर्च | ACTTOLOG",
+    "titleNe": "थेसिन रिसर्च",
     "descNe": "विषय छनोटदेखि भाइभा तयारीसम्म अनुसन्धान सहयोग।"
    },
    "/entertainment": {
-    "title": "Entertainment | ACTTOLOG",
+    "title": "Entertainment",
     "desc": "AI stories, comedy, drama, horror, short films, music and cinematic work from the Acttolog world.",
     "canon": "https://www.acttolog.com/entertainment",
-    "titleNe": "मनोरञ्जन | ACTTOLOG",
+    "titleNe": "मनोरञ्जन",
     "descNe": "Acttolog संसारबाट एआई कथा, कमेडी, ड्रामा र संगीत।"
    },
    "/academy": {
-    "title": "Academy | ACTTOLOG",
+    "title": "Academy",
     "desc": "Structured courses, modules and lessons on research methods, data analysis, economics and immersive web.",
     "canon": "https://www.acttolog.com/academy",
-    "titleNe": "एकेडेमी | ACTTOLOG",
+    "titleNe": "एकेडेमी",
     "descNe": "अनुसन्धान विधि, डाटा विश्लेषण र इमर्सिभ वेबका पाठ्यक्रम।"
    },
    "/games": {
-    "title": "Games | ACTTOLOG",
+    "title": "Games",
     "desc": "Browser games, mini games, educational play and experimental interactive experiences.",
     "canon": "https://www.acttolog.com/games",
-    "titleNe": "खेलहरू | ACTTOLOG",
+    "titleNe": "खेलहरू",
     "descNe": "ब्राउजर खेल, मिनी खेल र शैक्षिक खेल।"
    },
    "/darkroom": {
-    "title": "Darkroom — Digital Discovery & Resources | ACTTOLOG",
+    "title": "Darkroom — Digital Discovery & Resources",
     "desc": "A verified discovery hub for official websites, software, tools, research databases and hard-to-find resources.",
     "canon": "https://www.acttolog.com/darkroom",
-    "titleNe": "डार्करूम — डिजिटल खोज र स्रोत | ACTTOLOG",
+    "titleNe": "डार्करूम — डिजिटल खोज र स्रोत",
     "descNe": "आधिकारिक वेबसाइट, सफ्टवेयर, औजार र डाटाबेसको प्रमाणित खोज केन्द्र।"
    },
    "/nepal": {
-    "title": "Nepal Tourism — Places, Cultures, Treks & Travel Guidelines | ACTTOLOG",
+    "title": "Nepal Tourism — Places, Cultures, Treks & Travel Guidelines",
     "desc": "An interactive guide to Nepal: Himalayan regions and places to visit, festivals, cultures, cuisine, wildlife, trekking permits, seasons and travel etiquette.",
     "canon": "https://www.acttolog.com/nepal",
-    "titleNe": "नेपाल पर्यटन — स्थान, संस्कृति, ट्रेक र मार्गदर्शन | ACTTOLOG",
+    "titleNe": "नेपाल पर्यटन — स्थान, संस्कृति, ट्रेक र मार्गदर्शन",
     "descNe": "नेपालको अन्तरक्रियात्मक मार्गदर्शन: हिमाली क्षेत्र, घुम्ने ठाउँ, चाडपर्व, संस्कृति, खाना, वन्यजन्तु, ट्रेक अनुमति र यात्रा आचरण।"
    },
    "/blog": {
-    "title": "Blog | ACTTOLOG",
+    "title": "Blog",
     "desc": "Research practice, technology craft, education design and creative systems from the Acttolog world.",
     "canon": "https://www.acttolog.com/blog",
-    "titleNe": "ब्लग | ACTTOLOG",
+    "titleNe": "ब्लग",
     "descNe": "Acttolog संसारबाट अनुसन्धान, प्रविधि, शिक्षा र सिर्जनशीलता।"
    },
    "/offers": {
-    "title": "Offers | ACTTOLOG",
+    "title": "Offers",
     "desc": "Acttolog offers across research, academy, entertainment, games and Darkroom. NPR and USD.",
     "canon": "https://www.acttolog.com/offers",
-    "titleNe": "अफरहरू | ACTTOLOG",
+    "titleNe": "अफरहरू",
     "descNe": "अनुसन्धान, एकेडेमी, मनोरञ्जन र खेलका Acttolog अफर।"
    },
    "/about": {
-    "title": "About | ACTTOLOG",
+    "title": "About",
     "desc": "Acttolog purpose, vision, mission, values, divisions and responsible technology position.",
     "canon": "https://www.acttolog.com/about",
-    "titleNe": "हाम्रो बारेमा | ACTTOLOG",
+    "titleNe": "हाम्रो बारेमा",
     "descNe": "Acttolog को उद्देश्य, दृष्टिकोण, लक्ष्य, मूल्य र विभागहरू।"
    },
    "/contact": {
-    "title": "Contact | ACTTOLOG",
+    "title": "Contact",
     "desc": "Contact Acttolog. Public contact form — no login required.",
     "canon": "https://www.acttolog.com/contact",
-    "titleNe": "सम्पर्क | ACTTOLOG",
+    "titleNe": "सम्पर्क",
     "descNe": "Acttolog सम्पर्क। सार्वजनिक फारम — लगइन आवश्यक छैन।"
    },
    "/ai": {
-    "title": "Acttolog AI | ACTTOLOG",
+    "title": "Acttolog AI",
     "desc": "Acttolog-first assistant for discovering research, resources, courses, media and offers.",
     "canon": "https://www.acttolog.com/ai",
-    "titleNe": "Acttolog एआई | ACTTOLOG",
+    "titleNe": "Acttolog एआई",
     "descNe": "अनुसन्धान, स्रोत, पाठ्यक्रम र अफर खोज्ने Acttolog-पहिलो सहायक।"
    }
   },
