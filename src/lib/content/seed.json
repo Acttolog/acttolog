@@ -2703,7 +2703,7 @@
    "access": "public",
    "audience": "global",
    "featured": true,
-   "seoTitle": "Designing a Research Question That Survives Review | Acttolog",
+   "seoTitle": "Designing a Research Question That Survives Review",
    "seoDescription": "A research question is not a topic. It is a claim about what is unknown, why it matters, and how it can be answered with the data you can actually reach.",
    "socialImage": ""
   },
@@ -2735,7 +2735,7 @@
    "access": "public",
    "audience": "global",
    "featured": false,
-   "seoTitle": "A Practical Workflow for Reproducible Data Analysis | Acttolog",
+   "seoTitle": "A Practical Workflow for Reproducible Data Analysis",
    "seoDescription": "Reproducibility is a time-saving strategy: the person you are protecting is future you, three weeks from now, under deadline.",
    "socialImage": ""
   },
@@ -2767,7 +2767,7 @@
    "access": "members",
    "audience": "global",
    "featured": false,
-   "seoTitle": "How to Structure a Thesis Chapter Reviewers Trust | Acttolog",
+   "seoTitle": "How to Structure a Thesis Chapter Reviewers Trust",
    "seoDescription": "Reviewers reward predictability: a chapter that says where it is, what it does and what it concluded.",
    "socialImage": ""
   },
@@ -2799,7 +2799,7 @@
    "access": "public",
    "audience": "global",
    "featured": false,
-   "seoTitle": "Storytelling Systems: Where Creativity Meets Data | Acttolog",
+   "seoTitle": "Storytelling Systems: Where Creativity Meets Data",
    "seoDescription": "The strongest media work treats data as a constraint generator and creativity as the search space.",
    "socialImage": ""
   },
@@ -2832,7 +2832,7 @@
    "access": "public",
    "audience": "global",
    "featured": true,
-   "seoTitle": "Building a Digital World: Notes on Immersive Web Design | Acttolog",
+   "seoTitle": "Building a Digital World: Notes on Immersive Web Design",
    "seoDescription": "A 3D hero is not decoration. It is a navigation promise about how the site expects to be explored.",
    "socialImage": ""
   },
@@ -2864,7 +2864,7 @@
    "access": "public",
    "audience": "global",
    "featured": false,
-   "seoTitle": "Why Darkroom Publishes No Popularity Numbers | Acttolog",
+   "seoTitle": "Why Darkroom Publishes No Popularity Numbers",
    "seoDescription": "A resource list ranked by clicks rewards whoever marketed hardest, not whoever is most useful.",
    "socialImage": ""
   },
@@ -2896,7 +2896,7 @@
    "access": "members",
    "audience": "global",
    "featured": false,
-   "seoTitle": "Members: The Pre-Submission Research Checklist | Acttolog",
+   "seoTitle": "Members: The Pre-Submission Research Checklist",
    "seoDescription": "A members-only checklist covering structure, citations, similarity review, figures, tables and the final consistency pass.",
    "socialImage": ""
   }
