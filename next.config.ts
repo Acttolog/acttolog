@@ -47,6 +47,19 @@ const nextConfig: NextConfig = {
     // Small (1 GB) build containers: cap static-generation workers.
     cpus: Number(process.env.ACTTOLOG_BUILD_CPUS || 1),
   },
+  // Debug-only: ACTTOLOG_NO_MINIFY=1 keeps React's full hydration-mismatch
+  // text instead of a minified error code. Never set in CI.
+  ...(process.env.ACTTOLOG_NO_MINIFY
+    ? {
+        webpack: (config: unknown, opts: { dev?: boolean }) => {
+          if (!opts.dev) {
+            (config as { optimization?: { minimize?: boolean } }).optimization ??= {};
+            (config as { optimization: { minimize: boolean } }).optimization.minimize = false;
+          }
+          return config;
+        },
+      }
+    : {}),
 };
 
 export default nextConfig;

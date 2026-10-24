@@ -61,8 +61,10 @@ export function QualityProvider({ children }: { children: ReactNode }) {
 
 export function useQuality(): QualityCtx {
   const c = useContext(Ctx);
-  // Outside a provider (e.g. a component reused in a story or the static
-  // poster path) fall back to live detection rather than throwing.
-  if (!c) return { setting: 'auto', tier: detectTier(), setSetting: () => {} };
+  // The fallback must be a constant. Calling detectTier() here reads
+  // navigator/viewport during render, so the server would emit MEDIUM while
+  // the first client render emitted HIGH — React #418 hydration failure, which
+  // took down the first-visit overlay on the static Pages build.
+  if (!c) return { setting: 'auto', tier: 'medium', setSetting: () => {} };
   return c;
 }
