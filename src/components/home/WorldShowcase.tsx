@@ -4,7 +4,7 @@ import { Reveal } from '@/components/ui/Reveal';
 import { Icon } from '@/components/ui/Icon';
 import { useI18n } from '@/lib/i18n';
 import { usePrefs, THEMES } from '@/lib/prefs';
-import { resolveImage } from '@/lib/utils';
+import { MediaCover } from '@/components/ui/MediaCover';
 import { WORLDS_360 } from '@/lib/world/config';
 import Link from 'next/link';
 
@@ -17,7 +17,6 @@ import Link from 'next/link';
 export function WorldShowcase({ shots }: { shots: string[] }) {
   const { locale } = useI18n();
   const { theme, setTheme } = usePrefs();
-  const img = (id: string, art: string) => (shots.includes(id) ? `/media/${id}.jpg` : resolveImage(`art:${art}`));
 
   const feats: [string, string, string][] = [
     [locale === 'ne' ? 'ड्र्याग → दुई अक्षमा घुमाउनुहोस्' : 'Drag — spin on two axes', 'Horizontal spin with a slow vertical breathing wobble; inertia on release.', 'refresh'],
@@ -62,8 +61,7 @@ export function WorldShowcase({ shots }: { shots: string[] }) {
           {gallery.map(([id, art, label], i) => (
             <Reveal key={id} delay={i * 60} className={i === 0 ? 'lg:row-span-2' : ''}>
               <div className="card group relative overflow-hidden h-full" style={{ minHeight: i === 0 ? 420 : 200 }}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={img(id, art)} alt={label}
+                <MediaCover id={id} art={art} shots={shots} alt={label}
                   className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.8s] group-hover:scale-105" />
                 <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg,transparent 45%,color-mix(in srgb,var(--bg) 88%,transparent))' }} />
                 <div className="absolute bottom-0 p-5 w-full">

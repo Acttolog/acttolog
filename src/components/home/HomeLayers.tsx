@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Icon } from '@/components/ui/Icon';
 import { Reveal } from '@/components/ui/Reveal';
 import { SectionHead } from '@/components/ui/Heads';
+import { MediaCover } from '@/components/ui/MediaCover';
 import { AccessBadge } from '@/components/ui/Badges';
 import { DrCard } from '@/components/darkroom/DrCard';
 import { GoogleButton } from '@/components/ui/GoogleButton';
@@ -198,9 +199,6 @@ function LayerEcosystem({ sec, dvs }: { sec: HomeSection; dvs: Division[] }) {
 /* ── 03 · divisions ─────────────────────────────────────────────── */
 
 function LayerDivisions({ sec, dvs, counts, shots }: { sec: HomeSection; dvs: Division[]; counts: HomeData['counts']; shots: string[] }) {
-  /** Real media shot when present, procedural brand art otherwise. */
-  const shot = (id: string, art: string) =>
-    shots.includes(id) ? `/media/${id}.jpg` : resolveImage(`art:${art}`);
   const { L, locale } = useI18n();
   if (sec.visible === false) return null;
   const cnt: Record<string, string> = {
@@ -221,8 +219,7 @@ function LayerDivisions({ sec, dvs, counts, shots }: { sec: HomeSection; dvs: Di
                 onClick={() => track('division_view', { division: d.id })}>
                 <div className="grid sm:grid-cols-[.85fr_1.15fr] h-full">
                   <div className="h-[188px] sm:h-full min-h-[188px] overflow-hidden relative">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={shot(d.id, d.art || 'nebula')} alt=""
+                    <MediaCover id={d.id} art={d.art || 'nebula'} shots={shots}
                       className="w-full h-full object-cover transition-transform duration-[1.6s] group-hover:scale-105" />
                     <div className="absolute inset-0" style={{ background: `linear-gradient(90deg,transparent 40%,color-mix(in srgb,var(--panel2) 88%,transparent))` }} />
                   </div>
@@ -268,7 +265,7 @@ function LayerFeatured({ sec, f }: { sec: HomeSection; f: HomeData['featured'] }
             <Link href={`/blog/${post.slug}`} className="card group block h-full">
               <div className="relative h-[320px] sm:h-[400px] overflow-hidden">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={resolveImage(post.cover, 'editorial')} alt=""
+                <img loading="lazy" decoding="async" src={resolveImage(post.cover, 'editorial')} alt=""
                   className="w-full h-full object-cover transition-transform duration-[1.6s] group-hover:scale-105" />
                 <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg,transparent 30%,color-mix(in srgb,var(--bg) 94%,transparent))' }} />
                 <div className="absolute top-4 left-4 flex gap-2">
@@ -306,7 +303,7 @@ function LayerFeatured({ sec, f }: { sec: HomeSection; f: HomeData['featured'] }
                 <Link href={`/entertainment/${f.ent.slug}`} className="card group block">
                   <div className="relative h-[178px] overflow-hidden">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={resolveImage(f.ent.thumb, 'stage')} alt=""
+                    <img loading="lazy" decoding="async" src={resolveImage(f.ent.thumb, 'stage')} alt=""
                       className="w-full h-full object-cover transition-transform duration-[1.6s] group-hover:scale-105" />
                     <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg,transparent 35%,color-mix(in srgb,var(--bg) 92%,transparent))' }} />
                     <div className="absolute top-3 left-3 flex gap-2">
@@ -424,7 +421,7 @@ function LayerAcademy({ sec, courses }: { sec: HomeSection; courses: AcademyCour
                     onClick={() => track('academy_entry', { course: c.slug })}>
                     <div className="h-[148px] overflow-hidden relative">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={resolveImage(c.image, 'academy')} alt=""
+                      <img loading="lazy" decoding="async" src={resolveImage(c.image, 'academy')} alt=""
                         className="w-full h-full object-cover transition-transform duration-[1.6s] group-hover:scale-105" />
                       <div className="absolute top-3 left-3 flex gap-2">
                         <AccessBadge access={c.access} membersLabel={t('members')} publicLabel={t('public')} />
@@ -588,7 +585,7 @@ function LayerAbout({ sec, s }: { sec: HomeSection; s: SiteSettings }) {
           <div className="panel p-7 sm:p-12 relative overflow-hidden">
             <div className="absolute inset-0 -z-10 opacity-40">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={resolveImage('art:academy')} alt="" className="w-full h-full object-cover" />
+              <img loading="lazy" decoding="async" src={resolveImage('art:academy')} alt="" className="w-full h-full object-cover" />
             </div>
             <div className="grid lg:grid-cols-[1.1fr_.9fr] gap-10 items-center">
               <div>
@@ -632,7 +629,7 @@ function LayerCta({ sec }: { sec: HomeSection }) {
           <div className="panel relative overflow-hidden p-9 sm:p-16 text-center">
             <div className="absolute inset-0 -z-10 opacity-50">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={resolveImage('art:nebula')} alt="" className="w-full h-full object-cover" />
+              <img loading="lazy" decoding="async" src={resolveImage('art:nebula')} alt="" className="w-full h-full object-cover" />
             </div>
             <div className="eyebrow justify-center mb-5">ACTTOLOG WORLD</div>
             <h2 className="h2 max-w-[26ch] mx-auto">{L(sec.title)}</h2>
