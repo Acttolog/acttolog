@@ -2250,13 +2250,14 @@
         "ne": "हिमालमा पहिलो बिहानी"
       },
       "desc": {
-        "en": "Sunrise across the Annapurna range seen from a ridge camp.",
-        "ne": "हिमालय श्रृङ्खलाको उज्यालो।"
+        "en": "Generated cinemagraph — alpenglow crossing a high Himalayan wall.",
+        "ne": "जेनेरेट भिजुअल — हिमाली पर्खालमा बिहानको रातो उज्यालो।"
       },
       "kind": "file",
-      "src": "nepal/video/himalaya-dawn.mp4",
+      "src": "/media/nepal/video/himalaya-dawn.mp4",
       "poster": "nepal/everest-pano",
-      "mood": "cinematic"
+      "mood": "cinematic",
+      "credit": "Generated visual · not documentary footage"
     },
     {
       "id": "khumbu-walk",
@@ -2265,13 +2266,14 @@
         "ne": "भित्र हिँड्दै"
       },
       "desc": {
-        "en": "Sherpa porters, suspension bridges and prayer flags on the trail to Namche.",
-        "ne": "नामेजाने बाटो।"
+        "en": "Generated cinemagraph — a village trail under prayer flags in the high valleys.",
+        "ne": "जेनेरेट भिजुअल — पताका मुनिको गाउँ बाटो।"
       },
       "kind": "file",
-      "src": "nepal/video/khumbu-walk.mp4",
+      "src": "/media/nepal/video/khumbu-walk.mp4",
       "poster": "nepal/namche-prayer-flags",
-      "mood": "movement"
+      "mood": "movement",
+      "credit": "Generated visual · not documentary footage"
     },
     {
       "id": "festival-street",
@@ -2280,13 +2282,14 @@
         "ne": "कुमारीको गल्ली"
       },
       "desc": {
-        "en": "Kathmandu during Indra Jatra — drums, masks and a chariot in a lane.",
-        "ne": "इन्द्रजात्राको काठमाडौँ।"
+        "en": "Generated cinemagraph — a chariot wheel, drums and masks in a crowded dusk courtyard.",
+        "ne": "जेनेरेट भिजुअल — रथ, ढोल र मुखौटा।"
       },
       "kind": "file",
-      "src": "nepal/video/festival-street.mp4",
+      "src": "/media/nepal/video/festival-street.mp4",
       "poster": "nepal/bhaktapur-durbar",
-      "mood": "culture"
+      "mood": "culture",
+      "credit": "Generated visual · not documentary footage"
     },
     {
       "id": "terai-dawn",
@@ -2295,13 +2298,14 @@
         "ne": "बिहानको घाँसे मैदान"
       },
       "desc": {
-        "en": "Rhino, mist and birds rising over the Chitwan phanta.",
-        "ne": "चितवनको बिहान।"
+        "en": "Generated cinemagraph — a rhino moving through mist over lowland grass at first light.",
+        "ne": "जेनेरेट भिजुअल — बिहानको कुहिरोमा गैँडा।"
       },
       "kind": "file",
-      "src": "nepal/video/terai-dawn.mp4",
+      "src": "/media/nepal/video/terai-dawn.mp4",
       "poster": "nepal/canoe-rapti",
-      "mood": "wildlife"
+      "mood": "wildlife",
+      "credit": "Generated visual · not documentary footage"
     }
   ],
   "guidelines_note": {

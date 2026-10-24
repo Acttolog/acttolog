@@ -51,7 +51,11 @@ function Clip({ v, posterMap, tier, reduced, primary }: {
   const ne = locale === 'ne';
   const shot = posterMap[v.id] || null;
   const posterUrl = shot ? `/media/nepal/${shot.base}-${shot.has[shot.has.length - 1]}.jpg` : undefined;
-  const autoplay = seen && !broken && !reduced && (tier === 'high' || tier === 'medium') && primary;
+  // The element is always mounted with preload="none" — that is what actually
+  // saves the bytes. Gating the tag's existence on an observer added a failure
+  // mode without removing a single request, so `seen` now only decides whether
+  // the lead clip is allowed to start itself.
+  const autoplay = primary && seen && !broken && !reduced && (tier === 'high' || tier === 'medium');
 
   useEffect(() => {
     const el = videoRef.current;
@@ -63,7 +67,6 @@ function Clip({ v, posterMap, tier, reduced, primary }: {
   const start = () => {
     const el = videoRef.current;
     if (!el) return;
-    el.preload = 'metadata';
     const p = el.play();
     if (p && typeof p.then === 'function') p.then(() => setPlaying(true)).catch(() => setBroken(true));
     else setPlaying(true);
@@ -71,7 +74,7 @@ function Clip({ v, posterMap, tier, reduced, primary }: {
 
   return (
     <div ref={ref} className={`np-clip${primary ? ' np-clip-hero' : ''}`} data-broken={broken || undefined}>
-      {seen && !broken && (
+      {!broken && (
         <video
           ref={videoRef}
           className="np-clip-video"
@@ -83,12 +86,14 @@ function Clip({ v, posterMap, tier, reduced, primary }: {
           preload="none"
           aria-label={`${L(v.title)} — ${L(v.desc)}`}
           onError={() => setBroken(true)}
+          onPlay={() => setPlaying(true)}
+          onPause={() => setPlaying(false)}
         />
       )}
-      {(!seen || broken || !playing) && !reduced && (
+      {!playing && !reduced && (
         <NepalShot shot={shot} alt="" art="himalaya" variant="wide" className="np-clip-still" />
       )}
-      {(!seen || broken) && reduced && (
+      {!playing && reduced && (
         <NepalShot shot={shot} alt="" art="himalaya" variant="wide" className="np-clip-still np-clip-still-static" />
       )}
 
