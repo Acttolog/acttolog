@@ -63,7 +63,7 @@ export function MyDashboard({ serverUser, initialTab }: { serverUser: SessionUse
 function DashboardTabs({ me, onSignOut, initialTab, local }: { me: SessionUser; onSignOut: () => void; initialTab?: Tab; local?: boolean }) {
   const { t, locale } = useI18n();
   const toast = useToast();
-  const { items: saved } = useSaved();
+  const { items: saved, toggleSave } = useSaved();
   const [tab, setTab] = useState<Tab>(initialTab || 'profile');
   const [recent, setRecent] = useState<{ kind: string; id: string; title: string; at: string }[]>([]);
   const [personalization, setPersonalization] = useState(false);
@@ -174,25 +174,33 @@ function DashboardTabs({ me, onSignOut, initialTab, local }: { me: SessionUser; 
                 {saved.length ? (
                   <div className="space-y-2">
                     {saved.map((s) => {
-                      const rowClass = 'flex items-center justify-between gap-3 rounded-xl border p-3.5';
+                      const rowClass = 'flex items-center gap-2 rounded-xl border p-1.5 pl-3.5';
                       const rowStyle = { borderColor: 'var(--line)', background: 'var(--panel2)' };
                       const body = (
                         <>
-                          <div className="min-w-0">
+                          <div className="min-w-0 flex-1">
                             <div className="text-[13.6px] font-medium truncate">{s.title}</div>
                             <div className="dim mono text-[9.8px] tracking-[.14em] mt-0.5">{s.kind.toUpperCase()}</div>
                           </div>
                           <Icon name={s.kind === 'search' ? 'search' : 'heart'} size={15} />
                         </>
                       );
-                      if (!s.route) {
-                        return <div key={`${s.kind}_${s.id}`} className={rowClass} style={rowStyle}>{body}</div>;
-                      }
-                      return s.route.startsWith('/') ? (
-                        <Link key={`${s.kind}_${s.id}`} href={s.route} className={rowClass} style={rowStyle}>{body}</Link>
-                      ) : (
-                        <a key={`${s.kind}_${s.id}`} href={s.route} target="_blank" rel="noopener noreferrer"
-                          className={rowClass} style={rowStyle}>{body}</a>
+                      const linkClass = 'flex min-w-0 flex-1 items-center justify-between gap-3';
+                      return (
+                        <div key={`${s.kind}_${s.id}`} className={rowClass} style={rowStyle}>
+                          {!s.route ? (
+                            <div className={linkClass}>{body}</div>
+                          ) : s.route.startsWith('/') ? (
+                            <Link href={s.route} className={linkClass}>{body}</Link>
+                          ) : (
+                            <a href={s.route} target="_blank" rel="noopener noreferrer" className={linkClass}>{body}</a>
+                          )}
+                          <button className="btn btn-g btn-sm flex-none" title={locale === 'ne' ? 'सुरक्षितबाट हटाउनुहोस्' : 'Remove from saved'}
+                            aria-label={locale === 'ne' ? 'सुरक्षितबाट हटाउनुहोस्' : 'Remove from saved'}
+                            onClick={() => toggleSave(s.kind, s.id, s.title)}>
+                            <Icon name="trash" size={13} />
+                          </button>
+                        </div>
                       );
                     })}
                   </div>

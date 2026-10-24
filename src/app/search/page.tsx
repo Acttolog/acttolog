@@ -3,7 +3,7 @@ import { SearchClient } from './SearchClient';
 
 export const metadata: Metadata = {
   title: 'Search',
-  description: 'Search across divisions, blog, Darkroom, Academy, Games, Entertainment, Thesyn Research and Offers.',
+  description: 'Search across divisions, blog, Darkroom, Academy, Games, Entertainment, Thesyn Research, Offers and the Nepal tourism guide.',
   alternates: { canonical: '/search' },
   robots: { index: false, follow: true },
 };
