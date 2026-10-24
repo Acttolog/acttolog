@@ -197,7 +197,9 @@ async function main() {
   /* ── 6. mobile ────────────────────────────────────────────────────────── */
   const m = await newPage(390, 844, true);
   const mr = await m.goto(`${BASE}/nepal`, { waitUntil: 'networkidle2', timeout: 90000 });
-  check('mobile HTTP 200', mr.status() === 200, String(mr.status()));
+  // 304 is a legitimate success here: GitHub Pages caches the prerendered HTML,
+  // so a second request for the same URL in one run returns Not Modified.
+  check('mobile HTTP ok', [200, 304].includes(mr.status()), String(mr.status()));
   await sleep(2000);
   const mo = await m.evaluate(() => ({
     docW: document.documentElement.scrollWidth, winW: window.innerWidth,
