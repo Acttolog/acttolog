@@ -84,10 +84,12 @@ export function AdminNav({ user }: { user: { name: string; email: string; role: 
 
   return (
     <>
-      <button className="btn btn-g btn-sm md:hidden mb-4" onClick={() => setOpen((v) => !v)}
-        aria-expanded={open} style={{ position: 'fixed', bottom: 16, left: 16, zIndex: 950 }}>
-        <Icon name="menu" size={15} />Admin menu
-      </button>
+      <div className="md:hidden">
+        <button className="btn btn-g btn-sm" onClick={() => setOpen((v) => !v)}
+          aria-expanded={open} style={{ position: 'fixed', bottom: 16, left: 16, zIndex: 950 }}>
+          <Icon name="menu" size={15} />Admin menu
+        </button>
+      </div>
       <aside className={`aside ${open ? 'open' : ''}`} onClick={() => setOpen(false)}>
         <Link href="/admin/dashboard" className="flex items-center gap-2.5 px-2.5 pt-1 pb-4" style={{ borderBottom: '1px solid var(--line)' }}>
           <Logo variant="icon" width={26} />

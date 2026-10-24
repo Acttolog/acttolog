@@ -141,10 +141,12 @@ export function Header({ nav, divisions: divs, brand }: {
             )}
 
             {!user ? (
-              <button className="btn btn-p btn-sm hidden sm:inline-flex"
-                onClick={() => { track('cta_interaction', { cta: 'header_signin' }); signIn(); }}>
-                {t('signin')}
-              </button>
+              <span className="hidden sm:block">
+                <button className="btn btn-p btn-sm"
+                  onClick={() => { track('cta_interaction', { cta: 'header_signin' }); signIn(); }}>
+                  {t('signin')}
+                </button>
+              </span>
             ) : (
               <div className="relative">
                 <button className="ico !w-auto !px-2.5" aria-haspopup="menu" aria-expanded={meOpen}
