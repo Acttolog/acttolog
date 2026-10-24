@@ -19,8 +19,9 @@ export async function POST(req: Request) {
   const prisma = getPrisma();
   if (!prisma) return NextResponse.json({ error: 'not_configured' }, { status: 503 });
 
+  // uid is the database id once the user row exists; older cookies carry g_<sub>.
   await prisma.user.updateMany({
-    where: { providerId: user.uid.replace(/^g_/, '') },
+    where: { OR: [{ id: user.uid }, { providerId: user.uid.replace(/^g_/, '') }] },
     data: { deletionRequestedAt: new Date() },
   });
   // Also record as a notification for admins via contact-style queue

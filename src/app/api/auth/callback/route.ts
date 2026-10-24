@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { exchangeCode, googleConfigured } from '@/lib/auth/google';
 import { createSessionCookie, resolveRole, sanitizeReturn } from '@/lib/auth/session';
+import { getPrisma } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
@@ -32,7 +33,7 @@ export async function GET(req: Request) {
     const profile = await exchangeCode(code, new URL('/api/auth/callback', url.origin).toString());
     const role = resolveRole(profile.email);
     await createSessionCookie({
-      uid: `g_${profile.sub}`,
+      uid: await persistUser(profile, role),
       name: profile.name,
       email: profile.email,
       picture: profile.picture,
@@ -42,5 +43,33 @@ export async function GET(req: Request) {
   } catch (e) {
     console.error('oauth callback failed', e);
     return fail('token_verification_failed');
+  }
+}
+
+/**
+ * Saved items, admin lists and deletion requests all reference User.id via a
+ * foreign key, so the Google identity has to exist in Postgres before a
+ * session can own rows. Without a database the provider id stays the subject.
+ */
+async function persistUser(profile: { sub: string; email: string; name: string; picture?: string }, role: 'Owner' | 'Admin' | 'Member'): Promise<string> {
+  const prisma = getPrisma();
+  if (!prisma) return `g_${profile.sub}`;
+  try {
+    const dbRole = role === 'Owner' ? 'OWNER' : role === 'Admin' ? 'ADMIN' : 'MEMBER';
+    const user = await prisma.user.upsert({
+      where: { providerId: profile.sub },
+      create: {
+        providerId: profile.sub, email: profile.email, name: profile.name,
+        picture: profile.picture, role: dbRole, lastLoginAt: new Date(),
+      },
+      update: {
+        email: profile.email, name: profile.name, picture: profile.picture,
+        role: dbRole, lastLoginAt: new Date(),
+      },
+    });
+    return user.id;
+  } catch (e) {
+    console.error('google user upsert failed — session falls back to the provider id', e);
+    return `g_${profile.sub}`;
   }
 }

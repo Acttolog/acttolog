@@ -22,7 +22,7 @@ export async function GET() {
   const items = await prisma.savedItem.findMany({
     where: { userId: user.uid }, orderBy: { at: 'desc' }, take: 200,
   });
-  return NextResponse.json({ items: items.map((i) => ({ kind: i.kind, id: i.refId, title: i.title, at: i.at })), stored: true });
+  return NextResponse.json({ items: items.map((i) => ({ kind: i.kind, id: i.refId, title: i.title, at: i.at, route: i.route ?? undefined })), stored: true });
 }
 
 /** POST /api/saved — toggle a saved item (server-side, private by default §49). */
