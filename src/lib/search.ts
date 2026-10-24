@@ -1,10 +1,11 @@
 import { getDB, pub } from '@/lib/content';
 import { L as resolveBi } from '@/lib/content';
+import { nepalGuide, bi as nepalBi, regionName } from '@/lib/content/nepal';
 
 /** Global search index (spec §55) — server-side, published content only. */
 
 export interface SearchEntry {
-  k: 'division' | 'blog' | 'darkroom' | 'games' | 'entertainment' | 'academy' | 'research' | 'offers';
+  k: 'division' | 'blog' | 'darkroom' | 'games' | 'entertainment' | 'academy' | 'research' | 'offers' | 'nepal' | 'trek';
   title: string;
   sub: string;
   route: string;
@@ -41,6 +42,27 @@ export function buildSearchIndex(locale: 'en' | 'ne' = 'en'): SearchEntry[] {
 
   pub(db.offers).forEach((x) =>
     o.push({ k: 'offers', title: L(x.title), sub: L(x.short), route: `/offers/${x.slug}`, txt: `${L(x.title)} ${L(x.short)} ${L(x.desc)}`.toLowerCase(), mem: x.access === 'members' }));
+
+  /* Nepal guide travels with the bundle, so a place stays findable even when
+     the third-party geocoder is slow or blocked. */
+  const ng = nepalGuide();
+  ng.places.forEach((p) =>
+    o.push({
+      k: 'nepal',
+      title: nepalBi(p.name, locale),
+      sub: `${regionName(p.region, locale)} · ${p.type}${p.unesco ? ' · UNESCO' : ''}`,
+      route: `/nepal#place-${p.id}`,
+      txt: `${nepalBi(p.name, locale)} ${nepalBi(p.desc, locale)} ${p.type} ${regionName(p.region, locale)} ${(p.tags || []).join(' ')}`.toLowerCase(),
+    }));
+
+  ng.treks.forEach((tr) =>
+    o.push({
+      k: 'trek',
+      title: nepalBi(tr.name, locale),
+      sub: `${tr.days} · ${regionName(tr.region, locale)}`,
+      route: '/nepal#treks',
+      txt: `${nepalBi(tr.name, locale)} ${nepalBi(tr.desc, locale)} ${nepalBi(tr.grade, locale)} trek ${regionName(tr.region, locale)} ${(tr.season || []).join(' ')}`.toLowerCase(),
+    }));
 
   return o;
 }

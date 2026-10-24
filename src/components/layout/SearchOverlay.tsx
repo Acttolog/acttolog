@@ -17,6 +17,7 @@ const GROUP_NAMES = (t: (k: string) => string) => ({
   command: 'World Commands', places: 'Places',
   division: t('nav.div'), blog: t('nav.blog'), darkroom: 'Darkroom', games: t('games'),
   entertainment: 'Entertainment', academy: 'Academy', research: 'Thesyn Research', offers: t('nav.offers'),
+  nepal: 'Nepal', trek: 'Trekking',
 });
 
 /** Global search overlay (spec §18/§26/§55) — ⌘K: world commands + places + content + AI. */

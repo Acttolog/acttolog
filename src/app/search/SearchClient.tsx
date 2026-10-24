@@ -91,6 +91,7 @@ export function SearchClient() {
     places: 'Places',
     division: t('nav.div'), blog: t('nav.blog'), darkroom: 'Darkroom', games: t('games'),
     entertainment: 'Entertainment', academy: 'Academy', research: 'Thesyn Research', offers: t('nav.offers'),
+    nepal: 'Nepal', trek: 'Trekking',
   };
 
   return (
@@ -162,6 +163,7 @@ function RowIcon({ k }: { k: string }) {
     division: ['var(--cy)', 'compass'], blog: ['var(--vi)', 'doc'], darkroom: ['var(--gold)', 'search'],
     games: ['var(--ok)', 'game'], entertainment: ['var(--mg)', 'play'], academy: ['var(--vi)', 'book'],
     research: ['var(--cy)', 'sigma'], offers: ['var(--gold)', 'star'],
+    nepal: ['var(--ok)', 'compass'], trek: ['var(--gold)', 'compass'],
   };
   const [color, icon] = map[k] || ['var(--cy)', 'spark'];
   return (
