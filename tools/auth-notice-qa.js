@@ -30,11 +30,11 @@ async function open(browser, url, width = 1280, height = 900) {
 
 async function dialogState(page) {
   return page.evaluate(() => {
-    const d = document.querySelector('[role="alertdialog"]');
+    const d = document.querySelector('[role="alertdialog"]') || document.querySelector('[role="dialog"][aria-modal="true"]');
     if (!d) return null;
     const r = d.getBoundingClientRect();
     return {
-      title: d.querySelector('#auth-notice-title')?.textContent?.trim() || '',
+      title: d.querySelector('#auth-notice-title')?.textContent?.trim() || d.querySelector('h3')?.textContent?.trim() || '',
       body: d.querySelector('p')?.textContent?.trim() || '',
       buttons: [...d.querySelectorAll('button, a')].map((b) => b.textContent.trim()).filter(Boolean),
       focused: document.activeElement?.textContent?.trim() || '',
@@ -50,6 +50,11 @@ async function main() {
     headless: 'shell',
     args: ['--no-sandbox', '--disable-dev-shm-usage', '--enable-unsafe-swiftshader'],
   });
+
+  // Static mirrors ship without /api routes: retry cannot leave for an OAuth
+  // start, so the honest outcome is the in-page preview notice.
+  const staticHost = await fetch(`${BASE}/api/auth/session`).then((r) => r.status === 404).catch(() => false);
+  console.log(`TARGET ${BASE} — ${staticHost ? 'static mirror' : 'SSR runtime'}`);
 
   // 1. not_configured on /contact
   {
@@ -106,8 +111,13 @@ async function main() {
     await sleep(2500);
     const url = page.url();
     const d2 = await dialogState(page);
-    check('home: TRY AGAIN reaches oauth start', /\/contact\?oauth=not_configured|\/api\/auth\/google/.test(url), url);
-    check('home: retry surfaces the real blocker', !!d2 && /not switched on yet/i.test(d2.title), d2 ? d2.title : 'no dialog');
+    if (staticHost) {
+      check('home: TRY AGAIN stays on the page', new URL(url).pathname === '/', url);
+      check('home: retry surfaces the preview notice', !!d2 && /available in this preview/i.test(d2.title), d2 ? d2.title : 'no dialog');
+    } else {
+      check('home: TRY AGAIN reaches oauth start', /\/contact\?oauth=not_configured|\/api\/auth\/google/.test(url), url);
+      check('home: retry surfaces the real blocker', !!d2 && /not switched on yet/i.test(d2.title), d2 ? d2.title : 'no dialog');
+    }
     check('home: no page errors', errors.length === 0, errors.slice(0, 2).join(' / '));
     await page.close();
   }

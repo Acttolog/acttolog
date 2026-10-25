@@ -8,6 +8,9 @@ import { useI18n } from '@/lib/i18n';
 
 type Kind = 'not_configured' | 'expired' | 'failed';
 
+/** Static mirrors have no OAuth start; retry must explain instead of navigating. */
+const STATIC_HOST = process.env.NEXT_PUBLIC_STATIC === '1';
+
 /**
  * Explains a failed sign-in instead of dropping the visitor on a bare page.
  * /api/auth/google redirects to /contact?oauth=not_configured when the OAuth
@@ -63,6 +66,14 @@ export function AuthNotice() {
   }
 
   function retry() {
+    // A router.replace here reloads the static mirror mid-flight and swallows
+    // the preview notice, so the retry used to end silently on "/".
+    if (STATIC_HOST) {
+      setOpen(false);
+      setDismissed(kind);
+      signIn();
+      return;
+    }
     cleanUrl();
     signIn();
   }
