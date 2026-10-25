@@ -113,12 +113,12 @@ function DashboardTabs({ me, onSignOut, initialTab, local }: { me: SessionUser; 
         <div className="flex flex-wrap items-center gap-5 mb-9">
           <span className="w-16 h-16 rounded-2xl grid place-items-center font-display font-bold text-[22px]"
             style={{ background: 'var(--grad)', color: '#04060e' }}>{initials}</span>
-          <div>
+          <div className="min-w-0">
             <h1 className="h2 !text-[clamp(1.55rem,3.6vw,2.4rem)]">{t('my')}</h1>
             <div className="mut text-[13.5px] mt-1">
               {me.name} · <span className="mono text-[12.3px]">{me.email}</span>
             </div>
-            <div className="flex gap-2 mt-2.5">
+            <div className="flex flex-wrap gap-2 mt-2.5">
               <span className="badge b-info">{me.role}</span>
               <span className="badge b-mut">{local ? (locale === 'ne' ? 'यो यन्त्र' : 'THIS DEVICE') : 'Google'}</span>
               <span className="badge b-mut">{locale === 'ne' ? 'खाता निजी' : 'PROFILE PRIVATE'}</span>
