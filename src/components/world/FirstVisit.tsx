@@ -39,7 +39,7 @@ export function FirstVisit() {
     <div className="fixed inset-0 z-[80] grid place-items-center p-4" role="dialog" aria-modal="true"
       aria-label={ne ? 'ACTTOLOG संसारमा स्वागत छ' : 'Welcome to Acttolog World'}
       style={{ background: 'color-mix(in srgb, var(--bg) 82%, transparent)', backdropFilter: 'blur(10px)' }}>
-      <div className="panel fv-card p-8 sm:p-10 text-center relative overflow-hidden" style={{ width: 'min(560px,94vw)' }}>
+      <div className="panel fv-card p-8 sm:p-10 text-center relative overflow-hidden" style={{ width: 'min(680px,94vw)' }}>
         {/* portal rings */}
         <div aria-hidden="true" className="absolute left-1/2 -translate-x-1/2 -top-24 w-[340px] h-[340px] rounded-full pointer-events-none"
           style={{ background: 'radial-gradient(circle, color-mix(in srgb,var(--cy) 16%,transparent) 0%, transparent 62%)' }} />
@@ -53,14 +53,14 @@ export function FirstVisit() {
         <p className="mono text-[10.6px] tracking-[.22em] mt-3" style={{ color: 'var(--cy)' }}>
           {ne ? 'खोज्नुहोस्। सिक्नुहोस्। बनाउनुहोस्। जोडिनुहोस्।' : 'DISCOVER. LEARN. CREATE. CONNECT.'}
         </p>
-        <div className="flex flex-col sm:flex-row gap-2.5 justify-center mt-8">
-          <button className="btn btn-p" onClick={() => { done('earth'); router.push('/explore?mode=earth'); }}>
+        <div className="flex flex-wrap flex-col sm:flex-row gap-2.5 justify-center mt-8">
+          <button className="btn btn-p !px-5" onClick={() => { done('earth'); router.push('/explore?mode=earth'); }}>
             <Icon name="globe" size={16} />{ne ? 'पृथ्वी अन्वेषण' : 'EXPLORE EARTH'}
           </button>
-          <button className="btn btn-g" onClick={() => { done('enter'); document.getElementById('intro')?.scrollIntoView({ behavior: 'smooth' }); }}>
+          <button className="btn btn-g !px-5" onClick={() => { done('enter'); document.getElementById('intro')?.scrollIntoView({ behavior: 'smooth' }); }}>
             <Icon name="rocket" size={16} />{ne ? 'एक्टोलग प्रवेश' : 'ENTER ACTTOLOG'}
           </button>
-          <button className="btn btn-g" onClick={() => { done('search'); window.dispatchEvent(new CustomEvent('acttolog:search-open')); }}>
+          <button className="btn btn-g !px-5" onClick={() => { done('search'); window.dispatchEvent(new CustomEvent('acttolog:search-open')); }}>
             <Icon name="search" size={16} />{ne ? 'संसार खोज' : 'SEARCH WORLD'}
           </button>
         </div>
