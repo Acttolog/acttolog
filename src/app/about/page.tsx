@@ -32,7 +32,7 @@ export default function AboutPage() {
         <div className="wrap">
           <Reveal>
             <div className="panel p-7 sm:p-9 grid md:grid-cols-[auto_1fr] gap-7 items-start">
-              <div className="flex md:flex-col gap-4">
+              <div className="flex flex-wrap md:flex-col gap-4">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src="/media/founder-pro.jpg" alt="The founder and guide of Acttolog World"
                   className="w-36 h-36 md:w-44 md:h-44 rounded-3xl object-cover"

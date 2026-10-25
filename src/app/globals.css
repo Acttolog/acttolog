@@ -288,6 +288,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
   display: grid; place-items: center; cursor: pointer; transition: 0.3s; color: var(--mut); position: relative;
 }
 .ico:hover { color: var(--txt); border-color: var(--line2); transform: translateY(-2px); }
+/* 320px-class phones: the header cannot hold search + lang + theme + burger */
+@media (max-width: 359px) { .ico-narrow-hide { display: none; } }
 .burger {
   display: none; width: 40px; height: 40px; border-radius: 11px; border: 1px solid var(--line);
   background: var(--panel2); align-items: center; justify-content: center; cursor: pointer;
@@ -465,7 +467,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .fld { display: block; margin-bottom: 15px; }
 .fld > span { display: block; font-family: var(--font-mono); font-size: 10.3px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--dim); margin-bottom: 7px; }
 .inp, .ta, .sel {
-  width: 100%; background: color-mix(in srgb, var(--bg) 72%, transparent); border: 1px solid var(--line);
+  width: 100%; min-width: 0; background: color-mix(in srgb, var(--bg) 72%, transparent); border: 1px solid var(--line);
   border-radius: 12px; padding: 11px 13px; font-size: 14.2px; color: var(--txt); transition: 0.3s; outline: none;
 }
 .inp:focus, .ta:focus, .sel:focus { border-color: color-mix(in srgb, var(--cy) 65%, transparent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--cy) 14%, transparent); }

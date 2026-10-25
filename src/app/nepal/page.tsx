@@ -442,7 +442,7 @@ export default function NepalPage() {
         .mt-4 { margin-top: 16px; }
 
         /* ── festivals ── */
-        .np-fest { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+        .np-fest { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr)); }
         .np-fest-card { padding: 20px; display: flex; flex-direction: column; gap: 12px; border-left: 2px solid var(--a); }
         .np-fest-media { position: relative; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 11px; margin: -4px -4px 2px; }
         .np-fest-img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -486,7 +486,7 @@ export default function NepalPage() {
         .np-wild-where { align-self: flex-start; font-size: 9.2px; }
 
         /* ── treks ── */
-        .np-treks { display: grid; gap: 15px; grid-template-columns: repeat(auto-fill, minmax(348px, 1fr)); }
+        .np-treks { display: grid; gap: 15px; grid-template-columns: repeat(auto-fill, minmax(min(348px, 100%), 1fr)); }
         .np-trek { padding: 22px; display: flex; flex-direction: column; gap: 13px; }
         .np-trek-head { display: flex; justify-content: space-between; gap: 14px; align-items: flex-start; }
         .np-trek-name { font: 600 1.22rem/1.2 var(--font-display); color: var(--txt); margin: 0; letter-spacing: -.015em; }
@@ -519,6 +519,8 @@ export default function NepalPage() {
           .np-hero { min-height: 82vh; }
           .np-stats { grid-template-columns: repeat(2, 1fr); }
           .np-trek-facts { grid-template-columns: 1fr 1fr; }
+          .np-trek-head { flex-wrap: wrap; }
+          .np-trek-grade { white-space: normal; }
         }
         @media (prefers-reduced-motion: reduce) {
           .np-hero-img { animation: none; }

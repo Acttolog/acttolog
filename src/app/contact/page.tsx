@@ -49,14 +49,14 @@ export default function ContactPage() {
       <section className="sec pt-2">
         <div className="wrap">
           <div className="grid lg:grid-cols-[1.1fr_.9fr] gap-6 items-start">
-            <Reveal>
+            <Reveal className="min-w-0">
               <div className="panel p-6 sm:p-9">
                 <div className="eyebrow mb-6">SEND A MESSAGE</div>
                 <ContactForm divisions={divs.map((d) => ({ id: d.id, name: d.name.en }))} />
               </div>
             </Reveal>
 
-            <div className="space-y-5">
+            <div className="space-y-5 min-w-0">
               <Reveal delay={80}>
                 <div className="panel p-6 sm:p-7">
                   <div className="eyebrow mb-5">DIRECT CHANNELS</div>

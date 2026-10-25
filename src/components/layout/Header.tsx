@@ -103,7 +103,7 @@ export function Header({ nav, divisions: divs, brand }: {
           </nav>
 
           <div className="nact" onMouseLeave={() => { megaTimer.current = setTimeout(() => setMegaOpen(false), 160); }}>
-            <button className="ico" onClick={openSearch} aria-label={t('search')} title="Search (⌘K)">
+            <button className="ico ico-narrow-hide" onClick={openSearch} aria-label={t('search')} title="Search (⌘K)">
               <Icon name="search" size={17} />
             </button>
             <button className="ico" onClick={() => setLocale(locale === 'en' ? 'ne' : 'en')}
