@@ -73,6 +73,9 @@ export function Footer() {
           <div className="fcol">
             <h4>{locale === 'ne' ? 'सामग्री' : 'Content'}</h4>
             <Link href="/blog">{t('nav.blog')}</Link>
+            <a href="https://acttolog.blogspot.com" target="_blank" rel="noopener noreferrer">
+              {locale === 'ne' ? 'ब्लगर च्यानल ↗' : 'Blogger channel ↗'}
+            </a>
             <Link href="/offers">{t('nav.offers')}</Link>
             <Link href="/ai">{t('ai.t')}</Link>
             <Link href="/search">{t('search')}</Link>
