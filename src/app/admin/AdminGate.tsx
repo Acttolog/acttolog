@@ -13,14 +13,20 @@ export function AdminGate({ children }: { children: React.ReactNode }) {
   const staff = Boolean(user && (user.role === 'Owner' || user.role === 'Admin'));
 
   const isLogin = pathname.startsWith('/admin/login');
+  // Static Pages has no auth server. The scene editor only writes this
+  // browser's localStorage / exported JSON, so expose it there as a
+  // labelled local preview; every other admin route stays gated.
+  const staticScenePreview = process.env.NEXT_PUBLIC_STATIC === '1' && pathname === '/admin/scene';
 
   useEffect(() => {
-    if (isLogin || loading || user) return;
+    if (staticScenePreview || isLogin || loading || user) return;
     router.replace('/admin/login');
-  }, [isLogin, loading, user, router]);
+  }, [staticScenePreview, isLogin, loading, user, router]);
 
   // the login page renders without the gated shell
   if (isLogin) return <>{children}</>;
+
+  if (staticScenePreview) return <>{children}</>;
 
   if (loading) {
     return (

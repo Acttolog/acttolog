@@ -1,7 +1,8 @@
 /**
  * ACTTOLOG World registry — WorldNodes, camera presets and structured
  * SceneConfig (spec §19, §88). Values live here (config, not components)
- * and surface in /admin/scene; CMS/DB persistence activates with DATABASE_URL.
+ * and surface in /admin/scene, where edits are stored per browser and can
+ * be exported as JSON; there is no CMS/DB persistence layer in this build.
  */
 
 export interface WorldNode {
@@ -30,6 +31,12 @@ export interface CameraPreset {
   mode: 'earth' | 'map' | 'sat' | '360';
 }
 
+export interface SceneNodeOverride {
+  enabled: boolean;
+  lat: number;
+  lon: number;
+}
+
 export interface SceneConfig {
   enabled: boolean;
   model: string;
@@ -44,6 +51,7 @@ export interface SceneConfig {
   particles: number;
   interaction: { drag: boolean; wheelZoom: boolean; pointerReadout: boolean };
   breakpointVisibility: { mobile: boolean; tablet: boolean; desktop: boolean };
+  nodes: Record<string, SceneNodeOverride>;
   qualityDefault: 'auto' | 'high' | 'medium' | 'low';
 }
 
@@ -126,6 +134,7 @@ export const DEFAULT_SCENE: SceneConfig = {
   particles: 700,
   interaction: { drag: true, wheelZoom: true, pointerReadout: true },
   breakpointVisibility: { mobile: true, tablet: true, desktop: true },
+  nodes: {},
   qualityDefault: 'auto',
 };
 

@@ -20,6 +20,8 @@ import * as THREE from 'three';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { TIER_CONFIG, prefersReducedMotion, type QualityTier } from './tier';
 import { TileSphere, type TileLayer } from './TileGlobe';
+import { DEFAULT_SCENE, type SceneConfig } from '@/lib/world/config';
+import { useScenePreview } from '@/lib/world/useScenePreview';
 
 /* ── live entity beacons (OSINT-style pulses over world cities) ─── */
 export const ENTITY_POINTS: [number, number][] = [
@@ -261,7 +263,7 @@ function ActtologCore({ reduced }: { reduced: boolean }) {
 
 export interface GlobeNode {
   id: string; name: string; sub: string; route: string; color: string;
-  lat: number; lon: number;
+  lat: number; lon: number; enabled?: boolean;
 }
 
 export const DIVISION_NODES: GlobeNode[] = [
@@ -479,9 +481,10 @@ function DivisionNodes({ nodes, labels, reduced, onSelect }: {
   nodes: GlobeNode[]; labels: boolean; reduced: boolean;
   onSelect: (route: string) => void;
 }) {
+  const visible = useMemo(() => nodes.filter((n) => n.enabled !== false), [nodes]);
   const textures = useMemo(
-    () => (labels ? nodes.map((n) => makeLabelTexture(n.name, n.color)) : []),
-    [labels, nodes],
+    () => (labels ? visible.map((n) => makeLabelTexture(n.name, n.color)) : []),
+    [labels, visible],
   );
   const pulseRefs = useRef<(THREE.Mesh | null)[]>([]);
   useFrame((state) => {
@@ -496,7 +499,7 @@ function DivisionNodes({ nodes, labels, reduced, onSelect }: {
   });
   return (
     <group>
-      {nodes.map((n, i) => {
+      {visible.map((n, i) => {
         const pos = latLonToVec3(n.lat, n.lon, 1.005);
         const out = pos.clone().normalize();
         return (
@@ -529,19 +532,20 @@ function DivisionNodes({ nodes, labels, reduced, onSelect }: {
 }
 
 function Arcs({ nodes, pulses, reduced }: { nodes: GlobeNode[]; pulses: boolean; reduced: boolean }) {
-  const curves = useMemo(() => ARC_PAIRS.map(([a, b]) => {
+  const curves = useMemo(() => ARC_PAIRS.flatMap(([a, b]) => {
+    if (nodes[a].enabled === false || nodes[b].enabled === false) return [];
     const va = latLonToVec3(nodes[a].lat, nodes[a].lon, 1.005);
     const vb = latLonToVec3(nodes[b].lat, nodes[b].lon, 1.005);
     const mid = va.clone().add(vb).multiplyScalar(0.5);
     const lift = 1.12 + va.distanceTo(vb) * 0.22;
     mid.normalize().multiplyScalar(lift);
-    return new THREE.QuadraticBezierCurve3(va, mid, vb);
+    return [new THREE.QuadraticBezierCurve3(va, mid, vb)];
   }), [nodes]);
 
   const geometries = useMemo(() => curves.map((c) => new THREE.TubeGeometry(c, 64, 0.0028, 6, false)), [curves]);
   const pulseRefs = useRef<(THREE.Mesh | null)[]>([]);
   useFrame((state) => {
-    if (reduced || !pulses) return;
+    if (reduced || !pulses || curves.length === 0) return;
     const t = state.clock.elapsedTime;
     pulseRefs.current.forEach((m, i) => {
       if (!m) return;
@@ -559,7 +563,7 @@ function Arcs({ nodes, pulses, reduced }: { nodes: GlobeNode[]; pulses: boolean;
             blending={THREE.AdditiveBlending} depthWrite={false} toneMapped={false} />
         </mesh>
       ))}
-      {pulses && !reduced && Array.from({ length: 4 }).map((_, i) => (
+      {pulses && !reduced && curves.length > 0 && Array.from({ length: 4 }).map((_, i) => (
         <mesh key={`p${i}`} ref={(el) => { pulseRefs.current[i] = el; }}>
           <sphereGeometry args={[0.012, 10, 10]} />
           <meshBasicMaterial color="#9be8ff" transparent opacity={0.95}
@@ -703,13 +707,16 @@ function BloomPass() {
   return null;
 }
 
-function WorldGroup({ children, reduced, dragRef, tier, scrollRef, flyRef, distRef }: {
+function WorldGroup({ children, reduced, dragRef, tier, scrollRef, flyRef, distRef, spin, wobble, dragEnabled }: {
   children: React.ReactNode; reduced: boolean;
   dragRef: React.RefObject<{ dx: number; vel: number; dragging: boolean }>;
   tier: QualityTier;
   scrollRef: React.RefObject<number>;
   flyRef: React.RefObject<{ lat: number; lon: number; token: number } | null>;
   distRef: React.RefObject<number>;
+  spin: number;
+  wobble: boolean;
+  dragEnabled: boolean;
 }) {
   const group = useRef<THREE.Group>(null);
   const cfg = TIER_CONFIG[tier];
@@ -736,18 +743,18 @@ function WorldGroup({ children, reduced, dragRef, tier, scrollRef, flyRef, distR
     const surface = (distRef.current ?? 3) < 1.25;
     if (!reduced) {
       const drag = dragRef.current;
-      if (drag) {
+      if (drag && dragEnabled) {
         if (drag.dragging) { drag.vel = drag.dx * 0.006; drag.dx = 0; flyState.current.active = false; }
         else drag.vel *= 0.94;
         group.current.rotation.y += drag.vel;
       }
       // orbit-mode motion yields to the surface/fly mode so geocoding lands exact
       if (!surface && !flyState.current.active) {
-        group.current.rotation.y += dt * cfg.autoRotate * 0.35; // horizontal spin
+        group.current.rotation.y += dt * cfg.autoRotate * spin; // horizontal spin
         const p = scrollRef.current ?? 0;
-        const wobble = reduced ? 0 : Math.sin(state.clock.elapsedTime * 0.11) * 0.10; // vertical breathing
-        group.current.rotation.x = THREE.MathUtils.lerp(group.current.rotation.x, 0.16 + p * -0.22 + wobble, Math.min(1, dt * 2));
-        group.current.rotation.z = THREE.MathUtils.lerp(group.current.rotation.z, reduced ? 0 : Math.sin(state.clock.elapsedTime * 0.07) * 0.05, Math.min(1, dt * 2));
+        const breathe = wobble ? Math.sin(state.clock.elapsedTime * 0.11) * 0.10 : 0; // vertical breathing
+        group.current.rotation.x = THREE.MathUtils.lerp(group.current.rotation.x, 0.16 + p * -0.22 + breathe, Math.min(1, dt * 2));
+        group.current.rotation.z = THREE.MathUtils.lerp(group.current.rotation.z, wobble ? Math.sin(state.clock.elapsedTime * 0.07) * 0.05 : 0, Math.min(1, dt * 2));
       }
     }
   });
@@ -802,7 +809,19 @@ function PinMarker({ lat, lon }: { lat: number; lon: number }) {
 
 /* ── scene root ─────────────────────────────────────────────────── */
 
-function Scene({ tier, scrollRef, distTargetRef, distRef, flyRef, dragRef, onSelect, onStats, onCursor, layer, tilesEnabled, pin }: {
+/** Applies the scene editor's field of view without remounting the canvas. */
+function CameraFov({ fov }: { fov: number }) {
+  const camera = useThree((s) => s.camera);
+  useEffect(() => {
+    const cam = camera as THREE.PerspectiveCamera;
+    if (typeof cam.fov !== 'number' || cam.fov === fov) return;
+    cam.fov = fov;
+    cam.updateProjectionMatrix();
+  }, [camera, fov]);
+  return null;
+}
+
+function Scene({ tier, scrollRef, distTargetRef, distRef, flyRef, dragRef, onSelect, onStats, onCursor, layer, tilesEnabled, pin, preview }: {
   tier: QualityTier;
   scrollRef: React.RefObject<number>;
   distTargetRef: React.RefObject<number>;
@@ -815,12 +834,45 @@ function Scene({ tier, scrollRef, distTargetRef, distRef, flyRef, dragRef, onSel
   layer: TileLayer;
   tilesEnabled: boolean;
   pin: [number, number] | null;
+  preview: SceneConfig | null;
 }) {
   const cfg = TIER_CONFIG[tier];
   const reduced = useMemo(() => prefersReducedMotion(), []);
   const sunDir = useMemo(() => new THREE.Vector3(5, 2.2, 3.4).normalize(), []);
   const frames = useRef(0);
   const acc = useRef(0);
+
+  // Preview values are intent; the active quality tier still caps the budget.
+  const anim = preview?.animation;
+  const spin = anim ? (anim.autoRotate ? Math.max(0, anim.speed) : 0) : 0.35;
+  const particles = preview ? Math.min(preview.particles, cfg.particles) : cfg.particles;
+  const showStars = preview ? preview.environment.stars : true;
+  const showDust = preview ? preview.environment.dust : true;
+  const showAtmosphere = preview ? preview.environment.atmosphere : true;
+  const dragEnabled = preview ? preview.interaction.drag : true;
+  const cursor = preview?.interaction.pointerReadout === false ? undefined : onCursor;
+
+  const nodes = useMemo(() => {
+    const overrides = preview?.nodes;
+    if (!overrides) return DIVISION_NODES;
+    return DIVISION_NODES.map((n) => {
+      const o = overrides[n.id];
+      if (!o) return n;
+      return {
+        ...n,
+        enabled: o.enabled ?? n.enabled,
+        lat: Number.isFinite(o.lat) ? o.lat : n.lat,
+        lon: Number.isFinite(o.lon) ? o.lon : n.lon,
+      };
+    });
+  }, [preview]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    (window as unknown as Record<string, unknown>).__atlNodes = nodes.map((n) => ({
+      id: n.id, enabled: n.enabled !== false, lat: n.lat, lon: n.lon,
+    }));
+  }, [nodes]);
 
   useFrame((_, dt) => {
     frames.current++; acc.current += dt;
@@ -829,21 +881,23 @@ function Scene({ tier, scrollRef, distTargetRef, distRef, flyRef, dragRef, onSel
 
   return (
     <>
+      <CameraFov fov={preview?.camera.fov ?? DEFAULT_SCENE.camera.fov} />
       <Rig scrollRef={scrollRef} distTargetRef={distTargetRef} distRef={distRef} />
-      <Starfield count={cfg.stars} />
-      <WorldGroup reduced={reduced} dragRef={dragRef} tier={tier} scrollRef={scrollRef} flyRef={flyRef} distRef={distRef}>
-        <Earth segments={cfg.sphereSegments} sunDir={sunDir} onCursor={onCursor} />
+      {showStars && <Starfield count={cfg.stars} />}
+      <WorldGroup reduced={reduced} dragRef={dragRef} tier={tier} scrollRef={scrollRef} flyRef={flyRef} distRef={distRef}
+        spin={spin} wobble={anim ? anim.wobble : true} dragEnabled={dragEnabled}>
+        <Earth segments={cfg.sphereSegments} sunDir={sunDir} onCursor={cursor} />
         {tilesEnabled && <TileSphere layer={layer} distRef={distRef} active />}
         {pin && <PinMarker lat={pin[0]} lon={pin[1]} />}
         <DecorCull distRef={distRef}>
           <Graticule />
           <EntityBeacons reduced={reduced} />
-          <Atmosphere />
+          {showAtmosphere && <Atmosphere />}
           <OrbitalRings count={cfg.rings} reduced={reduced} />
-          <Arcs nodes={DIVISION_NODES} pulses={cfg.pulses} reduced={reduced} />
-          <DivisionNodes nodes={DIVISION_NODES} labels={cfg.labels} reduced={reduced} onSelect={onSelect} />
+          <Arcs nodes={nodes} pulses={cfg.pulses} reduced={reduced} />
+          <DivisionNodes nodes={nodes} labels={cfg.labels} reduced={reduced} onSelect={onSelect} />
           <ActtologCore reduced={reduced} />
-      {cfg.particles > 0 && <Dust count={cfg.particles} reduced={reduced} />}
+          {showDust && particles > 0 && <Dust count={particles} reduced={reduced} />}
         </DecorCull>
       </WorldGroup>
       {cfg.bloom && !reduced && <BloomPass />}
@@ -868,19 +922,21 @@ export function EarthScene({ tier, frameloop, scrollRef, distTargetRef, distRef,
 }) {
   const cfg = TIER_CONFIG[tier];
   const reduced = typeof window !== 'undefined' && prefersReducedMotion();
+  const preview = useScenePreview();
   return (
     <Canvas
       className="globe-canvas"
       dpr={cfg.dpr}
       frameloop={reduced ? 'demand' : frameloop}
-      camera={{ position: [0, 0.12, 3.15], fov: 42, near: 0.00002, far: 500 }}
+      camera={{ position: [0, 0.12, 3.15], fov: preview?.camera.fov ?? DEFAULT_SCENE.camera.fov, near: 0.00002, far: 500 }}
       gl={{ antialias: tier !== 'low', alpha: true, powerPreference: 'high-performance', logarithmicDepthBuffer: true }}
       onWheel={(e) => {
+        if (preview && !preview.interaction.wheelZoom) return;
         const next = (distTargetRef.current ?? 3.15) * Math.exp(e.deltaY * 0.0011);
         distTargetRef.current = Math.min(3.6, Math.max(1.0025, next));
       }}
     >
-      <Scene tier={tier} scrollRef={scrollRef} distTargetRef={distTargetRef} distRef={distRef} flyRef={flyRef} dragRef={dragRef} onSelect={onSelect} onStats={onStats} onCursor={onCursor} layer={layer} tilesEnabled={tilesEnabled} pin={pin} />
+      <Scene tier={tier} scrollRef={scrollRef} distTargetRef={distTargetRef} distRef={distRef} flyRef={flyRef} dragRef={dragRef} onSelect={onSelect} onStats={onStats} onCursor={onCursor} layer={layer} tilesEnabled={tilesEnabled} pin={pin} preview={preview} />
     </Canvas>
   );
 }

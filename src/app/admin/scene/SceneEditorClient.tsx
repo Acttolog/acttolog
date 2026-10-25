@@ -4,19 +4,53 @@ import { useEffect, useState } from 'react';
 import { DEFAULT_SCENE, CAMERA_PRESETS, WORLD_NODES, type SceneConfig } from '@/lib/world/config';
 import { Icon } from '@/components/ui/Icon';
 import { useToast } from '@/lib/toast';
+import { SCENE_PREVIEW_EVENT, SCENE_PREVIEW_KEY } from '@/lib/world/useScenePreview';
 
 /**
  * Structured scene editor (spec §43). No arbitrary code: typed fields only.
- * Without a database, edits are preview-local (localStorage) and exportable
- * as JSON for the CMS; with DATABASE_URL they persist via /api/admin/scene.
+ * Edits are stored in this browser and applied live to the globe for the
+ * fields listed under PREVIEW STATE; JSON export carries them into the CMS.
+ * There is no /api/admin/scene persistence in this build.
  */
+
+/** Buffers the raw text so "-" and partial decimals survive until valid. */
+function CoordInput({ label, value, min, max, onCommit }: {
+  label: string; value: number; min: number; max: number; onCommit: (v: number) => void;
+}) {
+  const [text, setText] = useState(String(value));
+  const [editing, setEditing] = useState(false);
+
+  useEffect(() => {
+    if (!editing) setText(String(value));
+  }, [value, editing]);
+
+  return (
+    <label className="fld">
+      <span>{label}</span>
+      <input className="inp min-w-0" type="number" inputMode="decimal" min={min} max={max} step={0.001}
+        value={text}
+        onFocus={() => setEditing(true)}
+        onChange={(e) => {
+          setText(e.target.value);
+          const v = e.target.valueAsNumber;
+          if (Number.isFinite(v) && v >= min && v <= max) onCommit(v);
+        }}
+        onBlur={() => {
+          setEditing(false);
+          const v = Number(text);
+          if (!Number.isFinite(v) || v < min || v > max) setText(String(value));
+          else setText(String(v));
+        }} />
+    </label>
+  );
+}
 export function SceneEditorClient() {
   const [cfg, setCfg] = useState<SceneConfig>(DEFAULT_SCENE);
   const toast = useToast();
 
   useEffect(() => {
     try {
-      const raw = localStorage.getItem('act_scene_preview');
+      const raw = localStorage.getItem(SCENE_PREVIEW_KEY);
       if (raw) setCfg({ ...DEFAULT_SCENE, ...JSON.parse(raw) });
     } catch { /* ignore */ }
   }, []);
@@ -24,7 +58,16 @@ export function SceneEditorClient() {
   const set = <K extends keyof SceneConfig>(k: K, v: SceneConfig[K]) => {
     const next = { ...cfg, [k]: v };
     setCfg(next);
-    try { localStorage.setItem('act_scene_preview', JSON.stringify(next)); } catch { /* ignore */ }
+    try { localStorage.setItem(SCENE_PREVIEW_KEY, JSON.stringify(next)); } catch { /* ignore */ }
+    window.dispatchEvent(new Event(SCENE_PREVIEW_EVENT));
+  };
+
+  const setNode = (id: string, patch: Partial<SceneConfig['nodes'][string]>) => {
+    const base = WORLD_NODES.find((n) => n.id === id);
+    if (!base) return;
+    const all = cfg.nodes ?? {};
+    const cur = all[id] ?? { enabled: base.enabled, lat: base.position.lat, lon: base.position.lon };
+    set('nodes', { ...all, [id]: { ...cur, ...patch } });
   };
 
   const Num = ({ label, value, min, max, step, on }: { label: string; value: number; min: number; max: number; step: number; on: (v: number) => void }) => (
@@ -127,7 +170,7 @@ export function SceneEditorClient() {
               }}>
               <Icon name="down" size={14} />Export JSON
             </button>
-            <button className="btn btn-g btn-sm" onClick={() => { setCfg(DEFAULT_SCENE); localStorage.removeItem('act_scene_preview'); toast('Reset to defaults.', 'info'); }}>
+            <button className="btn btn-g btn-sm" onClick={() => { setCfg(DEFAULT_SCENE); localStorage.removeItem(SCENE_PREVIEW_KEY); window.dispatchEvent(new Event(SCENE_PREVIEW_EVENT)); toast('Reset to defaults.', 'info'); }}>
               <Icon name="refresh" size={14} />Reset
             </button>
           </div>
@@ -138,28 +181,58 @@ export function SceneEditorClient() {
         <div className="panel p-6">
           <div className="mono text-[9.7px] tracking-[.2em] dim mb-4">WORLD NODES</div>
           <div className="space-y-2">
-            {WORLD_NODES.map((n) => (
-              <div key={n.id} className="rounded-xl border p-3.5" style={{ borderColor: 'var(--line)', background: 'var(--panel2)' }}>
-                <div className="flex items-center justify-between gap-2">
-                  <span className="font-display font-semibold text-[13px]">{n.title}</span>
-                  <span className={`badge ${n.enabled ? 'b-ok' : 'b-mut'}`}>{n.enabled ? 'on' : 'off'}</span>
+            {WORLD_NODES.map((n) => {
+              const o = (cfg.nodes ?? {})[n.id];
+              const lat = o?.lat ?? n.position.lat;
+              const lon = o?.lon ?? n.position.lon;
+              const on = o?.enabled ?? n.enabled;
+              return (
+                <div key={n.id} className="rounded-xl border p-3.5" style={{ borderColor: 'var(--line)', background: 'var(--panel2)' }}>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-display font-semibold text-[13px]">{n.title}</span>
+                    <button className={`sw${on ? ' on' : ''}`} aria-label={`${n.title} visible`}
+                      onClick={() => setNode(n.id, { enabled: !on })} />
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 mt-2.5">
+                    <CoordInput label="Latitude" value={lat} min={-90} max={90}
+                      onCommit={(v) => setNode(n.id, { lat: v })} />
+                    <CoordInput label="Longitude" value={lon} min={-180} max={180}
+                      onCommit={(v) => setNode(n.id, { lon: v })} />
+                  </div>
+                  <div className="dim mono text-[9.6px] tracking-[.14em] mt-1.5">
+                    {n.cameraPreset}{o ? ' · preview override' : ''}
+                  </div>
                 </div>
-                <div className="dim mono text-[9.6px] tracking-[.14em] mt-1">
-                  {n.position.lat.toFixed(2)}, {n.position.lon.toFixed(2)} · {n.cameraPreset}
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
           <p className="dim text-[11.4px] mt-4 leading-relaxed">
-            Node editing (add/move/disable) persists with the CMS database. Positions drive both the hero globe and /explore camera presets.
+            Move a node&apos;s latitude/longitude or switch it off — saved in this browser and applied live to the globe.
+            Adding or deleting nodes is a CMS feature and is not available in this build.
           </p>
+          <button className="btn btn-g btn-sm mt-3" disabled={!Object.keys(cfg.nodes ?? {}).length}
+            onClick={() => set('nodes', {})}>
+            <Icon name="refresh" size={14} />Reset nodes
+          </button>
         </div>
         <div className="panel p-6">
           <div className="mono text-[9.7px] tracking-[.2em] dim mb-4">PREVIEW STATE</div>
           <p className="mut text-[12.6px] leading-relaxed">
-            Edits apply to this browser as a preview and are exportable as structured JSON.
-            Production-wide changes require the CMS database (NOT CONFIGURED until DATABASE_URL is connected).
+            Saved in this browser only (localStorage) — no database or API persistence in this build.
+            Export JSON to carry the values into the CMS.
           </p>
+          <p className="dim text-[11.4px] mt-3 leading-relaxed">
+            <strong className="text-[var(--txt)]">Applied live to the globe:</strong> field of view, auto-rotate and speed,
+            vertical wobble, stars, dust, atmosphere, particle count (capped by the quality tier), drag, wheel zoom,
+            pointer readout and node position/visibility. Open Home or Explore on this browser to see the change.
+          </p>
+          <p className="dim text-[11.4px] mt-3 leading-relaxed">
+            <strong className="text-[var(--txt)]">Stored but not applied yet:</strong> enabled, scale, opacity, lighting
+            and quality default.
+          </p>
+          <a href="/explore?mode=earth" className="btn btn-g btn-sm mt-4">
+            <Icon name="globe" size={14} />Open the globe
+          </a>
         </div>
       </div>
     </div>
