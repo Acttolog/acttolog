@@ -17,32 +17,49 @@ export const metadata: Metadata = {
 };
 
 export default function EntertainmentPage() {
-  const items = pub(db.entertainment).slice().sort((a, b) => String(b.date).localeCompare(String(a.date)));
+  const items = pub(db.entertainment)
+    .slice()
+    .sort((a, b) => String(b.date).localeCompare(String(a.date)));
   const cats = db.entCats || [];
   const d = db.divisions.find((x) => x.id === 'entertainment');
 
   return (
     <>
-      <PageHead kicker={`ACTTOLOG DIVISION · ENTERTAINMENT`} title={d ? d.name.en : 'Entertainment'}
-        body={d ? d.desc.en : ''} art="stage" />
-      <WorldPortal world="cinema" title="Entertainment World" titleNe="मनोरञ्जन वर्ल्ड"
+      <PageHead
+        kicker={`ACTTOLOG DIVISION · ENTERTAINMENT`}
+        title={d ? d.name.en : 'Entertainment'}
+        body={d ? d.desc.en : ''}
+        art="stage"
+      />
+      <WorldPortal
+        world="cinema"
+        title="Entertainment World"
+        titleNe="मनोरञ्जन वर्ल्ड"
         subtitle="A cinematic media environment in 360° — stories, drama and sound, with hotspots into the Games Arena and the world hub."
-        accent="var(--mg)" earthLink="/explore?mode=earth&lat=34.05200&lng=-118.24400" />
+        accent="var(--mg)"
+        earthLink="/explore?mode=earth&lat=34.05200&lng=-118.24400"
+      />
 
       <section className="sec pt-2">
         <div className="wrap">
           <EntertainmentGrid items={items} cats={cats} />
           <EntertainmentChannels />
           <Reveal>
-            <div className="panel p-6 sm:p-8 mt-12 flex flex-wrap items-center gap-6 justify-between">
+            <div className="panel mt-12 flex flex-wrap items-center justify-between gap-6 p-6 sm:p-8">
               <div>
                 <div className="eyebrow mb-2">STUDIO</div>
-                <p className="mut text-[13.4px] leading-relaxed max-w-[70ch]">
-                  Entertainment items marked <span className="badge b-vi mx-1"><Icon name="lock" size={10} />Members</span>{' '}
+                <p className="mut max-w-[70ch] text-[13.4px] leading-relaxed">
+                  Entertainment items marked{' '}
+                  <span className="badge b-vi mx-1">
+                    <Icon name="lock" size={10} />
+                    Members
+                  </span>{' '}
                   show a preview to everyone; the full media opens after you continue with Google.
                 </p>
               </div>
-              <Link href="/offers/entertainment-studio" className="btn btn-g">Studio Pass <Icon name="arrow" size={15} /></Link>
+              <Link href="/offers/entertainment-studio" className="btn btn-g">
+                Studio Pass <Icon name="arrow" size={15} />
+              </Link>
             </div>
           </Reveal>
         </div>
@@ -50,4 +67,3 @@ export default function EntertainmentPage() {
     </>
   );
 }
-

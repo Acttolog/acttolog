@@ -21,23 +21,28 @@ export default function DarkroomPage() {
 
   return (
     <>
-      <section className="relative pt-[calc(var(--nav)+50px)] pb-10 overflow-hidden">
+      <section className="relative overflow-hidden pt-[calc(var(--nav)+50px)] pb-10">
         <div className="wrap">
           <Reveal>
             <div className="eyebrow">ACTTOLOG DIVISION · DARKROOM</div>
             <h1 className="h1 mt-5 max-w-[22ch]">{d?.name.en || 'Darkroom'}</h1>
-            <p className="font-display font-bold text-[clamp(1.2rem,2.6vw,1.9rem)] tracking-[-.02em] gtext mt-4">
+            <p className="font-display gtext mt-4 text-[clamp(1.2rem,2.6vw,1.9rem)] font-bold tracking-[-.02em]">
               Find What Others Struggle to Find.
             </p>
             <p className="lead mt-5">{d?.desc.en}</p>
-            <p className="mut text-[13.2px] leading-relaxed mt-3 max-w-[72ch]">{d?.desc.ne}</p>
+            <p className="mut mt-3 max-w-[72ch] text-[13.2px] leading-relaxed">{d?.desc.ne}</p>
           </Reveal>
         </div>
       </section>
 
-      <WorldPortal world="darkroom" title="Darkroom World" titleNe="डार्करूम वर्ल्ड"
+      <WorldPortal
+        world="darkroom"
+        title="Darkroom World"
+        titleNe="डार्करूम वर्ल्ड"
         subtitle="The dark cinematic knowledge environment — discovery, verified resources and the AI core, connected by hotspots."
-        accent="var(--gold)" earthLink="/explore?mode=earth&lat=52.52000&lng=13.40500" />
+        accent="var(--gold)"
+        earthLink="/explore?mode=earth&lat=52.52000&lng=13.40500"
+      />
 
       <section className="sec pt-2">
         <div className="wrap">

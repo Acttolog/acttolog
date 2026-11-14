@@ -27,7 +27,7 @@ export function googleAuthUrl(state: string, redirectUri: string): string {
 }
 
 export interface GoogleProfile {
-  sub: string;        // provider ID
+  sub: string; // provider ID
   email: string;
   email_verified: boolean;
   name: string;

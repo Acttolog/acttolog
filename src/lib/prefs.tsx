@@ -5,7 +5,20 @@ import type { ReactNode } from 'react';
 
 /** Theme (dark default) + currency (NPR default) — both remembered. */
 
-type Theme = 'dark' | 'light' | 'midnight' | 'aurora' | 'sunset' | 'paper' | 'cyber' | 'royal' | 'ocean' | 'rose';
+type Theme =
+  | 'dark'
+  | 'light'
+  | 'midnight'
+  | 'aurora'
+  | 'sunset'
+  | 'paper'
+  | 'cyber'
+  | 'royal'
+  | 'ocean'
+  | 'rose'
+  | 'nebula'
+  | 'titanium'
+  | 'holo';
 export const THEMES: { id: Theme; label: string; sw: [string, string] }[] = [
   { id: 'dark', label: 'Obsidian (default)', sw: ['#05060c', '#35e0ff'] },
   { id: 'light', label: 'Daylight', sw: ['#f4f7fc', '#0aa0cf'] },
@@ -17,6 +30,9 @@ export const THEMES: { id: Theme; label: string; sw: [string, string] }[] = [
   { id: 'royal', label: 'Royal Violet Gold', sw: ['#0a0618', '#c084fc'] },
   { id: 'ocean', label: 'Deep Ocean', sw: ['#02121c', '#38dfff'] },
   { id: 'rose', label: 'Rose Quartz', sw: ['#14060f', '#ff6fa5'] },
+  { id: 'nebula', label: 'Nebula Violet', sw: ['#070312', '#a78bfa'] },
+  { id: 'titanium', label: 'Titanium Light', sw: ['#e8ebf0', '#0e7490'] },
+  { id: 'holo', label: 'Holographic Ice', sw: ['#04070d', '#7df9ff'] },
 ];
 type Currency = 'NPR' | 'USD';
 
@@ -41,7 +57,9 @@ export function PrefsProvider({ usdToNpr, children }: { usdToNpr: number; childr
       if (THEMES.some((x) => x.id === t)) setTheme(t as Theme);
       const c = localStorage.getItem('act_cur');
       if (c === 'USD' || c === 'NPR') setCurrencyState(c);
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }, []);
 
   useEffect(() => {
@@ -49,20 +67,34 @@ export function PrefsProvider({ usdToNpr, children }: { usdToNpr: number; childr
     try {
       localStorage.setItem('act_theme', theme);
       const m = document.querySelector('meta[name=theme-color]');
-      if (m) m.setAttribute('content', theme === 'dark' ? '#05060c' : '#f4f7fc');
+      if (m)
+        m.setAttribute(
+          'content',
+          theme === 'light' || theme === 'paper' || theme === 'titanium' ? '#f4f7fc' : '#05060c',
+        );
       window.dispatchEvent(new CustomEvent('acttolog:theme', { detail: theme }));
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }, [theme]);
 
   const setThemeSafe = useCallback((t: Theme) => setTheme(t), []);
-  const toggleTheme = useCallback(() => setTheme((t) => {
-    const i = THEMES.findIndex((x) => x.id === t);
-    return THEMES[(i + 1) % THEMES.length].id;
-  }), []);
+  const toggleTheme = useCallback(
+    () =>
+      setTheme((t) => {
+        const i = THEMES.findIndex((x) => x.id === t);
+        return THEMES[(i + 1) % THEMES.length].id;
+      }),
+    [],
+  );
 
   const setCurrency = useCallback((c: Currency) => {
     setCurrencyState(c);
-    try { localStorage.setItem('act_cur', c); } catch { /* ignore */ }
+    try {
+      localStorage.setItem('act_cur', c);
+    } catch {
+      /* ignore */
+    }
   }, []);
 
   const value = useMemo(

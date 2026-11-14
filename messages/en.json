@@ -97,6 +97,7 @@
   "modules": "Modules",
   "lessons": "Lessons",
   "play": "Play",
+  "playNow": "Play now",
   "dev": "In development",
   "consent.t": "Privacy & consent",
   "consent.b": "Necessary processing keeps Acttolog working. Analytics and personalisation are optional and start only after you allow them. Google identity and analytics are kept logically separate — you can browse anonymously.",

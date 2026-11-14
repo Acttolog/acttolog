@@ -22,13 +22,21 @@ export function FirstVisit() {
 
   useEffect(() => {
     if (window.location.pathname !== '/' || !decided) return;
-    try { if (localStorage.getItem(KEY)) return; } catch { return; }
+    try {
+      if (localStorage.getItem(KEY)) return;
+    } catch {
+      return;
+    }
     const t = setTimeout(() => setShow(true), 900); // let the world paint first
     return () => clearTimeout(t);
   }, [decided]);
 
   const done = (action: string) => {
-    try { localStorage.setItem(KEY, '1'); } catch { /* private mode */ }
+    try {
+      localStorage.setItem(KEY, '1');
+    } catch {
+      /* private mode */
+    }
     setShow(false);
     track('cta_interaction', { cta: 'first_visit', action });
   };
@@ -36,36 +44,80 @@ export function FirstVisit() {
   if (!show) return null;
 
   return (
-    <div className="fixed inset-0 z-[80] grid place-items-center p-4" role="dialog" aria-modal="true"
+    <div
+      className="fixed inset-0 z-[80] grid place-items-center p-4"
+      role="dialog"
+      aria-modal="true"
       aria-label={ne ? 'ACTTOLOG संसारमा स्वागत छ' : 'Welcome to Acttolog World'}
-      style={{ background: 'color-mix(in srgb, var(--bg) 82%, transparent)', backdropFilter: 'blur(10px)' }}>
-      <div className="panel fv-card p-8 sm:p-10 text-center relative overflow-hidden" style={{ width: 'min(680px,94vw)' }}>
+      style={{ background: 'color-mix(in srgb, var(--bg) 82%, transparent)', backdropFilter: 'blur(10px)' }}
+    >
+      <div
+        className="panel fv-card relative overflow-hidden p-8 text-center sm:p-10"
+        style={{ width: 'min(680px,94vw)' }}
+      >
         {/* portal rings */}
-        <div aria-hidden="true" className="absolute left-1/2 -translate-x-1/2 -top-24 w-[340px] h-[340px] rounded-full pointer-events-none"
-          style={{ background: 'radial-gradient(circle, color-mix(in srgb,var(--cy) 16%,transparent) 0%, transparent 62%)' }} />
-        <div aria-hidden="true" className="absolute left-1/2 top-8 -translate-x-1/2 w-16 h-16 rounded-full"
-          style={{ border: '1px solid color-mix(in srgb,var(--cy) 55%,transparent)', boxShadow: '0 0 34px color-mix(in srgb,var(--cy) 30%,transparent), inset 0 0 18px color-mix(in srgb,var(--vi) 25%,transparent)', animation: 'fvSpin 9s linear infinite' }} />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -top-24 left-1/2 h-[340px] w-[340px] -translate-x-1/2 rounded-full"
+          style={{
+            background:
+              'radial-gradient(circle, color-mix(in srgb,var(--cy) 16%,transparent) 0%, transparent 62%)',
+          }}
+        />
+        <div
+          aria-hidden="true"
+          className="absolute top-8 left-1/2 h-16 w-16 -translate-x-1/2 rounded-full"
+          style={{
+            border: '1px solid color-mix(in srgb,var(--cy) 55%,transparent)',
+            boxShadow:
+              '0 0 34px color-mix(in srgb,var(--cy) 30%,transparent), inset 0 0 18px color-mix(in srgb,var(--vi) 25%,transparent)',
+            animation: 'fvSpin 9s linear infinite',
+          }}
+        />
 
         <div className="eyebrow mt-14 mb-2">ACTTOLOG WORLD</div>
-        <h2 className="font-display font-bold text-[clamp(1.5rem,4.4vw,2.15rem)] tracking-[-.02em] gtext leading-tight">
+        <h2 className="font-display gtext text-[clamp(1.5rem,4.4vw,2.15rem)] leading-tight font-bold tracking-[-.02em]">
           {ne ? 'ACTTOLOG संसारमा स्वागत छ' : 'WELCOME TO ACTTOLOG WORLD'}
         </h2>
-        <p className="mono text-[10.6px] tracking-[.22em] mt-3" style={{ color: 'var(--cy)' }}>
+        <p className="mono mt-3 text-[10.6px] tracking-[.22em]" style={{ color: 'var(--cy)' }}>
           {ne ? 'खोज्नुहोस्। सिक्नुहोस्। बनाउनुहोस्। जोडिनुहोस्।' : 'DISCOVER. LEARN. CREATE. CONNECT.'}
         </p>
-        <div className="flex flex-wrap flex-col sm:flex-row gap-2.5 justify-center mt-8">
-          <button className="btn btn-p !px-5" onClick={() => { done('earth'); router.push('/explore?mode=earth'); }}>
-            <Icon name="globe" size={16} />{ne ? 'पृथ्वी अन्वेषण' : 'EXPLORE EARTH'}
+        <div className="mt-8 flex flex-col flex-wrap justify-center gap-2.5 sm:flex-row">
+          <button
+            className="btn btn-p !px-5"
+            onClick={() => {
+              done('earth');
+              router.push('/explore?mode=earth');
+            }}
+          >
+            <Icon name="globe" size={16} />
+            {ne ? 'पृथ्वी अन्वेषण' : 'EXPLORE EARTH'}
           </button>
-          <button className="btn btn-g !px-5" onClick={() => { done('enter'); document.getElementById('intro')?.scrollIntoView({ behavior: 'smooth' }); }}>
-            <Icon name="rocket" size={16} />{ne ? 'एक्टोलग प्रवेश' : 'ENTER ACTTOLOG'}
+          <button
+            className="btn btn-g !px-5"
+            onClick={() => {
+              done('enter');
+              document.getElementById('intro')?.scrollIntoView({ behavior: 'smooth' });
+            }}
+          >
+            <Icon name="rocket" size={16} />
+            {ne ? 'एक्टोलग प्रवेश' : 'ENTER ACTTOLOG'}
           </button>
-          <button className="btn btn-g !px-5" onClick={() => { done('search'); window.dispatchEvent(new CustomEvent('acttolog:search-open')); }}>
-            <Icon name="search" size={16} />{ne ? 'संसार खोज' : 'SEARCH WORLD'}
+          <button
+            className="btn btn-g !px-5"
+            onClick={() => {
+              done('search');
+              window.dispatchEvent(new CustomEvent('acttolog:search-open'));
+            }}
+          >
+            <Icon name="search" size={16} />
+            {ne ? 'संसार खोज' : 'SEARCH WORLD'}
           </button>
         </div>
-        <button className="dim text-[11.6px] mt-6 underline underline-offset-4 hover:text-[var(--txt)] transition-colors"
-          onClick={() => done('skip')}>
+        <button
+          className="dim mt-6 text-[11.6px] underline underline-offset-4 transition-colors hover:text-[var(--txt)]"
+          onClick={() => done('skip')}
+        >
           {ne ? 'स्किप गर्नुहोस्' : 'Skip — take me straight in'}
         </button>
       </div>

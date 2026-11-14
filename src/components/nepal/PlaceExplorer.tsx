@@ -5,6 +5,7 @@ import { useI18n } from '@/lib/i18n';
 import { useSaved } from '@/lib/saved';
 import { Icon } from '@/components/ui/Icon';
 import { NepalShot } from './NepalShot';
+import { SpatialFrame } from '@/components/spatial/SpatialFrame';
 import type { ShotSource } from '@/lib/nepal-media';
 import type { NepalPlace, NepalRegion } from '@/lib/content/nepal';
 
@@ -30,12 +31,23 @@ const TYPE_LABEL: Record<string, { en: string; ne: string }> = {
 
 /** Deterministic procedural palette per place type when no photograph exists. */
 const TYPE_ART: Record<string, string> = {
-  mountain: 'himalaya', viewpoint: 'himalaya', cave: 'himalaya', landscape: 'himalaya',
-  lake: 'himalaya', monastery: 'newar', heritage: 'newar', city: 'mithila',
-  village: 'newar', wildlife: 'terai',
+  mountain: 'himalaya',
+  viewpoint: 'himalaya',
+  cave: 'himalaya',
+  landscape: 'himalaya',
+  lake: 'himalaya',
+  monastery: 'newar',
+  heritage: 'newar',
+  city: 'mithila',
+  village: 'newar',
+  wildlife: 'terai',
 };
 
-export function PlaceExplorer({ places, regions, shots }: {
+export function PlaceExplorer({
+  places,
+  regions,
+  shots,
+}: {
   places: NepalPlace[];
   regions: NepalRegion[];
   /** place id → scanned photo, only for places that actually have one. */
@@ -65,8 +77,15 @@ export function PlaceExplorer({ places, regions, shots }: {
       if (type !== 'all' && p.type !== type) return false;
       if (!needle) return true;
       const hay = [
-        p.name.en, p.name.ne || '', L(p.desc), p.tags.join(' '), regionName[p.region] || '', p.type,
-      ].join(' ').toLowerCase();
+        p.name.en,
+        p.name.ne || '',
+        L(p.desc),
+        p.tags.join(' '),
+        regionName[p.region] || '',
+        p.type,
+      ]
+        .join(' ')
+        .toLowerCase();
       return hay.includes(needle);
     });
   }, [places, region, type, q, L, regionName]);
@@ -84,26 +103,32 @@ export function PlaceExplorer({ places, regions, shots }: {
             aria-label={ne ? 'स्थान खोज्नुहोस्' : 'Search places'}
           />
           {q && (
-            <button className="np-flt-clear mono" onClick={() => setQ('')} aria-label="Clear search">✕</button>
+            <button className="np-flt-clear mono" onClick={() => setQ('')} aria-label="Clear search">
+              ✕
+            </button>
           )}
         </div>
         <div className="np-flt-row" role="group" aria-label="Filter by region">
-          <button className={`chip${region === 'all' ? ' on' : ''}`} onClick={() => setRegion('all')}>
+          <button className={`chip${region === 'all' ? 'on' : ''}`} onClick={() => setRegion('all')}>
             {ne ? 'सबै क्षेत्र' : 'ALL REGIONS'}
           </button>
           {regions.map((r) => (
-            <button key={r.id} className={`chip${region === r.id ? ' on' : ''}`}
-              onClick={() => setRegion(r.id)} style={{ ['--a']: r.accent } as React.CSSProperties}>
+            <button
+              key={r.id}
+              className={`chip${region === r.id ? 'on' : ''}`}
+              onClick={() => setRegion(r.id)}
+              style={{ ['--a']: r.accent } as React.CSSProperties}
+            >
               {L(r.name)}
             </button>
           ))}
         </div>
         <div className="np-flt-row" role="group" aria-label="Filter by type">
-          <button className={`chip${type === 'all' ? ' on' : ''}`} onClick={() => setType('all')}>
+          <button className={`chip${type === 'all' ? 'on' : ''}`} onClick={() => setType('all')}>
             {ne ? 'सबै प्रकार' : 'ALL TYPES'}
           </button>
           {types.map((t) => (
-            <button key={t} className={`chip${type === t ? ' on' : ''}`} onClick={() => setType(t)}>
+            <button key={t} className={`chip${type === t ? 'on' : ''}`} onClick={() => setType(t)}>
               {(TYPE_LABEL[t] || { en: t })[locale === 'ne' && TYPE_LABEL[t]?.ne ? 'ne' : 'en']}
             </button>
           ))}
@@ -121,7 +146,7 @@ export function PlaceExplorer({ places, regions, shots }: {
           const real = Boolean(shot);
           return (
             <article key={p.id} id={`place-${p.id}`} className="np-card card">
-              <div className="np-card-media">
+              <SpatialFrame className="np-card-media" clean intensity={7}>
                 <NepalShot
                   shot={shot}
                   alt={real ? `${p.name.en} — ${regionName[p.region] || 'Nepal'}` : ''}
@@ -130,20 +155,33 @@ export function PlaceExplorer({ places, regions, shots }: {
                   className="np-card-img"
                 />
                 <div className="np-card-badges">
-                  <span className="tag">{(TYPE_LABEL[p.type] || { en: p.type })[ne && TYPE_LABEL[p.type]?.ne ? 'ne' : 'en']}</span>
+                  <span className="tag">
+                    {(TYPE_LABEL[p.type] || { en: p.type })[ne && TYPE_LABEL[p.type]?.ne ? 'ne' : 'en']}
+                  </span>
                   {p.unesco && <span className="tag np-unesco">UNESCO</span>}
                 </div>
                 {!real && <span className="mono np-card-art">{ne ? 'विवरण चित्र' : 'ILLUSTRATED'}</span>}
-              </div>
+              </SpatialFrame>
               <div className="np-card-body">
-                <div className="mono np-card-region" style={{ ['--a']: (regions.find((r) => r.id === p.region)?.accent) || 'var(--cy)' } as React.CSSProperties}>
+                <div
+                  className="mono np-card-region"
+                  style={
+                    {
+                      ['--a']: regions.find((r) => r.id === p.region)?.accent || 'var(--cy)',
+                    } as React.CSSProperties
+                  }
+                >
                   {regionName[p.region]}
                 </div>
                 <h3 className="np-card-title">{L(p.name)}</h3>
                 <p className="np-card-desc">{L(p.desc)}</p>
                 {p.note && <p className="np-card-note">{L(p.note)}</p>}
                 <div className="np-card-tags">
-                  {p.tags.map((t) => <span key={t} className="tag">{t}</span>)}
+                  {p.tags.map((t) => (
+                    <span key={t} className="tag">
+                      {t}
+                    </span>
+                  ))}
                 </div>
                 <div className="np-card-foot">
                   <span className="mono np-card-best">
@@ -156,11 +194,15 @@ export function PlaceExplorer({ places, regions, shots }: {
                       aria-pressed={saved}
                     >
                       <Icon name={saved ? 'check' : 'heart'} size={13} />
-                      {saved ? (ne ? 'सुरक्षित' : 'SAVED') : (ne ? 'सुरक्षित गर्नु' : 'SAVE')}
+                      {saved ? (ne ? 'सुरक्षित' : 'SAVED') : ne ? 'सुरक्षित गर्नु' : 'SAVE'}
                     </button>
-                    <a className="btn btn-g btn-sm" href={`/explore?mode=map&lat=${p.coords[0]}&lng=${p.coords[1]}`}
-                      aria-label={`View ${p.name.en} on the map`}>
-                      <Icon name="globe" size={13} />{ne ? 'नक्सामा' : 'MAP'}
+                    <a
+                      className="btn btn-g btn-sm"
+                      href={`/explore?mode=map&lat=${p.coords[0]}&lng=${p.coords[1]}`}
+                      aria-label={`View ${p.name.en} on the map`}
+                    >
+                      <Icon name="globe" size={13} />
+                      {ne ? 'नक्सामा' : 'MAP'}
                     </a>
                   </div>
                 </div>
@@ -173,7 +215,11 @@ export function PlaceExplorer({ places, regions, shots }: {
       {!filtered.length && (
         <div className="panel np-empty">
           <div className="eyebrow">{ne ? 'कुनै भेटिएन' : 'NOTHING FOUND'}</div>
-          <p className="mut">{ne ? 'फिल्टर बदल्नुहोस् वा खोज शब्द हटाउनुहोस्।' : 'Loosen the filters or clear the search — every place here is catalogued by hand.'}</p>
+          <p className="mut">
+            {ne
+              ? 'फिल्टर बदल्नुहोस् वा खोज शब्द हटाउनुहोस्।'
+              : 'Loosen the filters or clear the search — every place here is catalogued by hand.'}
+          </p>
         </div>
       )}
 

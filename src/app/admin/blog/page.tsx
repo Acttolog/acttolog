@@ -7,12 +7,28 @@ export const metadata: Metadata = { title: 'Blog | Admin', robots: { index: fals
 
 export default function Page() {
   const db = getDB();
-  const rows = (db.posts).map((r) => ({ ...r, __href: ((r)=>`/blog/${r.slug}`)(r) })) as Record<string, unknown>[];
+  const rows = db.posts.map((r) => ({ ...r, __href: ((r) => `/blog/${r.slug}`)(r) })) as Record<
+    string,
+    unknown
+  >[];
   return (
     <div>
-      <AHead title="Blog" desc="Create, edit, schedule and publish articles. Language + Audience + Access + Status are independent fields." />
+      <AHead
+        title="Blog"
+        desc="Create, edit, schedule and publish articles. Language + Audience + Access + Status are independent fields."
+      />
       <DbNotice configured={dbReady()} />
-      <CollectionTable rows={rows} cols={[['title','Title'],['category','Category'],['status','Status'],['access','Access'],['publishedAt','Published'],['author','Author']].map(([key, label]) => ({ key, label }))} />
+      <CollectionTable
+        rows={rows}
+        cols={[
+          ['title', 'Title'],
+          ['category', 'Category'],
+          ['status', 'Status'],
+          ['access', 'Access'],
+          ['publishedAt', 'Published'],
+          ['author', 'Author'],
+        ].map(([key, label]) => ({ key, label }))}
+      />
     </div>
   );
 }

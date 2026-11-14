@@ -41,7 +41,12 @@ const secret = () => {
 };
 
 export async function createSessionCookie(user: SessionUser): Promise<void> {
-  const token = await new SignJWT({ role: user.role, name: user.name, picture: user.picture || '', email: user.email })
+  const token = await new SignJWT({
+    role: user.role,
+    name: user.name,
+    picture: user.picture || '',
+    email: user.email,
+  })
     .setProtectedHeader({ alg: 'HS256' })
     .setSubject(user.uid)
     .setIssuedAt()
@@ -94,7 +99,10 @@ export function resolveRole(email: string, claimed?: unknown): SessionUser['role
   const owner = (process.env.OWNER_EMAIL || '').trim().toLowerCase();
   const e = email.toLowerCase();
   if (owner && e === owner) return 'Owner';
-  const admins = (process.env.ADMIN_EMAILS || '').split(',').map((x) => x.trim().toLowerCase()).filter(Boolean);
+  const admins = (process.env.ADMIN_EMAILS || '')
+    .split(',')
+    .map((x) => x.trim().toLowerCase())
+    .filter(Boolean);
   if (admins.includes(e)) return 'Admin';
   // DB-backed role overrides (Editor/Contributor future) arrive via claimed role
   if (claimed === 'Admin' && admins.includes(e)) return 'Admin';

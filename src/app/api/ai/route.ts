@@ -11,10 +11,15 @@ const Body = z.object({
   message: z.string().min(1).max(2000),
   mode: z.enum(['act', 'actweb']).default('act'),
   locale: z.enum(['en', 'ne']).default('en'),
-  history: z.array(z.object({
-    role: z.enum(['user', 'assistant']),
-    text: z.string().max(4000),
-  })).max(20).optional(),
+  history: z
+    .array(
+      z.object({
+        role: z.enum(['user', 'assistant']),
+        text: z.string().max(4000),
+      }),
+    )
+    .max(20)
+    .optional(),
   conversationId: z.string().max(64).optional(),
 });
 

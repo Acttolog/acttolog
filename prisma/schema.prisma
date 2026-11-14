@@ -32,11 +32,14 @@ model User {
   submissions  DarkroomSubmission[]
   gameScores   GameScore[]
   gameProgress GameProgress[]
+  auditLogs    AuditLog[]
 }
 
 enum Role {
   OWNER
   ADMIN
+  ANALYST     // intelligence: datasets, reports, approved queries, exports (§25)
+  VIEWER      // intelligence: assigned dashboards + authorized reports only (§25)
   EDITOR      // future (§52)
   CONTRIBUTOR // future (§52)
   MEMBER
@@ -547,4 +550,54 @@ model RecentItem {
 
   @@unique([userId, kind, refId])
   @@index([userId, at])
+}
+
+// ─── Intelligence platform (§25, §27): additive, never duplicates above ──
+
+// Append-only audit trail for sensitive intelligence operations. Actor email is
+// snapshotted so the record survives user deletion; meta must be redacted of
+// secrets/PII before writing (see lib/intelligence/audit.ts).
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?
+  actor      User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  actorEmail String?
+  action     String // e.g. "connector.create", "report.export", "role.change"
+  target     String? // resource id or route
+  meta       Json? // redacted, non-secret detail
+  ts         DateTime @default(now())
+
+  @@index([ts])
+  @@index([actorId, ts])
+  @@index([action, ts])
+}
+
+// Persisted metric dictionary — mirrors the code definitions in lib/metrics.ts so
+// the dashboard can show the exact formula behind every number (honesty §48).
+model MetricDefinition {
+  key        String   @id // e.g. "page_views", "engaged_rate"
+  label      String
+  unit       String // count | percent | ms
+  definition String // human-readable formula
+  updatedAt  DateTime @updatedAt
+
+  snapshots  MetricSnapshot[]
+}
+
+// A measured metric value over a period. value=null means "insufficient measured
+// data" — never a fabricated zero. Forecast outputs live in ForecastRun, not here.
+model MetricSnapshot {
+  id          String   @id @default(cuid())
+  metricKey   String
+  metric      MetricDefinition @relation(fields: [metricKey], references: [key], onDelete: Cascade)
+  periodStart DateTime
+  periodEnd   DateTime
+  value       Float?
+  numerator   Int?
+  denominator Int?
+  dims        Json? // {div, region, device}
+  computedAt  DateTime @default(now())
+
+  @@index([metricKey, periodStart])
+  @@index([computedAt])
 }

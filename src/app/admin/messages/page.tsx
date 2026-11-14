@@ -7,7 +7,10 @@ import { MessagesClient } from './MessagesClient';
 export default function Page() {
   return (
     <div>
-      <AHead title="Contact Messages" desc="Private inbox. Public form only — never shows the owner email; routes here with rate limiting and honeypot protection." />
+      <AHead
+        title="Contact Messages"
+        desc="Private inbox. Public form only — never shows the owner email; routes here with rate limiting and honeypot protection."
+      />
       <MessagesClient />
     </div>
   );

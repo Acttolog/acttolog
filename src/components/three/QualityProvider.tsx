@@ -3,8 +3,12 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import {
-  detectTier, readQualitySetting, resolveTier, writeQualitySetting,
-  type QualitySetting, type QualityTier,
+  detectTier,
+  readQualitySetting,
+  resolveTier,
+  writeQualitySetting,
+  type QualitySetting,
+  type QualityTier,
 } from './tier';
 
 /**

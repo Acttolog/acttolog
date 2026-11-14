@@ -12,7 +12,11 @@ export const QUALITY_SETTINGS: QualitySetting[] = ['auto', 'high', 'medium', 'lo
 
 /** Compact deck labels — single initials collide once MOBILE exists. */
 export const QUALITY_LABEL: Record<QualitySetting, string> = {
-  auto: 'AUTO', high: 'HI', medium: 'MED', low: 'LO', mobile: 'MOB',
+  auto: 'AUTO',
+  high: 'HI',
+  medium: 'MED',
+  low: 'LO',
+  mobile: 'MOB',
 };
 
 const isSetting = (v: unknown): v is QualitySetting =>
@@ -59,12 +63,18 @@ export function readQualitySetting(): QualitySetting {
     if (isSetting(q)) return q;
     const stored = localStorage.getItem(QUALITY_KEY);
     if (isSetting(stored)) return stored;
-  } catch { /* private mode */ }
+  } catch {
+    /* private mode */
+  }
   return 'auto';
 }
 
 export function writeQualitySetting(s: QualitySetting): void {
-  try { localStorage.setItem(QUALITY_KEY, s); } catch { /* ignore */ }
+  try {
+    localStorage.setItem(QUALITY_KEY, s);
+  } catch {
+    /* ignore */
+  }
 }
 
 export function prefersReducedMotion(): boolean {
@@ -95,8 +105,52 @@ export interface TierConfig {
 }
 
 export const TIER_CONFIG: Record<QualityTier, TierConfig> = {
-  high: { dpr: [1, 2], sphereSegments: 96, stars: 5000, particles: 700, bloom: true, pulses: true, labels: true, rings: 3, autoRotate: 0.05, maxTileZoom: 18 },
-  medium: { dpr: [1, 1.5], sphereSegments: 64, stars: 2500, particles: 300, bloom: false, pulses: false, labels: true, rings: 2, autoRotate: 0.05, maxTileZoom: 17 },
-  low: { dpr: [1, 1], sphereSegments: 40, stars: 900, particles: 0, bloom: false, pulses: false, labels: false, rings: 2, autoRotate: 0.03, maxTileZoom: 16 },
-  mobile: { dpr: [1, 1.25], sphereSegments: 44, stars: 1100, particles: 0, bloom: false, pulses: false, labels: false, rings: 1, autoRotate: 0.035, maxTileZoom: 16 },
+  high: {
+    dpr: [1, 2],
+    sphereSegments: 96,
+    stars: 5000,
+    particles: 700,
+    bloom: true,
+    pulses: true,
+    labels: true,
+    rings: 3,
+    autoRotate: 0.05,
+    maxTileZoom: 18,
+  },
+  medium: {
+    dpr: [1, 1.5],
+    sphereSegments: 64,
+    stars: 2500,
+    particles: 300,
+    bloom: false,
+    pulses: false,
+    labels: true,
+    rings: 2,
+    autoRotate: 0.05,
+    maxTileZoom: 17,
+  },
+  low: {
+    dpr: [1, 1],
+    sphereSegments: 40,
+    stars: 900,
+    particles: 0,
+    bloom: false,
+    pulses: false,
+    labels: false,
+    rings: 2,
+    autoRotate: 0.03,
+    maxTileZoom: 16,
+  },
+  mobile: {
+    dpr: [1, 1.25],
+    sphereSegments: 44,
+    stars: 1100,
+    particles: 0,
+    bloom: false,
+    pulses: false,
+    labels: false,
+    rings: 1,
+    autoRotate: 0.035,
+    maxTileZoom: 16,
+  },
 };

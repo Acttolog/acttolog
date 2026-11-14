@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Reveal } from '@/components/ui/Reveal';
 import { Icon } from '@/components/ui/Icon';
+import { SpatialFrame } from '@/components/spatial/SpatialFrame';
 import { OfferActions } from './OfferActions';
 import { getDB, pub } from '@/lib/content';
 import { resolveImage, fdate } from '@/lib/utils';
@@ -30,51 +31,82 @@ export default async function OfferPage({ params }: { params: Promise<{ slug: st
   if (!offer || (offer.status !== 'published' && offer.status !== 'scheduled')) notFound();
 
   const division = db.divisions.find((d) => d.id === offer.division);
-  const related = pub(db.offers).filter((o) => o.id !== offer.id && o.division === offer.division).slice(0, 3);
+  const related = pub(db.offers)
+    .filter((o) => o.id !== offer.id && o.division === offer.division)
+    .slice(0, 3);
 
   return (
     <section className="pt-[calc(var(--nav)+48px)] pb-16">
       <div className="wrap">
-        <nav className="flex items-center gap-2 text-[12.3px] dim mb-8 flex-wrap" aria-label="Breadcrumb">
-          <Link href="/" className="hover:text-[var(--cy)]">Home</Link><span>/</span>
-          <Link href="/offers" className="hover:text-[var(--cy)]">Offers</Link><span>/</span>
+        <nav className="dim mb-8 flex flex-wrap items-center gap-2 text-[12.3px]" aria-label="Breadcrumb">
+          <Link href="/" className="hover:text-[var(--cy)]">
+            Home
+          </Link>
+          <span>/</span>
+          <Link href="/offers" className="hover:text-[var(--cy)]">
+            Offers
+          </Link>
+          <span>/</span>
           <span style={{ color: 'var(--txt)' }}>{offer.title.en}</span>
         </nav>
 
-        <div className="grid lg:grid-cols-[1.35fr_.65fr] gap-6 items-start">
+        <div className="grid items-start gap-6 lg:grid-cols-[1.35fr_.65fr]">
           <Reveal>
             <div className="panel overflow-hidden">
-              <div className="relative h-[200px] sm:h-[240px]">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={resolveImage(offer.art ? `art:${offer.art}` : '', 'offers')} alt="" className="w-full h-full object-cover" />
-                <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg,transparent 30%,color-mix(in srgb,var(--bg) 90%,transparent))' }} />
+              <SpatialFrame className="relative h-[200px] sm:h-[240px]" intensity={6} hud="OFFER · 3D">
+                {}
+                <img
+                  src={resolveImage(offer.art ? `art:${offer.art}` : '', 'offers')}
+                  alt=""
+                  className="h-full w-full object-cover"
+                />
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background:
+                      'linear-gradient(180deg,transparent 30%,color-mix(in srgb,var(--bg) 90%,transparent))',
+                  }}
+                />
                 <div className="absolute bottom-5 left-6 sm:left-8">
                   <span className="badge b-mut mb-2">{division ? division.name.en : offer.division}</span>
-                  <h1 className="font-display font-bold text-[clamp(1.6rem,3.8vw,2.5rem)] tracking-[-.025em]" style={{ color: offer.accent || 'var(--txt)' }}>
+                  <h1
+                    className="font-display text-[clamp(1.6rem,3.8vw,2.5rem)] font-bold tracking-[-.025em]"
+                    style={{ color: offer.accent || 'var(--txt)' }}
+                  >
                     {offer.title.en}
                   </h1>
                 </div>
-              </div>
+              </SpatialFrame>
               <div className="p-6 sm:p-9">
                 <p className="lead mb-4">{offer.short.en}</p>
-                <p className="mut text-[14px] leading-relaxed mb-3">{offer.desc.en}</p>
-                {offer.desc.ne && <p className="dim text-[13.2px] leading-relaxed mb-8">{offer.desc.ne}</p>}
+                <p className="mut mb-3 text-[14px] leading-relaxed">{offer.desc.en}</p>
+                {offer.desc.ne && <p className="dim mb-8 text-[13.2px] leading-relaxed">{offer.desc.ne}</p>}
 
                 <div className="eyebrow mb-4">WHAT IS INCLUDED</div>
-                <ul className="space-y-3 mb-8">
+                <ul className="mb-8 space-y-3">
                   {(offer.features || []).map((f, i) => (
-                    <li key={i} className="flex items-start gap-3 text-[13.6px] mut">
-                      <span style={{ color: 'var(--ok)', flex: 'none', marginTop: 3 }}><Icon name="check" size={14} /></span>
-                      <span>{f.en}{f.ne && <span className="dim block text-[12.4px] mt-0.5">{f.ne}</span>}</span>
+                    <li key={i} className="mut flex items-start gap-3 text-[13.6px]">
+                      <span style={{ color: 'var(--ok)', flex: 'none', marginTop: 3 }}>
+                        <Icon name="check" size={14} />
+                      </span>
+                      <span>
+                        {f.en}
+                        {f.ne && <span className="dim mt-0.5 block text-[12.4px]">{f.ne}</span>}
+                      </span>
                     </li>
                   ))}
                 </ul>
 
                 {(offer.terms.en || offer.terms.ne) && (
-                  <div className="rounded-xl border p-5" style={{ borderColor: 'var(--line)', background: 'var(--panel2)' }}>
-                    <div className="mono text-[9.7px] tracking-[.2em] dim mb-2">TERMS</div>
+                  <div
+                    className="rounded-xl border p-5"
+                    style={{ borderColor: 'var(--line)', background: 'var(--panel2)' }}
+                  >
+                    <div className="mono dim mb-2 text-[9.7px] tracking-[.2em]">TERMS</div>
                     <p className="mut text-[12.8px] leading-relaxed">{offer.terms.en}</p>
-                    {offer.terms.ne && <p className="dim text-[12px] leading-relaxed mt-2">{offer.terms.ne}</p>}
+                    {offer.terms.ne && (
+                      <p className="dim mt-2 text-[12px] leading-relaxed">{offer.terms.ne}</p>
+                    )}
                   </div>
                 )}
               </div>
@@ -90,12 +122,16 @@ export default async function OfferPage({ params }: { params: Promise<{ slug: st
             {related.length > 0 && (
               <Reveal delay={140}>
                 <div className="panel p-6">
-                  <div className="eyebrow mb-4">MORE FROM {division ? division.name.en.toUpperCase() : 'ACTTOLOG'}</div>
+                  <div className="eyebrow mb-4">
+                    MORE FROM {division ? division.name.en.toUpperCase() : 'ACTTOLOG'}
+                  </div>
                   <div className="space-y-3">
                     {related.map((o) => (
-                      <Link key={o.id} href={`/offers/${o.slug}`} className="block group">
-                        <div className="font-display font-semibold text-[13.6px] group-hover:text-[var(--cy)] transition-colors">{o.title.en}</div>
-                        <div className="mut text-[12.2px] mt-0.5 line-clamp-1">{o.short.en}</div>
+                      <Link key={o.id} href={`/offers/${o.slug}`} className="group block">
+                        <div className="font-display text-[13.6px] font-semibold transition-colors group-hover:text-[var(--cy)]">
+                          {o.title.en}
+                        </div>
+                        <div className="mut mt-0.5 line-clamp-1 text-[12.2px]">{o.short.en}</div>
                       </Link>
                     ))}
                   </div>

@@ -37,12 +37,18 @@ export function GuidelinesTabs({ g }: { g: NepalGuide }) {
             id={`np-tab-${p.key}`}
             aria-selected={tab === p.key}
             aria-controls={`np-panel-${p.key}`}
-            className={`np-gt-tab${tab === p.key ? ' on' : ''}`}
+            className={`np-gt-tab${tab === p.key ? 'on' : ''}`}
             onClick={() => setTab(p.key)}
             onKeyDown={(e) => {
               const i = PANELS.findIndex((x) => x.key === tab);
-              if (e.key === 'ArrowRight') { e.preventDefault(); setTab(PANELS[(i + 1) % PANELS.length].key); }
-              if (e.key === 'ArrowLeft') { e.preventDefault(); setTab(PANELS[(i - 1 + PANELS.length) % PANELS.length].key); }
+              if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                setTab(PANELS[(i + 1) % PANELS.length].key);
+              }
+              if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                setTab(PANELS[(i - 1 + PANELS.length) % PANELS.length].key);
+              }
             }}
           >
             <Icon name={p.icon} size={14} />
@@ -53,8 +59,11 @@ export function GuidelinesTabs({ g }: { g: NepalGuide }) {
 
       <div className="np-gt-panels">
         <div
-          role="tabpanel" id="np-panel-permits" aria-labelledby="np-tab-permits"
-          hidden={tab !== 'permits'} className="np-gt-wrap np-gt-grid"
+          role="tabpanel"
+          id="np-panel-permits"
+          aria-labelledby="np-tab-permits"
+          hidden={tab !== 'permits'}
+          className="np-gt-wrap np-gt-grid"
         >
           {g.permits.map((p) => (
             <article key={p.id} className="panel np-gt-card">
@@ -68,8 +77,11 @@ export function GuidelinesTabs({ g }: { g: NepalGuide }) {
         </div>
 
         <ul
-          role="tabpanel" id="np-panel-etiquette" aria-labelledby="np-tab-etiquette"
-          hidden={tab !== 'etiquette'} className="np-gt-wrap np-gt-list"
+          role="tabpanel"
+          id="np-panel-etiquette"
+          aria-labelledby="np-tab-etiquette"
+          hidden={tab !== 'etiquette'}
+          className="np-gt-wrap np-gt-list"
         >
           {g.etiquette.map((e, i) => (
             <li key={i} className="np-gt-li">
@@ -80,8 +92,11 @@ export function GuidelinesTabs({ g }: { g: NepalGuide }) {
         </ul>
 
         <div
-          role="tabpanel" id="np-panel-safety" aria-labelledby="np-tab-safety"
-          hidden={tab !== 'safety'} className="np-gt-wrap np-gt-grid np-gt-grid-wide"
+          role="tabpanel"
+          id="np-panel-safety"
+          aria-labelledby="np-tab-safety"
+          hidden={tab !== 'safety'}
+          className="np-gt-wrap np-gt-grid np-gt-grid-wide"
         >
           {g.safety.map((s, i) => (
             <article key={i} className="panel np-gt-card np-gt-risk">
@@ -93,19 +108,26 @@ export function GuidelinesTabs({ g }: { g: NepalGuide }) {
         </div>
 
         <div
-          role="tabpanel" id="np-panel-practical" aria-labelledby="np-tab-practical"
-          hidden={tab !== 'practical'} className="np-gt-wrap np-gt-cols"
+          role="tabpanel"
+          id="np-panel-practical"
+          aria-labelledby="np-tab-practical"
+          hidden={tab !== 'practical'}
+          className="np-gt-wrap np-gt-cols"
         >
-          {([
-            ['visa', ne ? 'भिसा' : 'VISA & ENTRY'],
-            ['money', ne ? 'पैसा' : 'MONEY'],
-            ['getting_around', ne ? 'यातायात' : 'GETTING AROUND'],
-            ['essentials', ne ? 'अत्यावश्यक' : 'ESSENTIALS'],
-          ] as [keyof NepalGuide['practical'], string][]).map(([k, heading]) => (
+          {(
+            [
+              ['visa', ne ? 'भिसा' : 'VISA & ENTRY'],
+              ['money', ne ? 'पैसा' : 'MONEY'],
+              ['getting_around', ne ? 'यातायात' : 'GETTING AROUND'],
+              ['essentials', ne ? 'अत्यावश्यक' : 'ESSENTIALS'],
+            ] as [keyof NepalGuide['practical'], string][]
+          ).map(([k, heading]) => (
             <section key={k} className="panel np-gt-panel">
               <div className="eyebrow">{heading}</div>
               <ul className="np-gt-ul">
-                {g.practical[k].map((line, i) => <li key={i}>{L(line)}</li>)}
+                {g.practical[k].map((line, i) => (
+                  <li key={i}>{L(line)}</li>
+                ))}
               </ul>
             </section>
           ))}

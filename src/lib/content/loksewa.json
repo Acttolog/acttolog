@@ -1,0 +1,295 @@
+{
+  "meta": {
+    "name": { "en": "Loksewa Ghar", "ne": "लोकसेवा घर" },
+    "tagline": {
+      "en": "Everything the Nepal civil service exam needs, in one house — laws, syllabus, subjects, practice and a rank-first plan.",
+      "ne": "नेपालको लोकसेवा परीक्षालाई चाहिने सबै कुरा एउटै घरमा — कानून, पाठ्यक्रम, विषय, अभ्यास र रैंक ल्याउने योजना।"
+    },
+    "focusLevel": { "en": "Officer level — शाखा अधिकृत (Section Officer)", "ne": "अधिकृत तह — शाखा अधिकृत" },
+    "disclaimer": {
+      "en": "Syllabus structure, marks and negative marking are compiled from public information about the Commission's Section Officer selection. Always confirm the current year's syllabus and notice on psc.gov.np before you plan. Every question in the practice bank here was written by ACTTOLOG for study — it is not an official question paper.",
+      "ne": "पाठ्यक्रमको संरचना, अङ्क र नकारात्मक अङ्क कर्मचारी चयन आयोगको शाखा अधिकृत चयनसम्बन्धी सार्वजनिक सूचनाबाट संकलन गरिएको हो। योजना बनाउनुअघि आयोगको आधिकारिक साइट psc.gov.np मा हालको वर्षको विषयसूची र सूचना अनिवार्य पुष्टि गर्नुहोस्। यहाँको अभ्यास प्रश्नहरू ACTTOLOG ले पढाइका लागि लेखेको हो, आयोगको आधिकारिक प्रश्नपत्र होइन।"
+    },
+    "updatedSeason": { "en": "Compiled 2026 · verify each cycle", "ne": "संकलन २०२६ · हरेक चक्रमा जाँच्नुहोस्" }
+  },
+  "sources": [
+    { "name": { "en": "Public Service Commission (कर्मचारी चयन आयोग)", "ne": "कर्मचारी चयन आयोग" }, "url": "https://psc.gov.np", "use": { "en": "Notices, syllabi, results", "ne": "सूचना, विषयसूची, नतिजा" } },
+    { "name": { "en": "Nepal Law Commission", "ne": "नेपाल कानून आयोग" }, "url": "https://lawcommission.gov.np", "use": { "en": "Full text of acts and rules, free download", "ne": "ऐन र नियमावलीको पूर्ण पाठ, निःशुल्क डाउनलोड" } },
+    { "name": { "en": "Ministry of Home Affairs — Acts / Regulations", "ne": "गृह मन्त्रालय — ऐन / नियमावली" }, "url": "https://moha.gov.np/en/page/act-regulation", "use": { "en": "Latest amendments to governance laws", "ne": "सुशासन कानूनका नवीन संशोधनहरू" } },
+    { "name": { "en": "National Portal", "ne": "राष्ट्रीय पोर्टल" }, "url": "https://nepal.gov.np", "use": { "en": "Government structure, services, policies", "ne": "सरकारी संरचना, सेवा, नीति" } }
+  ],
+  "stages": [
+    { "id": "pre", "order": 1, "title": { "en": "First paper — Administration Aptitude", "ne": "पहिलो पेपर — प्रशासनिक योग्यता" }, "marks": 100, "negative": 0.2, "kind": { "en": "Objective (MCQ)", "ne": "वस्तुगत (MCQ)" }, "note": { "en": "This is the gate. Most candidates lose the race here, not in the written stage.", "ne": "यो ढोका हो। धेरैजसो प्रतिस्पर्धी यहीँ हार्छन्, लिखित चरणमा होइन।" } },
+    { "id": "governance", "order": 2, "title": { "en": "Governance System", "ne": "सुशासन प्रणाली" }, "marks": 100, "negative": 0, "kind": { "en": "Written", "ne": "लिखित" }, "note": { "en": "State, constitution, public service, resources.", "ne": "राज्य, संविधान, जनसेवा, स्रोतसाधन।" } },
+    { "id": "contemporary", "order": 3, "title": { "en": "Contemporary Issues", "ne": "समकालीन मुद्दा" }, "marks": 100, "negative": 0, "kind": { "en": "Written", "ne": "लिखित" }, "note": { "en": "Social, economic, development and environmental issues of Nepal.", "ne": "नेपालको सामाजिक, आर्थिक, विकासगतरूप र वातावरणीय मुद्दा।" } },
+    { "id": "service", "order": 4, "title": { "en": "Service Subject", "ne": "सेवा विषय" }, "marks": 100, "negative": 0, "kind": { "en": "Written", "ne": "लिखित" }, "note": { "en": "Management, revenue, accounting, auditing, federalism.", "ne": "व्यवस्थापन, राजस्व, लेखा, लेखा परीक्षण, संघीयता।" } },
+    { "id": "it", "order": 5, "title": { "en": "IT skill test", "ne": "सूविधा सीप परीक्षण" }, "marks": 10, "negative": 0, "kind": { "en": "Practical", "ne": "व्यावहारिक" }, "note": { "en": "Computer literacy — word, sheet, internet, official use.", "ne": "कम्प्युटर साक्षरता — वर्ड, शीट, इन्टरनेट, कार्यालय प्रयोग।" } },
+    { "id": "group", "order": 6, "title": { "en": "Group test", "ne": "सामूहिक परीक्षण" }, "marks": 10, "negative": 0, "kind": { "en": "Discussion", "ne": "छलफल" }, "note": { "en": "How you argue, listen and lead a group.", "ne": "तपाईंले समूहमा कसरी तर्क, सुनाइ र नेतृत्व गर्नुहुन्छ।" } },
+    { "id": "interview", "order": 7, "title": { "en": "Interview", "ne": "अन्तर्वार्ता" }, "marks": 60, "negative": 0, "kind": { "en": "Panel", "ne": "पैनल" }, "note": { "en": "Depth of service subject, clarity, composure.", "ne": "सेवा विषयको गहिराइ, स्पष्टता र शान्ति।" } }
+  ],
+  "papers": [
+    {
+      "slug": "aptitude",
+      "color": "var(--cy)",
+      "title": { "en": "Administration Aptitude", "ne": "प्रशासनिक योग्यता" },
+      "short": { "en": "Paper I · 100 marks · objective", "ne": "पहिलो पेपर · १०० अङ्क · वस्तुगत" },
+      "intro": {
+        "en": "The first paper tests speed with accuracy across five families: geography, history and polity with economy, science and technology, mental ability, and language. One mark for a right answer, and a fifth of it gone for a wrong one — so guessing is a skill you must train, not a habit you must keep.",
+        "ne": "पहिलो पेपरले पाँच परिवारमा गति र शुद्धता नाप्छ: भूगोल, इतिहास-राजनीति र अर्थतन्त्र, विज्ञान-प्रविधि, मानसिक क्षमता, र भाषा। सही उत्तरमा एक अङ्क, गलतमा त्यसको पाँचौं भाग घट्छ — त्यसैले अनुमान तालिम लिनुपर्ने सीप हो, बानी होइन।"
+      },
+      "strategy": {
+        "en": "Answer in three passes: certain first, probable second, blank last. With 20% negative marking, leaving a question empty is often the better bet than a coin flip.",
+        "ne": "तीन चरणमा उत्तर दिनुहोस्: पक्का पहिले, सम्भावित दोस्रो, खाली अन्त्यमा। २०% नकारात्मक अङ्कमा, प्रश्न खाली छोड्नु धाक्का भन्दा धेरैजसो राम्रो हुन्छ।"
+      },
+      "subjects": [
+        {
+          "slug": "geography",
+          "title": { "en": "Geography of Nepal and the world", "ne": "नेपाल र विश्वको भूगोल" },
+          "units": [
+            { "slug": "physical", "title": { "en": "Physical set-up", "ne": "भौतिक संरचना" }, "points": ["Himal, Pahad, Terai and the internal rivers", "River systems: Koshi, Gandaki, Karnali, Mahanadi", "Climate zones and their effect on settlement"] },
+            { "slug": "human", "title": { "en": "Population and settlement", "ne": "जनसंख्या र बस्ती" }, "points": ["Census reading, density and migration", "Urban and rural settlement patterns", "Road, air and river connectivity"] },
+            { "slug": "resources", "title": { "en": "Resources and economy of place", "ne": "स्रोत र स्थानको अर्थतन्त्र" }, "points": ["Water, forest, mineral and hydropower potential", "Agriculture zones and food security", "Disaster geography: flood, landslide, earthquake"] },
+            { "slug": "world", "title": { "en": "World geography basics", "ne": "विश्व भूगोलको आधार" }, "points": ["Continents, oceans and major straits", "Climate and vegetation belts", "Nepal's position in South Asia and its neighbours"] }
+          ]
+        },
+        {
+          "slug": "polity",
+          "title": { "en": "History, polity and economy", "ne": "इतिहास, राजनीति र अर्थतन्त्र" },
+          "units": [
+            { "slug": "history", "title": { "en": "Nepal's modern history", "ne": "नेपालको आधुनिक इतिहास" }, "points": ["Unification and its administration", "Rana period and the 2006 change", "Peace process and the constitution"] },
+            { "slug": "constitution", "title": { "en": "Constitution as polity", "ne": "राजनीतिको आधार संविधान" }, "points": ["Structure of the 2072 constitution", "Fundamental rights and duties", "Distribution of power: federation, province, local"] },
+            { "slug": "economy", "title": { "en": "Economy in one page", "ne": "एक पृष्ठको अर्थतन्त्र" }, "points": ["Three sectors and their share of work", "Remittance, trade balance and foreign currency", "Budget language: revenue, capital, grant"] },
+            { "slug": "institutions", "title": { "en": "State institutions", "ne": "राज्यका निकाय" }, "points": ["Executive, legislature, judiciary", "Constitutional bodies and their mandate", "Independent offices and accountability"] }
+          ]
+        },
+        {
+          "slug": "sciencetech",
+          "title": { "en": "Science and technology", "ne": "विज्ञान र प्रविधि" },
+          "units": [
+            { "slug": "everyday", "title": { "en": "Everyday science", "ne": "दैनिक विज्ञान" }, "points": ["Health, agriculture and environment basics", "Disaster science for Nepal", "Energy: hydro, solar, and the grid"] },
+            { "slug": "digital", "title": { "en": "Digital governance", "ne": "डिजिटल सुशासन" }, "points": ["E-governance services and their legal base", "Data protection and the privacy law", "Cyber security awareness for officers"] },
+            { "slug": "current", "title": { "en": "Technology in the news", "ne": "समाचारको प्रविधि" }, "points": ["Artificial intelligence in public work", "Space, satellites and weather services", "What a new technology changes for a citizen"] }
+          ]
+        },
+        {
+          "slug": "aptitude-reasoning",
+          "title": { "en": "Mental ability, IQ and reasoning", "ne": "मानसिक क्षमता, IQ र तर्क" },
+          "units": [
+            { "slug": "verbal", "title": { "en": "Verbal reasoning", "ne": "शाब्दिक तर्क" }, "points": ["Analogy, classification, series", "Coding-decoding", "Statement, assumption and conclusion"] },
+            { "slug": "quant", "title": { "en": "Quantitative aptitude", "ne": "गाणितिक क्षमता" }, "points": ["Percentage, profit-loss, interest", "Time-work, time-distance", "Averages, ratio and proportion"] },
+            { "slug": "data", "title": { "en": "Data interpretation", "ne": "तथ्याङ्क व्याख्या" }, "points": ["Table, bar and pie reading", "Sets and Venn diagrams", "Speed: what to calculate and what to estimate"] },
+            { "slug": "puzzle", "title": { "en": "Puzzles and seating", "ne": "पजल र बसाइ" }, "points": ["Sequence and arrangement", "Blood relations", "Clock, calendar and direction"] }
+          ]
+        },
+        {
+          "slug": "language",
+          "title": { "en": "Language: English and Nepali", "ne": "भाषा: अङ्ग्रेजी र नेपाली" },
+          "units": [
+            { "slug": "english", "title": { "en": "English for official work", "ne": "कार्यालयको अङ्ग्रेजी" }, "points": ["Grammar in use: tense, agreement, preposition", "Vocabulary that appears in papers", "Precis, letter and report writing"] },
+            { "slug": "nepali", "title": { "en": "Nepali language and practical writing", "ne": "नेपाली भाषा र व्यावहारिक लेखन" }, "points": ["शुद्ध लेखन, विराम चिह्न", "कार्यपत्र, निवेदन, टिप्पणी शैली", "सारांश र भावार्थ"] },
+            { "slug": "translation", "title": { "en": "Translation between the two", "ne": "दुई भाषाको अनुवाद" }, "points": ["Official terms and their pairs", "Number, date and name conventions", "Reading a law in one language, writing in the other"] }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "governance",
+      "color": "var(--vi)",
+      "title": { "en": "Governance System", "ne": "सुशासन प्रणाली" },
+      "short": { "en": "Written · 100 marks", "ne": "लिखित · १०० अङ्क" },
+      "intro": {
+        "en": "The written governance paper asks how the state actually runs: the constitution as the source of power, the machinery of public service, and how the country's resources are governed. Answers that quote the right section and name the right body score; answers that stay general do not.",
+        "ne": "सुशासनको लिखित पेपरले राज्य वास्तवमा कसरी चल्छ भन्ध सोध्छ: सत्ताको स्रोत संविधान, जनसेवाको यन्त्र, र देशको स्रोत कसरी सुशासित हुन्छ भन्ने। सही दफा उद्धृत र सही निकायको नाम लेखेको उत्तरले अङ्क पाउँछ; सामान्य उत्तरले पाउँदैन।"
+      },
+      "strategy": {
+        "en": "For every unit keep three lines ready: the law that creates it, the body that runs it, and one real example of it working or failing.",
+        "ne": "हरेक एकाइका लागि तीन लाइन तयार राख्नुहोस्: त्यसलाई सिर्जना गर्ने कानून, चलाउने निकाय, र चलिरहेको वा असफल भएको एक वास्तविक उदाहरण।"
+      },
+      "subjects": [
+        {
+          "slug": "state",
+          "title": { "en": "The state and its structure", "ne": "राज्य र यसको संरचना" },
+          "units": [
+            { "slug": "sovereignty", "title": { "en": "State, sovereignty, citizenship", "ne": "राज्य, सार्वभौमसत्ता, नागरिकता" }, "points": ["Elements of a state", "Citizenship law and its amendments", "Federal, provincial and local sovereignty"] },
+            { "slug": "three-organs", "title": { "en": "Legislature, executive, judiciary", "ne": "ब्यवस्थापिका, कार्यपालिका, न्यायपालिका" }, "points": ["Composition and power at three levels", "Checks and balance in practice", "Case law an officer should know"] },
+            { "slug": "local", "title": { "en": "Local governance", "ne": "स्थानीय तहको सुशासन" }, "points": ["Local Government Operation Act in outline", "Services delegated to a municipality", "Planning and budget at the local level"] }
+          ]
+        },
+        {
+          "slug": "constitution-law",
+          "title": { "en": "Constitution and essential laws", "ne": "संविधान र आवश्यक कानून" },
+          "units": [
+            { "slug": "constitution", "title": { "en": "Constitution of Nepal 2072", "ne": "नेपालको संविधान २०७२" }, "points": ["Preamble, parts and schedules", "Fundamental rights and their remedy", "Directive principles and state responsibility"] },
+            { "slug": "civil-service-law", "title": { "en": "Civil service law", "ne": "नागरिक सेवा कानून" }, "points": ["Civil Service Act 2049 and Rules 2064", "Class, category and the schedule of posts", "Discipline, inquiry and appeal"] },
+            { "slug": "commissions", "title": { "en": "Commission and accountability bodies", "ne": "आयोग र जवाफदेही निकाय" }, "points": ["Public Service Commission Act 2049", "Anti-corruption law and its reach", "Audit, human rights and information commissions"] },
+            { "slug": "rti", "title": { "en": "Right to information and privacy", "ne": "सूचना अधिकार र गोपनीयता" }, "points": ["RTI Act 2064: what to give, what to refuse", "Privacy law and citizen data", "Record keeping and disclosure duty"] }
+          ]
+        },
+        {
+          "slug": "public-service",
+          "title": { "en": "Public service and administration", "ne": "जनसेवा र प्रशासन" },
+          "units": [
+            { "slug": "machinery", "title": { "en": "Machinery of government", "ne": "सरकारी यन्त्र" }, "points": ["Secretariat, department, attached office", "Role of a section officer", "Delegation and file movement"] },
+            { "slug": "process", "title": { "en": "Departmental process", "ne": "विभागीय प्रक्रिया" }, "points": ["Departmental Process Act 2064", "Noting, drafting and order writing", "Time limits and follow-up"] },
+            { "slug": "service-delivery", "title": { "en": "Service delivery and citizen charter", "ne": "सेवा प्रवाह र नागरिक बडापत्र" }, "points": ["Public service standards", "Grievance handling", "Measurement: what good looks like"] },
+            { "slug": "ethics", "title": { "en": "Ethics and integrity", "ne": "नैतिकता र इमानदारी" }, "points": ["Conflict of interest", "Code of conduct for civil servants", "Whistle-blowing and protection"] }
+          ]
+        },
+        {
+          "slug": "resources-governance",
+          "title": { "en": "Resources and their governance", "ne": "स्रोत र त्यसको सुशासन" },
+          "units": [
+            { "slug": "natural", "title": { "en": "Natural resources", "ne": "प्राकृतिक स्रोत" }, "points": ["Water, forest, land and mineral law", "Hydropower and licensing", "Community and state sharing"] },
+            { "slug": "environment", "title": { "en": "Environment and climate", "ne": "वातावरण र जलवायु" }, "points": ["Environment Act and IEE/EIA", "Disaster law and preparedness", "Climate finance an officer must read"] },
+            { "slug": "finance", "title": { "en": "Public finance", "ne": "सार्वजनिक वित्त" }, "points": ["Appropriation, budget and audit cycle", "Revenue: Income Tax Act 2058 in outline", "Fiscal federalism and the transfer formula"] }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "contemporary",
+      "color": "var(--mg)",
+      "title": { "en": "Contemporary Issues", "ne": "समकालीन मुद्दा" },
+      "short": { "en": "Written · 100 marks", "ne": "लिखित · १०० अङ्क" },
+      "intro": {
+        "en": "This paper rewards a candidate who can describe a Nepali problem precisely, then say what the state can realistically do about it. Four families carry almost every question: society, economy, development, and environment.",
+        "ne": "यो पेपरले नेपालको समस्या स्पष्टसँग वर्णन गरी, राज्यले वास्तविक रूपमा के गर्न सक्छ भन्न सक्नेलाई पुरस्कार दिन्छ। चार परिवारले लगभग हरेक प्रश्न बोक्छन्: समाज, अर्थतन्त्र, विकास, र वातावरण।"
+      },
+      "strategy": {
+        "en": "Build a one-page card per issue: what it is, two numbers that prove it, who owns it, what has been tried, what you would do in the first ninety days.",
+        "ne": "हरेक मुद्दाको एक पृष्ठको कार्ड बनाउनुहोस्: के हो, प्रमाणित दुई अङ्क, कसको जिम्मा, के गरियो, र पहिलो नब्बे दिनमा तपाईंले के गर्थ्यौं।"
+      },
+      "subjects": [
+        {
+          "slug": "social",
+          "title": { "en": "Social issues", "ne": "सामाजिक मुद्दा" },
+          "units": [
+            { "slug": "inclusion", "title": { "en": "Inclusion and identity", "ne": "समावेशीकरण र पहिचान" }, "points": ["Reservation and its legal basis", "Language, ethnicity and the state", "Gender policy in practice"] },
+            { "slug": "migration", "title": { "en": "Migration and remittance", "ne": "पलायन र विप्रेषण" }, "points": ["Foreign employment law", "Remittance and the local economy", "Brain drain and what reverses it"] },
+            { "slug": "health-edu", "title": { "en": "Health and education", "ne": "स्वास्थ्य र शिक्षा" }, "points": ["Access, quality and cost", "Federal split of services", "Digital divide in classrooms"] }
+          ]
+        },
+        {
+          "slug": "economic",
+          "title": { "en": "Economic issues", "ne": "आर्थिक मुद्दा" },
+          "units": [
+            { "slug": "macro", "title": { "en": "Macro picture", "ne": "समष्टि चित्र" }, "points": ["Growth, inflation and the rupee", "Trade deficit and imports", "Employment and the informal economy"] },
+            { "slug": "industry", "title": { "en": "Industry, agriculture, tourism", "ne": "उद्योग, कृषि, पर्यटन" }, "points": ["Why industry stalled and what restarts it", "Agriculture value chain", "Tourism as foreign exchange"] },
+            { "slug": "private", "title": { "en": "Public-private interface", "ne": "सार्वजनिक-निजी साझेदारी" }, "points": ["PPPs and their law", "Ease of doing business", "Procurement rules and integrity"] }
+          ]
+        },
+        {
+          "slug": "development",
+          "title": { "en": "Development and governance", "ne": "विकास र सुशासन" },
+          "units": [
+            { "slug": "planning", "title": { "en": "Planning in Nepal", "ne": "नेपालको योजना" }, "points": ["Periodic plans and the current one", "Project cycle and appraisal", "Monitoring and evaluation"] },
+            { "slug": "aid", "title": { "en": "Aid, debt and delivery", "ne": "सहायता, ऋण र कार्यान्वयन" }, "points": ["Grant versus loan discipline", "Absorption capacity", "Mega projects and their review"] },
+            { "slug": "sdg", "title": { "en": "Global commitments at home", "ne": "घरमा विश्व प्रतिबद्धता" }, "points": ["SDGs mapped to Nepali targets", "LDC graduation and what changes", "Disaster frameworks"] }
+          ]
+        },
+        {
+          "slug": "environment",
+          "title": { "en": "Environment and climate", "ne": "वातावरण र जलवायु" },
+          "units": [
+            { "slug": "himalaya", "title": { "en": "Mountains, water and glaciers", "ne": "हिमाल, पानी र हिमनदी" }, "points": ["Glacier retreat and lakes", "River basins downstream", "Hydropower and sediment"] },
+            { "slug": "disaster", "title": { "en": "Disaster and adaptation", "ne": "प्रकोप र अनुकूलन" }, "points": ["Flood, landslide, earthquake risk", "Early warning and response", "Adaptation finance"] },
+            { "slug": "urban", "title": { "en": "Cities, pollution, transport", "ne": "सहर, प्रदूषण, यातायात" }, "points": ["Air quality in the valley", "Public transport and land use", "Waste and water in growing towns"] }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "service",
+      "color": "var(--gold)",
+      "title": { "en": "Service Subject", "ne": "सेवा विषय" },
+      "short": { "en": "Written · 100 marks", "ne": "लिखित · १०० अङ्क" },
+      "intro": {
+        "en": "For the general Section Officer post the service subject is the trade of the job: management, revenue, accounting, auditing and how federalism divides the work. This is where a candidate becomes an officer on paper.",
+        "ne": "सामान्य शाखा अधिकृत पदका लागि सेवा विषय भनेको कामको सीप हो: व्यवस्थापन, राजस्व, लेखा, लेखा परीक्षण र संघीयताले काम कसरी बाँड्छ। यहीँ उम्मेदवार कागजमा अधिकारी बन्छ।"
+      },
+      "strategy": {
+        "en": "Learn each topic as a workflow, not a definition: who applies, what document moves, what the law requires, what the deadline is, what goes wrong.",
+        "ne": "हरेक विषय परिभाषा होइन कार्यप्रवाहको रूपमा सिक्नुहोस्: कसले लगाउँछ, कुन कागज चल्छ, कानूनले के माग्छ, म्याद के हो, के बिग्रन्छ।"
+      },
+      "subjects": [
+        {
+          "slug": "management",
+          "title": { "en": "Management", "ne": "व्यवस्थापन" },
+          "units": [
+            { "slug": "functions", "title": { "en": "Planning, organising, leading, controlling", "ne": "योजना, संर्गठन, नेतृत्व, नियन्त्रण" }, "points": ["Each function in an office setting", "Delegation and span of control", "Control systems and reporting"] },
+            { "slug": "hr", "title": { "en": "Human resource management", "ne": "मानव स्रोत व्यवस्थापन" }, "points": ["Recruitment through the Commission", "Training, transfer, promotion", "Performance agreement and appraisal"] },
+            { "slug": "og", "title": { "en": "Organisational behaviour", "ne": "संगठनात्मक व्यवहार" }, "points": ["Motivation and its theories in use", "Groups, conflict and negotiation", "Change management in government"] },
+            { "slug": "pm", "title": { "en": "Project and office management", "ne": "परियोजना र कार्यालय व्यवस्थापन" }, "points": ["Logframe, schedule, risk", "Records and file management", "Meeting, minute and follow-through"] }
+          ]
+        },
+        {
+          "slug": "revenue",
+          "title": { "en": "Revenue and taxation", "ne": "राजस्व र कर" },
+          "units": [
+            { "slug": "system", "title": { "en": "The revenue system", "ne": "राजस्व प्रणाली" }, "points": ["Federal, provincial and local revenue", "Income Tax Act 2058 in outline", "VAT and excise basics"] },
+            { "slug": "admin", "title": { "en": "Tax administration", "ne": "कर प्रशासन" }, "points": ["Registration, return, assessment", "Recovery and penalty", "Taxpayer service and dispute"] },
+            { "slug": "customs", "title": { "en": "Customs and trade", "ne": "भन्डार र व्यापार" }, "points": ["Import-export procedure", "Valuation and classification", "Border points and Nepal's trade"] }
+          ]
+        },
+        {
+          "slug": "accounting",
+          "title": { "en": "Accounting and auditing", "ne": "लेखा र लेखा परीक्षण" },
+          "units": [
+            { "slug": "govt-accounting", "title": { "en": "Government accounting", "ne": "सरकारी लेखा" }, "points": ["Budget to expenditure chain", "Chart of accounts and classification", "Month and year closing"] },
+            { "slug": "audit", "title": { "en": "Audit types", "ne": "लेखा परीक्षणका प्रकार" }, "points": ["Compliance, performance, financial", "Internal audit in a line agency", "Audit report and follow-up"] },
+            { "slug": "controls", "title": { "en": "Financial control", "ne": "वित्तीय नियन्त्रण" }, "points": ["Delegation of financial power", "Procurement thresholds", "Irregularity, recovery and accountability"] }
+          ]
+        },
+        {
+          "slug": "federalism",
+          "title": { "en": "Federalism in practice", "ne": "व्यवहारमा संघीयता" },
+          "units": [
+            { "slug": "division", "title": { "en": "Division of power", "ne": "क्षमता बाँडफाँड" }, "points": ["Schedules of exclusive and concurrent power", "Concurrent legislation in practice", "Subsidiarity and local autonomy"] },
+            { "slug": "fiscal", "title": { "en": "Fiscal federalism", "ne": "वित्तीय संघीयता" }, "points": ["Revenue sharing and grants", "The fiscal commission formula", "Provincial and local budgets"] },
+            { "slug": "coordination", "title": { "en": "Coordination and dispute", "ne": "समन्वय र विवाद" }, "points": ["Inter-council machinery", "Office of the President and CM roles", "Judicial route for disputes"] }
+          ]
+        }
+      ]
+    }
+  ],
+  "laws": [
+    { "name": { "en": "Constitution of Nepal", "ne": "नेपालको संविधान" }, "year": "२०७२", "why": { "en": "Source of every power you will exercise", "ne": "तपाईंले प्रयोग गर्ने हरेक सत्ताको स्रोत" } },
+    { "name": { "en": "Public Service Commission Act", "ne": "लोक सेवा आयोग ऐन" }, "year": "२०४९", "why": { "en": "How the Commission itself is built", "ne": "आयोग कसरी गठन हुन्छ" } },
+    { "name": { "en": "Civil Service Act", "ne": "नागरिक सेवा ऐन" }, "year": "२०४९", "why": { "en": "Your career, from entry to retirement", "ne": "प्रवेशदेखि अवसर्तासम्मको करिअर" } },
+    { "name": { "en": "Civil Service Rules", "ne": "नागरिक सेवा नियमावली" }, "year": "२०६४", "why": { "en": "The working detail of the Act", "ne": "ऐनको कार्यविस्तार" } },
+    { "name": { "en": "Schedule of Posts Act", "ne": "पद नामावली ऐन" }, "year": "२०६३", "why": { "en": "Class, level and the post structure", "ne": "श्रेणी, तह र पद संरचना" } },
+    { "name": { "en": "Departmental Process Act", "ne": "विभागीय प्रक्रिया ऐन" }, "year": "२०६४", "why": { "en": "How files, orders and appeals move", "ne": "फाइल, आदेश र अपील कसरी चल्छ" } },
+    { "name": { "en": "Right to Information Act", "ne": "सूचना अधिकार ऐन" }, "year": "२०६४", "why": { "en": "What you must give and what you may refuse", "ne": "के दिनुपर्छ, के इनकार गर्न मिल्छ" } },
+    { "name": { "en": "Prevention of Corruption Act", "ne": "भ्रष्टाचार निवारण ऐन" }, "year": "२०५९", "why": { "en": "The line an officer may never cross", "ne": "अधिकारीले कहिल्यै ननाघ्ने रेखा" } },
+    { "name": { "en": "Income Tax Act", "ne": "आयकर ऐन" }, "year": "२०५८", "why": { "en": "Revenue work and your own return", "ne": "राजस्व काम र आफ्नै कर विवरण" } },
+    { "name": { "en": "Local Government Operation Act", "ne": "स्थानीय तह सञ्चालन ऐन" }, "year": "२०७४", "why": { "en": "Where most officers first meet the public", "ne": "धेरै अधिकारी जनतासँग भेट्ने ठाउँ" } }
+  ],
+  "mediums": [
+    { "id": "ne", "label": { "en": "Nepali medium", "ne": "नेपाली माध्यम" } },
+    { "id": "en", "label": { "en": "English medium", "ne": "अङ्ग्रेजी माध्यम" } },
+    { "id": "mix", "label": { "en": "Nepali + English", "ne": "नेपाली + अङ्ग्रेजी" } }
+  ],
+  "method": [
+    { "step": 1, "title": { "en": "Read the notice, not the rumour", "ne": "सूचना पढ्नुहोस्, हल्ला होइन" }, "body": { "en": "Open the Commission's own syllabus PDF and mark every line you cannot yet explain. That list is your real syllabus.", "ne": "आयोगकै विषयसूची खोलेर जुन हरेक लाइन तपाईंले अझै बुझाउन सक्नुहुन्न, चिन्ह लगाउनुहोस्। त्यो सूची नै तपाईंको साँचो पाठ्यक्रम हो।" } },
+    { "step": 2, "title": { "en": "One subject a day, one paper a week", "ne": "एक दिन एक विषय, एक हप्ता एक पेपर" }, "body": { "en": "Alternate aptitude practice with written-subject reading so speed never dies while depth grows.", "ne": "गहिराई बढ्दा गति नमर्न, योग्यता अभ्यास र लिखित विषयको पठन फेरफेर गर्नुहोस्।" } },
+    { "step": 3, "title": { "en": "Write the answer, do not read it", "ne": "उत्तर लेख्नुहोस्, पढ्नुहोस् होइन" }, "body": { "en": "A written paper is scored on paper. Ten timed answers a week, each with a law, a body and an example.", "ne": "लिखित पेपर कागजमा नापिन्छ। हप्तामा दस समयमा लेखिएका उत्तर — प्रत्येकमा एक कानून, एक निकाय, एक उदाहरण।" } },
+    { "step": 4, "title": { "en": "Track the gap, not the hours", "ne": "घण्टा होइन, खाली ठाउँ नाप्नुहोस्" }, "body": { "en": "After every test, the questions you got wrong are the only study list that matters. Fill them before adding new material.", "ne": "हरेक परीक्षणपछि गलत उत्तर दिएका प्रश्न नै एकमात्र महत्त्वको सूची हो। नयाँ सामग्री थप्नुअघि तिनै पूरा गर्नुहोस्।" } },
+    { "step": 5, "title": { "en": "Prepare the interview from month one", "ne": "अन्तर्वार्ता पहिलो महिनादेखि तयार पार्नुहोस्" }, "body": { "en": "Sixty marks sit at the end. Your service subject, said out loud in two minutes, is built by repetition, not by last-week cramming.", "ne": "अन्त्यमा साठी अङ्क छ। तपाईंको सेवा विषय दुई मिनेटमा मुखेर् भन्ने अभ्यास दोहोरावृत्तिबाट बन्छ, अन्तिम हप्ताको घुसाइबाट होइन।" } }
+  ],
+  "practice": [
+    { "paper": "aptitude", "q": { "en": "In a series 5, 11, 23, 47, ▢ — which number continues it?", "ne": "5, 11, 23, 47, ▢ शृङ्खलामा अर्को सङ्ख्या के हुन्छ?" }, "options": [{ "en": "95", "ne": "९५" }, { "en": "96", "ne": "९६" }, { "en": "94", "ne": "९४" }, { "en": "99", "ne": "९९" }], "answer": 0, "explain": { "en": "Each term is double the previous plus one: 47 × 2 + 1 = 95.", "ne": "हरेक पद अघिल्लोको दोब्बरमा एक जोड: ४७ × २ + १ = ९५।" } },
+    { "paper": "aptitude", "q": { "en": "Which river system is the largest of Nepal by basin?", "ne": "नेपालको सिन्धु जलाधार क्षेत्रमा सबैभन्दा ठूलो कुन?" }, "options": [{ "en": "Gandaki", "ne": "गण्डकी" }, { "en": "Koshi", "ne": "कोशी" }, { "en": "Karnali", "ne": "कर्णाली" }, { "en": "Mahanadi", "ne": "महानदी" }], "answer": 1, "explain": { "en": "The Koshi system drains the largest area of the country's rivers.", "ne": "कोशी प्रणालीले देशका नदीहरूमध्ये सबैभन्दा बढी क्षेत्र पानी निकास गर्छ।" } },
+    { "paper": "aptitude", "q": { "en": "Nepali: which word is spelled correctly?", "ne": "कुन शब्दको हिज्जे सही छ?" }, "options": [{ "en": "सुशासन", "ne": "सुशासन" }, { "en": "सुशाशन", "ne": "सुशाशन" }, { "en": "सुस्शासन", "ne": "सुस्शासन" }, { "en": "सुशासन्", "ne": "सुशासन्" }], "answer": 0, "explain": { "en": "Good governance is सुशासन.", "ne": "सुशासन नै सही रूप हो।" } },
+    { "paper": "aptitude", "q": { "en": "The Constitution of Nepal was promulgated in which Bikram Sambat year?", "ne": "नेपालको संविधान कुन वि.सं. मा जारी भयो?" }, "options": [{ "en": "2062", "ne": "२०६२" }, { "en": "2063", "ne": "२०६३" }, { "en": "2072", "ne": "२०७२" }, { "en": "2074", "ne": "२०७४" }], "answer": 2, "explain": { "en": "19 September 2015, which is 3 Aswin 2072.", "ne": "२०७२ असोज ३ गते (१९ सेप्टेम्बर २०१५)।" } },
+    { "paper": "aptitude", "q": { "en": "A shop marks an item 20% above cost and then gives a 10% discount. What is the profit percent on cost?", "ne": "एक पसलेले वस्तु लागतभन्दा २०% बढीमा राखेर १०% छुट दिन्छ। लागतमा नाफा कति प्रतिशत?" }, "options": [{ "en": "8%", "ne": "८%" }, { "en": "10%", "ne": "१०%" }, { "en": "12%", "ne": "१२%" }, { "en": "18%", "ne": "१८%" }], "answer": 0, "explain": { "en": "1.20 × 0.90 = 1.08, so 8% profit.", "ne": "१.२० × ०.९० = १.०८, अर्थात् ८% नाफा।" } },
+    { "paper": "aptitude", "q": { "en": "Choose the correct preposition: The report was submitted ___ the deadline.", "ne": "सही पूर्ियोजन छान्नुहोस्: The report was submitted ___ the deadline." }, "options": [{ "en": "in", "ne": "in" }, { "en": "on", "ne": "on" }, { "en": "at", "ne": "at" }, { "en": "by", "ne": "by" }], "answer": 3, "explain": { "en": "\"By the deadline\" means not later than it.", "ne": "by the deadline को अर्थ त्यसभन्दा पछि होइन।" } },
+    { "paper": "governance", "q": { "en": "Which body recommends the number of members and their terms for a provincial assembly?", "ne": "कुन निकायले प्रदेश सभाका सदस्य संख्या र कार्यकाल सिफारिस गर्छ?" }, "options": [{ "en": "The Commission itself", "ne": "आयोग आफैँ" }, { "en": "The Council of Ministers", "ne": "मन्त्रिपरिषद" }, { "en": "The President", "ne": "राष्ट्रपति" }, { "en": "The Chief Minister", "ne": "प्रमुखमन्त्री" }], "answer": 0, "explain": { "en": "The Commission is the constitutional body for its own composition and service rules.", "ne": "आयोग आफ्नो गठन र सेवासम्बन्धी कानूनी निकाय हो।" } },
+    { "paper": "governance", "q": { "en": "Under the RTI Act, if information is refused, what may the applicant do?", "ne": "सूचना अधिकार ऐनअन्तर्गत सूचना इनकार भएमा निवेदकले के गर्न सक्छ?" }, "options": [{ "en": "Nothing further", "ne": "थप केही गर्न सक्दैन" }, { "en": "Review then appeal to the Commission", "ne": "पुनरावलोकनपछि आयोगमा जोहर" }, { "en": "Sue immediately in the district court", "ne": "जिल्ला अदालतमा तुरुन्त मुद्दा" }, { "en": "Ask the police", "ne": "प्रहरीसँग जान" }], "answer": 1, "explain": { "en": "First a review by the designated officer, then appeal to the Information Commission.", "ne": "पहिले तोकिमै अधिकारीबाट पुनरावलोकन, त्यसपछि सूचना आयोगमा जोहर।" } },
+    { "paper": "contemporary", "q": { "en": "Which is the largest share of Nepal's household income from abroad?", "ne": "विदेशबाट आउने घरेलु आम्दानोको सबैभन्दा ठूलो स्रोत कुन?" }, "options": [{ "en": "Remittance from foreign employment", "ne": "बैदेशिक रोजगारको विप्रेषण" }, { "en": "Tourism receipts", "ne": "पर्यटन आम्दानी" }, { "en": "Foreign aid budget support", "ne": "विदेशी सहायता" }, { "en": "IT exports", "ne": "सूचना प्रविधि निर्यात" }], "answer": 0, "explain": { "en": "Remittance dominates external household income.", "ne": "बाह्य घरेलु आम्दानीमा विप्रेषणको हिस्सा सबैभन्दा ठूलो छ।" } },
+    { "paper": "contemporary", "q": { "en": "Graduating from LDC status mainly changes which of these?", "ne": "अल्पविकसित देश श्रेणीबाट निस्कँदा मुख्यतः के फेरिन्छ?" }, "options": [{ "en": "Preferential market access and some aid terms", "ne": "प्राथमिकताप्राप्त बजार पहुँच र केही सहायता सर्त" }, { "en": "The national currency", "ne": "राष्ट्रिय मुद्रा" }, { "en": "The number of provinces", "ne": "प्रदेश संख्या" }, { "en": "Citizenship rules", "ne": "नागरिकता नियम" }], "answer": 0, "explain": { "en": "Graduation re-prices trade preferences and part of concessional finance.", "ne": "स्तरोन्नतिले व्यापार प्राथमिकता र छुटसुविधागत वित्तको सर्त फेर्छ।" } },
+    { "paper": "service", "q": { "en": "In the budget cycle, which document authorises spending before the year begins?", "ne": "बजेट चक्रमा, वर्ष सुरु हुनुअघि खर्चको अधिकार दिने कागज कुन?" }, "options": [{ "en": "Appropriation Act", "ne": "व्यय विधेयक/ऐन" }, { "en": "Audit report", "ne": "लेखा परीक्षण प्रतिवेदन" }, { "en": "Finance statement", "ne": "वित्तीय विवरण" }, { "en": "Performance agreement", "ne": "कार्यसम्पादन सम्झौता" }], "answer": 0, "explain": { "en": "Money may be drawn only under an appropriation.", "ne ":"व्यय विधेयकबिना राजकोषबाट पैसा निस्कन मिल्दैन।" } },
+    { "paper": "service", "q": { "en": "Which audit type asks whether a programme achieved its stated result?", "ne": "कुन लेखा परीक्षणले कार्यक्रमले लक्षित नतिजा पायो कि भन्धर सोध्छ?" }, "options": [{ "en": "Compliance audit", "ne": "अनुपालन" }, { "en": "Performance audit", "ne": "कार्यसम्पादन" }, { "en": "Financial audit", "ne": "वित्तीय" }, { "en": "Internal control test", "ne": "आन्तरिक नियन्त्रण" }], "answer": 1, "explain": { "en": "Performance audit looks at economy, efficiency and effectiveness.", "ne": "कार्यसम्पादन परीक्षणले मितव्ययिता, दक्षता र प्रभावकारिता हेर्छ।" } },
+    { "paper": "service", "q": { "en": "Under fiscal federalism, which grant is meant to close the revenue shortfall of a local level?", "ne": "वित्तीय संघीयतामा, स्थानीय तहको राजस्व घाटा घटाउन कुन अनुदान हो?" }, "options": [{ "en": "Equalisation grant", "ne": "बराबरी अनुदान" }, { "en": "Special grant", "ne": "विशेष अनुदान" }, { "en": "Capital grant", "ne": "पुँजी अनुदान" }, { "en": "Matching grant", "ne": "समानुपातिक अनुदान" }], "answer": 0, "explain": { "en": "The fiscal commission recommends equalisation grants for shortfall.", "ne": "वित्त आयोगले घाटा पूरै गर्न बराबरी अनुदान सिफारिस गर्छ।" } },
+    { "paper": "service", "q": { "en": "What is the first document in a personnel file after selection?", "ne": "चयनपछि व्यक्तिको फाइलमा पहिलो कागज कुन?" }, "options": [{ "en": "Appointment letter", "ne": "खुल्ला पत्र" }, { "en": "Performance agreement", "ne": "कार्यसम्पादन सम्झौता" }, { "en": "Transfer order", "ne": " सरुवा आदेश" }, { "en": "Audit objection", "ne": "लेखा आपत्ति" }], "answer": 0, "explain": { "en": "Selection leads to appointment; the rest follow in service.", "ne": "चयनपछि नियुक्ति, अनि सेवामा बाँकी आउँछ।" } }
+  ]
+}

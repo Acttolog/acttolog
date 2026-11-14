@@ -29,7 +29,14 @@ export interface ShotSource {
   hasAvif: boolean;
 }
 
-export function NepalShot({ shot, alt, variant = 'card', art = 'himalaya', eager = false, className }: {
+export function NepalShot({
+  shot,
+  alt,
+  variant = 'card',
+  art = 'himalaya',
+  eager = false,
+  className,
+}: {
   shot: ShotSource | null;
   /** Meaningful description for screen readers. Pass '' for decorative art. */
   alt: string;
@@ -42,21 +49,25 @@ export function NepalShot({ shot, alt, variant = 'card', art = 'himalaya', eager
   const fallback = resolveImage('', art);
   if (!shot || !shot.has.length) {
     return (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img className={className} src={fallback} alt="" aria-hidden="true"
-        loading={eager ? 'eager' : 'lazy'} decoding="async" />
+      <img
+        className={className}
+        src={fallback}
+        alt=""
+        aria-hidden="true"
+        loading={eager ? 'eager' : 'lazy'}
+        decoding="async"
+      />
     );
   }
   const { base, has, hasAvif } = shot;
-  const srcset = (ext: string) =>
-    has.map((w) => `/media/nepal/${base}-${w}.${ext} ${w}w`).join(', ');
+  const srcset = (ext: string) => has.map((w) => `/media/nepal/${base}-${w}.${ext} ${w}w`).join(', ');
   const largest = has[has.length - 1];
 
   return (
     <picture>
       {hasAvif && <source type="image/avif" srcSet={srcset('avif')} sizes={SIZES[variant]} />}
       <source type="image/jpeg" srcSet={srcset('jpg')} sizes={SIZES[variant]} />
-      {/* eslint-disable-next-line @next/next/no-img-element */}
+      {}
       <img
         className={className}
         src={`/media/nepal/${base}-${largest}.jpg`}

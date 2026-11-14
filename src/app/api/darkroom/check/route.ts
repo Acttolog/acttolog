@@ -24,7 +24,11 @@ export async function POST(req: Request) {
   }
 
   const db = getDB();
-  const checks = precheckUrl(body.url, db.dr.map((r) => r.url), db.drSubs.map((s) => s.url));
+  const checks = precheckUrl(
+    body.url,
+    db.dr.map((r) => r.url),
+    db.drSubs.map((s) => s.url),
+  );
 
   // reachability probe (server-side, short timeout, HEAD then GET fallback)
   let reachable: [string, boolean] = ['Destination responds', false];
@@ -41,6 +45,7 @@ export async function POST(req: Request) {
 
   return NextResponse.json({
     checks: [...checks, reachable],
-    disclaimer: 'These checks do not guarantee that a destination is safe. Human admin verification is required before publication.',
+    disclaimer:
+      'These checks do not guarantee that a destination is safe. Human admin verification is required before publication.',
   });
 }

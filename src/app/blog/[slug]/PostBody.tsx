@@ -14,7 +14,6 @@ export function PostBody({ post }: { post: BlogPost }) {
 
   useEffect(() => {
     track('article_view', { post: post.slug });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [post.slug]);
 
   const content = L(post.content);
@@ -33,11 +32,20 @@ export function PostBody({ post }: { post: BlogPost }) {
             <Md src={rest || content.slice(previewCut - 200)} />
           </div>
           <div className="absolute inset-0 grid place-items-end">
-            <div className="w-full" style={{ background: 'linear-gradient(180deg,transparent,color-mix(in srgb,var(--bg) 96%,transparent) 55%)', height: '60%' }} />
+            <div
+              className="w-full"
+              style={{
+                background:
+                  'linear-gradient(180deg,transparent,color-mix(in srgb,var(--bg) 96%,transparent) 55%)',
+                height: '60%',
+              }}
+            />
           </div>
           <div className="relative">
-            <MembersGate returnTo={`/blog/${post.slug}`}
-              reason={locale === 'ne' ? 'सदस्य-विशेष लेख' : 'Members-only article'} />
+            <MembersGate
+              returnTo={`/blog/${post.slug}`}
+              reason={locale === 'ne' ? 'सदस्य-विशेष लेख' : 'Members-only article'}
+            />
           </div>
         </div>
       )}

@@ -17,14 +17,22 @@ async function main() {
   const browser = await puppeteer.launch({
     headless: 'shell',
     args: [
-      '--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu-sandbox',
-      '--enable-unsafe-swiftshader', '--use-gl=angle', '--use-angle=swiftshader',
+      '--no-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-gpu-sandbox',
+      '--enable-unsafe-swiftshader',
+      '--use-gl=angle',
+      '--use-angle=swiftshader',
     ],
   });
 
   const report = { pages: [], errors: [], checks: {} };
   const step = async (label, fn) => {
-    try { await fn(); } catch (e) { report.errors.push({ type: 'step:' + label, text: String((e && e.message) || e).slice(0, 140) }); }
+    try {
+      await fn();
+    } catch (e) {
+      report.errors.push({ type: 'step:' + label, text: String((e && e.message) || e).slice(0, 140) });
+    }
   };
 
   const newPage = async (w = 1440, h = 900) => {
@@ -56,7 +64,9 @@ async function main() {
       ['#darkPrev', '04-home-darkroom.png', 1200],
       ['#cta', '05-home-cta.png', 1000],
     ]) {
-      await step('scroll-' + sel, () => page.evaluate((s) => document.querySelector(s)?.scrollIntoView(), sel));
+      await step('scroll-' + sel, () =>
+        page.evaluate((s) => document.querySelector(s)?.scrollIntoView(), sel),
+      );
       await sleep(wait);
       await page.screenshot({ path: OUT + '/' + file });
     }
@@ -71,12 +81,20 @@ async function main() {
     await sleep(4000);
 
     report.checks.consentVisible = await page.evaluate(() =>
-      Boolean(document.querySelector('#consent') && document.querySelector('#consent').textContent.includes('Privacy')));
+      Boolean(
+        document.querySelector('#consent') &&
+        document.querySelector('#consent').textContent.includes('Privacy'),
+      ),
+    );
 
-    await step('consent-allow-all', () => page.evaluate(() => {
-      const all = [...document.querySelectorAll('#consent button')].find((b) => /Allow all/i.test(b.textContent));
-      if (all) all.click();
-    }));
+    await step('consent-allow-all', () =>
+      page.evaluate(() => {
+        const all = [...document.querySelectorAll('#consent button')].find((b) =>
+          /Allow all/i.test(b.textContent),
+        );
+        if (all) all.click();
+      }),
+    );
     await sleep(700);
     report.checks.consentDismissed = await page.evaluate(() => {
       const c = document.querySelector('#consent');
@@ -84,10 +102,13 @@ async function main() {
     });
 
     // language switch → Nepali
-    const clickLang = () => page.evaluate(() => {
-      const b = [...document.querySelectorAll('.nact button')].find((x) => (x.getAttribute('title') || '').includes('नेपाली'));
-      if (b) b.click();
-    });
+    const clickLang = () =>
+      page.evaluate(() => {
+        const b = [...document.querySelectorAll('.nact button')].find((x) =>
+          (x.getAttribute('title') || '').includes('नेपाली'),
+        );
+        if (b) b.click();
+      });
     await step('lang-switch', clickLang);
     await sleep(1000);
     report.checks.language = await page.evaluate(() => ({
@@ -99,64 +120,90 @@ async function main() {
     await sleep(600);
 
     // theme toggle → light → shot → back
-    const clickTheme = () => page.evaluate(() => {
-      const b = [...document.querySelectorAll('.nact button')].find((x) => x.getAttribute('aria-label') === 'Theme');
-      if (b) b.click();
-    });
+    const clickTheme = () =>
+      page.evaluate(() => {
+        const b = [...document.querySelectorAll('.nact button')].find(
+          (x) => x.getAttribute('aria-label') === 'Theme',
+        );
+        if (b) b.click();
+      });
     await step('theme-light', clickTheme);
     await sleep(1500);
-    report.checks.themeAfterToggle = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));
+    report.checks.themeAfterToggle = await page.evaluate(() =>
+      document.documentElement.getAttribute('data-theme'),
+    );
     await page.screenshot({ path: OUT + '/07-home-light.png' });
     await step('theme-back', clickTheme);
     await sleep(900);
 
     // search overlay
-    await step('search-open', () => page.evaluate(() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true, bubbles: true }))));
+    await step('search-open', () =>
+      page.evaluate(() =>
+        window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true, bubbles: true })),
+      ),
+    );
     await sleep(1000);
     let searchOpen = await page.evaluate(() => Boolean(document.querySelector('.mbd')));
     if (!searchOpen) {
-      await step('search-open-click', () => page.evaluate(() => document.querySelector('#btnSearch')?.click()));
+      await step('search-open-click', () =>
+        page.evaluate(() => document.querySelector('#btnSearch')?.click()),
+      );
       await sleep(900);
       searchOpen = await page.evaluate(() => Boolean(document.querySelector('.mbd')));
     }
     report.checks.searchOverlayOpen = searchOpen;
     if (searchOpen) {
-      await step('search-type', () => page.evaluate(() => {
-        const i = document.querySelector('.mbd input');
-        if (!i) return;
-        const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
-        setter.call(i, 'panel data');
-        i.dispatchEvent(new Event('input', { bubbles: true }));
-      }));
+      await step('search-type', () =>
+        page.evaluate(() => {
+          const i = document.querySelector('.mbd input');
+          if (!i) return;
+          const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+          setter.call(i, 'panel data');
+          i.dispatchEvent(new Event('input', { bubbles: true }));
+        }),
+      );
       await sleep(1600);
-      report.checks.searchResults = await page.evaluate(() => document.querySelectorAll('.mbd .rowlink').length);
+      report.checks.searchResults = await page.evaluate(
+        () => document.querySelectorAll('.mbd .rowlink').length,
+      );
       await page.screenshot({ path: OUT + '/08-search-overlay.png' });
-      await step('search-close', () => page.evaluate(() => {
-        const btns = [...document.querySelectorAll('.mbd button')];
-        const x = btns.find((b) => (b.getAttribute('aria-label') || '') === 'Close' || b.textContent === '✕');
-        if (x) x.click(); else document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
-      }));
+      await step('search-close', () =>
+        page.evaluate(() => {
+          const btns = [...document.querySelectorAll('.mbd button')];
+          const x = btns.find(
+            (b) => (b.getAttribute('aria-label') || '') === 'Close' || b.textContent === '✕',
+          );
+          if (x) x.click();
+          else document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+        }),
+      );
       await sleep(600);
     }
 
     // AI dock + question
     await step('ai-fab', () => page.evaluate(() => document.querySelector('#aifab')?.click()));
     await sleep(1200);
-    report.checks.aiDockOpen = await page.evaluate(() => document.querySelector('#aidock')?.classList.contains('open'));
-    await step('ai-ask', () => page.evaluate(() => {
-      const i = document.querySelector('#aidock input');
-      if (!i) return;
-      const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
-      setter.call(i, 'free tools for panel data analysis');
-      i.dispatchEvent(new Event('input', { bubbles: true }));
-      document.querySelector('#aidock form')?.requestSubmit();
-    }));
+    report.checks.aiDockOpen = await page.evaluate(() =>
+      document.querySelector('#aidock')?.classList.contains('open'),
+    );
+    await step('ai-ask', () =>
+      page.evaluate(() => {
+        const i = document.querySelector('#aidock input');
+        if (!i) return;
+        const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+        setter.call(i, 'free tools for panel data analysis');
+        i.dispatchEvent(new Event('input', { bubbles: true }));
+        document.querySelector('#aidock form')?.requestSubmit();
+      }),
+    );
     await sleep(4500);
     report.checks.aiReply = await page.evaluate(() => {
       const msgs = document.querySelectorAll('#aidock .aimsg.a');
       return msgs.length ? msgs[msgs.length - 1].textContent.slice(0, 110) : '(no reply)';
     });
-    report.checks.aiSourcePills = await page.evaluate(() => document.querySelectorAll('#aidock .srcpill').length);
+    report.checks.aiSourcePills = await page.evaluate(
+      () => document.querySelectorAll('#aidock .srcpill').length,
+    );
     await page.screenshot({ path: OUT + '/09-ai-dock.png' });
     report.pages.push('/ (interactions)');
     await page.close();
@@ -196,7 +243,9 @@ async function main() {
     await page.screenshot({ path: OUT + '/20-mobile-hero.png' });
     await step('burger', () => page.evaluate(() => document.querySelector('.burger')?.click()));
     await sleep(1000);
-    report.checks.mobileDrawerOpen = await page.evaluate(() => document.querySelector('#drawer')?.classList.contains('open'));
+    report.checks.mobileDrawerOpen = await page.evaluate(() =>
+      document.querySelector('#drawer')?.classList.contains('open'),
+    );
     await page.screenshot({ path: OUT + '/21-mobile-drawer.png' });
     await page.close();
 
@@ -218,4 +267,7 @@ async function main() {
   fs.writeFileSync(OUT + '/report.json', JSON.stringify(report, null, 2));
 }
 
-main().catch((e) => { console.error('QA FAILED:', e.message); process.exit(1); });
+main().catch((e) => {
+  console.error('QA FAILED:', e.message);
+  process.exit(1);
+});

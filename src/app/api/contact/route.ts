@@ -33,10 +33,13 @@ export async function POST(req: Request) {
 
   const prisma = getPrisma();
   if (!prisma) {
-    return NextResponse.json({
-      error: 'not_configured',
-      hint: 'Message storage is not configured yet. Please email or call us directly.',
-    }, { status: 503 });
+    return NextResponse.json(
+      {
+        error: 'not_configured',
+        hint: 'Message storage is not configured yet. Please email or call us directly.',
+      },
+      { status: 503 },
+    );
   }
 
   await prisma.contactMessage.create({

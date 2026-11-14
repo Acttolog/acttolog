@@ -19,7 +19,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     const page = await browser.newPage();
     await page.setViewport({ width: 1440, height: 900 });
     const found = [];
-    page.on('pageerror', (e) => found.push(String(e && e.message || e)));
+    page.on('pageerror', (e) => found.push(String((e && e.message) || e)));
     page.on('console', (m) => {
       if (m.type() === 'error') {
         const t = m.text();
@@ -46,4 +46,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   console.log(`\nTOTAL hydration messages: ${total}`);
   await browser.close();
   process.exit(0);
-})().catch((e) => { console.error('PROBE ERROR', e); process.exit(2); });
+})().catch((e) => {
+  console.error('PROBE ERROR', e);
+  process.exit(2);
+});

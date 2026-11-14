@@ -6,7 +6,10 @@ import { runSearch, type SearchEntry } from '@/lib/search';
  * (SSR/Vercel); falls back to the identical in-bundle index for static
  * hosts (GitHub Pages preview) so search never breaks.
  */
-export async function searchAnywhere(q: string, locale: Locale): Promise<{ results: SearchEntry[]; local: boolean }> {
+export async function searchAnywhere(
+  q: string,
+  locale: Locale,
+): Promise<{ results: SearchEntry[]; local: boolean }> {
   if (process.env.NEXT_PUBLIC_STATIC === '1') return { results: runSearch(q, locale), local: true };
   try {
     const res = await fetch(`/api/search?q=${encodeURIComponent(q)}&locale=${locale}`);
@@ -14,6 +17,8 @@ export async function searchAnywhere(q: string, locale: Locale): Promise<{ resul
       const data = await res.json();
       if (Array.isArray(data.results)) return { results: data.results, local: false };
     }
-  } catch { /* static host — fall through */ }
+  } catch {
+    /* static host — fall through */
+  }
   return { results: runSearch(q, locale), local: true };
 }

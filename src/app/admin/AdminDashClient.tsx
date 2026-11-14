@@ -38,53 +38,72 @@ export function AdminDashClient({ integ }: { integ: IntegrationRow[] }) {
 
   return (
     <div>
-      <div className="flex flex-wrap items-end justify-between gap-4 mb-7">
+      <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-display font-bold text-[clamp(1.42rem,3vw,2rem)] tracking-[-.025em]">Dashboard</h1>
-          <p className="mut text-[13.5px] mt-2 max-w-[86ch] leading-relaxed">
-            Acttolog control centre. All numbers below are content counts from the live CMS source —
-            traffic analytics appear under Analytics only when measured.
+          <h1 className="font-display text-[clamp(1.42rem,3vw,2rem)] font-bold tracking-[-.025em]">
+            Dashboard
+          </h1>
+          <p className="mut mt-2 max-w-[86ch] text-[13.5px] leading-relaxed">
+            Acttolog control centre. All numbers below are content counts from the live CMS source — traffic
+            analytics appear under Analytics only when measured.
           </p>
         </div>
         <div className="flex flex-wrap gap-2.5">
-          <Link href="/admin/intelligence" className="btn btn-g btn-sm"><Icon name="brain" size={14} />Intelligence</Link>
-          <Link href="/admin/system" className="btn btn-p btn-sm"><Icon name="refresh" size={14} />System health</Link>
+          <Link href="/admin/intelligence" className="btn btn-g btn-sm">
+            <Icon name="brain" size={14} />
+            Intelligence
+          </Link>
+          <Link href="/admin/system" className="btn btn-p btn-sm">
+            <Icon name="refresh" size={14} />
+            System health
+          </Link>
         </div>
       </div>
 
       <Reveal>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
           {counts.map(([label, n, href, icon]) => (
-            <Link key={label} href={href} className="panel p-5 block hover:-translate-y-1 transition-transform">
-              <div className="flex items-center justify-between mb-3">
-                <span style={{ color: 'var(--cy)' }}><Icon name={icon} size={17} /></span>
-                <span className="font-display font-bold text-[26px] tracking-[-.03em]">{n}</span>
+            <Link
+              key={label}
+              href={href}
+              className="panel block p-5 transition-transform hover:-translate-y-1"
+            >
+              <div className="mb-3 flex items-center justify-between">
+                <span style={{ color: 'var(--cy)' }}>
+                  <Icon name={icon} size={17} />
+                </span>
+                <span className="font-display text-[26px] font-bold tracking-[-.03em]">{n}</span>
               </div>
-              <div className="mono text-[9.6px] tracking-[.18em] dim">{label.toUpperCase()}</div>
+              <div className="mono dim text-[9.6px] tracking-[.18em]">{label.toUpperCase()}</div>
             </Link>
           ))}
         </div>
       </Reveal>
 
-      <div className="grid lg:grid-cols-[1.2fr_.8fr] gap-5">
+      <div className="grid gap-5 lg:grid-cols-[1.2fr_.8fr]">
         <Reveal delay={60}>
           <div className="panel p-6">
-            <div className="mono text-[9.7px] tracking-[.2em] dim mb-4">INTEGRATIONS</div>
+            <div className="mono dim mb-4 text-[9.7px] tracking-[.2em]">INTEGRATIONS</div>
             <div className="space-y-2.5">
               {integ.map((i) => (
-                <div key={i.key} className="flex items-center justify-between gap-3 rounded-xl border px-4 py-3"
-                  style={{ borderColor: 'var(--line)', background: 'var(--panel2)' }}>
+                <div
+                  key={i.key}
+                  className="flex items-center justify-between gap-3 rounded-xl border px-4 py-3"
+                  style={{ borderColor: 'var(--line)', background: 'var(--panel2)' }}
+                >
                   <div className="min-w-0">
-                    <div className="text-[13.2px] font-medium truncate">{i.label}</div>
-                    <div className="dim text-[11.4px] truncate">{i.key}</div>
+                    <div className="truncate text-[13.2px] font-medium">{i.label}</div>
+                    <div className="dim truncate text-[11.4px]">{i.key}</div>
                   </div>
                   <HealthBadge status={i.status} />
                 </div>
               ))}
             </div>
-            <div className="flex flex-wrap gap-3 mt-5">
-              <Link href="/admin/integrations" className="btn btn-g btn-sm">Manage integrations</Link>
-              <span className="dim mono text-[10.4px] self-center tracking-[.14em]">
+            <div className="mt-5 flex flex-wrap gap-3">
+              <Link href="/admin/integrations" className="btn btn-g btn-sm">
+                Manage integrations
+              </Link>
+              <span className="dim mono self-center text-[10.4px] tracking-[.14em]">
                 {healthy}/{integ.length} HEALTHY · {notConfigured} PENDING
               </span>
             </div>
@@ -94,7 +113,7 @@ export function AdminDashClient({ integ }: { integ: IntegrationRow[] }) {
         <div className="space-y-5">
           <Reveal delay={120}>
             <div className="panel p-6">
-              <div className="mono text-[9.7px] tracking-[.2em] dim mb-4">QUICK ACTIONS</div>
+              <div className="mono dim mb-4 text-[9.7px] tracking-[.2em]">QUICK ACTIONS</div>
               <div className="space-y-2">
                 {[
                   ['/admin/messages', 'Contact inbox', 'mail'],
@@ -104,11 +123,19 @@ export function AdminDashClient({ integ }: { integ: IntegrationRow[] }) {
                   ['/admin/backup', 'Backup & recovery', 'db'],
                   ['/admin/seo', 'SEO settings', 'search'],
                 ].map(([href, label, icon]) => (
-                  <Link key={href} href={href}
-                    className="flex items-center gap-3 rounded-xl border px-4 py-3 text-[13.2px] mut hover:text-[var(--txt)] transition-colors"
-                    style={{ borderColor: 'var(--line)', background: 'var(--panel2)' }}>
-                    <span style={{ color: 'var(--cy)' }}><Icon name={icon} size={15} /></span>{label}
-                    <span className="ml-auto"><Icon name="arrow" size={13} /></span>
+                  <Link
+                    key={href}
+                    href={href}
+                    className="mut flex items-center gap-3 rounded-xl border px-4 py-3 text-[13.2px] transition-colors hover:text-[var(--txt)]"
+                    style={{ borderColor: 'var(--line)', background: 'var(--panel2)' }}
+                  >
+                    <span style={{ color: 'var(--cy)' }}>
+                      <Icon name={icon} size={15} />
+                    </span>
+                    {label}
+                    <span className="ml-auto">
+                      <Icon name="arrow" size={13} />
+                    </span>
                   </Link>
                 ))}
               </div>
@@ -117,7 +144,7 @@ export function AdminDashClient({ integ }: { integ: IntegrationRow[] }) {
 
           <Reveal delay={180}>
             <div className="panel p-6">
-              <div className="mono text-[9.7px] tracking-[.2em] dim mb-3">CONTENT SOURCE</div>
+              <div className="mono dim mb-3 text-[9.7px] tracking-[.2em]">CONTENT SOURCE</div>
               <p className="mut text-[12.8px] leading-relaxed">
                 {process.env.NEXT_PUBLIC_SITE_URL ? '' : ''}
                 The CMS currently reads the <b style={{ color: 'var(--txt)' }}>bundled seed content</b>

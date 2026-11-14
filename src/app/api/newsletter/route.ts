@@ -22,11 +22,14 @@ export async function POST(req: Request) {
   const prisma = getPrisma();
   if (!prisma) {
     // Persistence not configured yet — say so honestly instead of pretending.
-    return NextResponse.json({
-      ok: false,
-      error: 'not_configured',
-      note: 'Newsletter storage is not configured yet. Please try again after launch, or contact us directly.',
-    }, { status: 503 });
+    return NextResponse.json(
+      {
+        ok: false,
+        error: 'not_configured',
+        note: 'Newsletter storage is not configured yet. Please try again after launch, or contact us directly.',
+      },
+      { status: 503 },
+    );
   }
 
   const existing = await prisma.newsletterSubscriber.findUnique({ where: { email } });

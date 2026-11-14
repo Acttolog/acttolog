@@ -2,6 +2,8 @@ import attribution from '@/lib/content/nepal-attribution.json';
 import { readMediaFiles, scanShots, shotFor, type ShotSource } from '@/lib/nepal-media';
 import { NepalShot } from './NepalShot';
 import { Reveal } from '@/components/ui/Reveal';
+import { SpatialFrame } from '@/components/spatial/SpatialFrame';
+import { FxReel } from '@/components/fx/FxReel';
 
 /**
  * NepalGallery — every photograph in the guide, with its photographer and
@@ -41,11 +43,24 @@ export function NepalGallery() {
 
   return (
     <div className="np-gal">
+      <FxReel
+        items={present.slice(0, 5).map(({ p, shot }) => {
+          // A reel cell renders about 340 px wide; take the smallest step that
+          // still covers it at 2x rather than the largest file available.
+          const w = shot.has.find((x) => x >= 700) ?? shot.has[shot.has.length - 1];
+          return {
+            src: `/media/nepal/${shot.base}-${w}.jpg`,
+            alt: p.alt.en,
+            title: p.title.en,
+            credit: `${p.credit} · ${p.license}`,
+          };
+        })}
+      />
       <div className="np-gal-grid">
         {present.map(({ p, shot }, i) => (
           <Reveal key={p.slug} delay={Math.min(i, 8) * 30} className="np-gal-cell">
             <figure className="np-gal-fig">
-              <div className="np-gal-media">
+              <SpatialFrame className="np-gal-media" clean intensity={7}>
                 <NepalShot
                   shot={shot}
                   alt={p.alt.en}
@@ -53,7 +68,7 @@ export function NepalGallery() {
                   art="himalaya"
                   className="np-gal-img"
                 />
-              </div>
+              </SpatialFrame>
               <figcaption className="np-gal-cap">
                 <span className="np-gal-title">{p.title.en}</span>
                 <span className="np-gal-credit">
@@ -61,7 +76,9 @@ export function NepalGallery() {
                   {' · © '}
                   {p.credit}
                   {' · '}
-                  <a href={p.sourceUrl} target="_blank" rel="license noopener noreferrer">{p.license}</a>
+                  <a href={p.sourceUrl} target="_blank" rel="license noopener noreferrer">
+                    {p.license}
+                  </a>
                 </span>
               </figcaption>
             </figure>
@@ -70,9 +87,9 @@ export function NepalGallery() {
       </div>
 
       <p className="np-gal-note">
-        {present.length} photographs across {subjects} subjects, all openly licensed and sourced from Wikimedia
-        Commons. Each credit links to its source page. {credited} carry attribution obligations, honoured on
-        the images themselves.
+        {present.length} photographs across {subjects} subjects, all openly licensed and sourced from
+        Wikimedia Commons. Each credit links to its source page. {credited} carry attribution obligations,
+        honoured on the images themselves.
       </p>
 
       <style>{`

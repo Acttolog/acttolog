@@ -5,6 +5,7 @@ import { Icon } from '@/components/ui/Icon';
 import { seoFor } from '@/lib/content';
 import { readMediaFiles, scanShots, shotFor, type ShotSource } from '@/lib/nepal-media';
 import { NepalShot } from '@/components/nepal/NepalShot';
+import { SpatialFrame } from '@/components/spatial/SpatialFrame';
 import { NepalGallery } from '@/components/nepal/NepalGallery';
 import { nepalGuide, placesByRegion } from '@/lib/content/nepal';
 import { NepalMap } from '@/components/nepal/NepalMap';
@@ -61,9 +62,18 @@ export default function NepalPage() {
             <h1 className="np-h1">{g.hero.title.en}</h1>
             <p className="np-hero-line">{g.hero.line.en}</p>
             <div className="np-hero-cta">
-              <a className="btn btn-p" href="#regions"><Icon name="globe" size={15} />EXPLORE THE MAP</a>
-              <a className="btn btn-g" href="#treks"><Icon name="compass" size={15} />PLAN A TREK</a>
-              <a className="btn btn-g" href="#guidelines"><Icon name="shield" size={15} />TRAVEL GUIDELINES</a>
+              <a className="btn btn-p" href="#regions">
+                <Icon name="globe" size={15} />
+                EXPLORE THE MAP
+              </a>
+              <a className="btn btn-g" href="#treks">
+                <Icon name="compass" size={15} />
+                PLAN A TREK
+              </a>
+              <a className="btn btn-g" href="#guidelines">
+                <Icon name="shield" size={15} />
+                TRAVEL GUIDELINES
+              </a>
             </div>
           </Reveal>
           <Reveal delay={160}>
@@ -89,11 +99,13 @@ export default function NepalPage() {
                 <div className="secnum">{t(1)} · GEOGRAPHY</div>
                 <h2 className="h2">Twelve regions, one country of contrasts</h2>
                 <p className="lead mt-4">
-                  Nepal runs from 59 m above sea level in the Terai to 8,848.86 m at Sagarmatha inside a hundred
-                  kilometres. Pick a region to see what belongs to it.
+                  Nepal runs from 59 m above sea level in the Terai to 8,848.86 m at Sagarmatha inside a
+                  hundred kilometres. Pick a region to see what belongs to it.
                 </p>
               </div>
-              <div className="mono np-head-meta">{g.regions.length} REGIONS · {g.places.length} PLACES</div>
+              <div className="mono np-head-meta">
+                {g.regions.length} REGIONS · {g.places.length} PLACES
+              </div>
             </div>
           </Reveal>
           <NepalMap regions={g.regions} placesByRegion={byRegion} />
@@ -109,8 +121,8 @@ export default function NepalPage() {
                 <div className="secnum">{t(2)} · PLACES TO VISIT</div>
                 <h2 className="h2">Where to actually go</h2>
                 <p className="lead mt-4">
-                  Heritage cities, high valleys, Terai grassland and lake country — searchable, filterable, and
-                  saveable to your My ACTTOLOG list.
+                  Heritage cities, high valleys, Terai grassland and lake country — searchable, filterable,
+                  and saveable to your My ACTTOLOG list.
                 </p>
               </div>
             </div>
@@ -147,8 +159,8 @@ export default function NepalPage() {
                 <div className="secnum">{t(4)} · CULTURE</div>
                 <h2 className="h2">The festival calendar</h2>
                 <p className="lead mt-4">
-                  Nepal&apos;s working week is Sunday to Friday and its year is held together by festivals. Timing a
-                  visit around one changes the whole trip.
+                  Nepal&apos;s working week is Sunday to Friday and its year is held together by festivals.
+                  Timing a visit around one changes the whole trip.
                 </p>
               </div>
             </div>
@@ -158,7 +170,7 @@ export default function NepalPage() {
               <Reveal key={f.id} delay={i * 45}>
                 <article className="np-fest-card panel" style={{ ['--a']: f.accent } as React.CSSProperties}>
                   {shotFor(f.image, scanned) && (
-                    <div className="np-fest-media">
+                    <SpatialFrame className="np-fest-media" clean intensity={8}>
                       <NepalShot
                         shot={shotFor(f.image, scanned)}
                         alt={`${f.name.en} celebrated in Nepal`}
@@ -166,7 +178,7 @@ export default function NepalPage() {
                         variant="card"
                         className="np-fest-img"
                       />
-                    </div>
+                    </SpatialFrame>
                   )}
                   <div className="np-fest-top">
                     <span className="mono np-fest-n">{t(i + 1)}</span>
@@ -200,7 +212,9 @@ export default function NepalPage() {
             {g.culture.map((c, i) => (
               <Reveal key={c.id} delay={i * 40}>
                 <article className="np-cult-card">
-                  <div className="np-cult-icon"><Icon name={c.icon === 'temple' ? 'screen' : c.icon} size={18} /></div>
+                  <div className="np-cult-icon">
+                    <Icon name={c.icon === 'temple' ? 'screen' : c.icon} size={18} />
+                  </div>
                   <h3 className="np-cult-name">{c.name.en}</h3>
                   <div className="mono np-cult-where">{c.where}</div>
                   <p className="np-cult-desc">{c.desc.en}</p>
@@ -219,7 +233,10 @@ export default function NepalPage() {
               <div>
                 <div className="secnum">{t(6)} · KITCHEN</div>
                 <h2 className="h2">What you will actually eat</h2>
-                <p className="lead mt-4">Hill fermentation, Terai river fish, Newar festival platters, and dal bhat that refills itself.</p>
+                <p className="lead mt-4">
+                  Hill fermentation, Terai river fish, Newar festival platters, and dal bhat that refills
+                  itself.
+                </p>
               </div>
             </div>
           </Reveal>
@@ -229,7 +246,7 @@ export default function NepalPage() {
               return (
                 <Reveal key={d.id} delay={i * 35}>
                   <article className="np-food-card card">
-                    <div className="np-food-media">
+                    <SpatialFrame className="np-food-media" clean intensity={8}>
                       <NepalShot
                         shot={shot}
                         alt={shot ? d.name.en : ''}
@@ -238,9 +255,12 @@ export default function NepalPage() {
                         className="np-food-img"
                       />
                       {!shot && <span className="mono np-card-art">ILLUSTRATED</span>}
-                    </div>
+                    </SpatialFrame>
                     <div className="np-food-body">
-                      <h3 className="np-food-name">{d.name.en}<span className="np-food-ne">{d.name.ne}</span></h3>
+                      <h3 className="np-food-name">
+                        {d.name.en}
+                        <span className="np-food-ne">{d.name.ne}</span>
+                      </h3>
                       <p className="np-food-desc">{d.desc.en}</p>
                     </div>
                   </article>
@@ -260,8 +280,8 @@ export default function NepalPage() {
                 <div className="secnum">{t(7)} · WILDLIFE</div>
                 <h2 className="h2">The Terai is the surprise</h2>
                 <p className="lead mt-4">
-                  Most visitors come for mountains and leave having never seen a rhino. The southern grass belt
-                  holds some of the subcontinent&apos;s better conservation stories.
+                  Most visitors come for mountains and leave having never seen a rhino. The southern grass
+                  belt holds some of the subcontinent&apos;s better conservation stories.
                 </p>
               </div>
             </div>
@@ -272,7 +292,8 @@ export default function NepalPage() {
                 <article className="np-wild-card panel">
                   <h3 className="np-wild-name">{w.name.en}</h3>
                   <div className="np-wild-meta mono">
-                    <span>{w.status.en}</span><span className="np-wild-sep" />
+                    <span>{w.status.en}</span>
+                    <span className="np-wild-sep" />
                   </div>
                   <p className="np-wild-desc">{w.desc.en}</p>
                   <div className="np-wild-where tag">{w.where}</div>
@@ -311,17 +332,36 @@ export default function NepalPage() {
                   </div>
                   <p className="np-trek-desc">{tr.desc.en}</p>
                   <dl className="np-trek-facts">
-                    <div><dt className="mono">DAYS</dt><dd>{tr.days}</dd></div>
-                    <div><dt className="mono">HIGH POINT</dt><dd>{tr.high}</dd></div>
-                    <div><dt className="mono">SEASON</dt><dd>{tr.season.join(' · ')}</dd></div>
+                    <div>
+                      <dt className="mono">DAYS</dt>
+                      <dd>{tr.days}</dd>
+                    </div>
+                    <div>
+                      <dt className="mono">HIGH POINT</dt>
+                      <dd>{tr.high}</dd>
+                    </div>
+                    <div>
+                      <dt className="mono">SEASON</dt>
+                      <dd>{tr.season.join(' · ')}</dd>
+                    </div>
                   </dl>
                   <div className="np-trek-permits">
                     <div className="mono np-trek-permits-label">REQUIRES</div>
-                    {tr.permit.map((p) => <span key={p} className="tag np-permit-tag">{p}</span>)}
+                    {tr.permit.map((p) => (
+                      <span key={p} className="tag np-permit-tag">
+                        {p}
+                      </span>
+                    ))}
                   </div>
                   <div className="np-trek-foot">
-                    <Link className="btn btn-g btn-sm" href="/nepal#guidelines"><Icon name="shield" size={13} />Permit rules</Link>
-                    <a className="btn btn-g btn-sm" href="/explore?mode=earth"><Icon name="globe" size={13} />View region</a>
+                    <Link className="btn btn-g btn-sm" href="/nepal#guidelines">
+                      <Icon name="shield" size={13} />
+                      Permit rules
+                    </Link>
+                    <a className="btn btn-g btn-sm" href="/explore?mode=earth">
+                      <Icon name="globe" size={13} />
+                      View region
+                    </a>
                   </div>
                 </article>
               </Reveal>
@@ -380,7 +420,9 @@ export default function NepalPage() {
               <div>
                 <div className="secnum">{t(11)} · IN MOTION</div>
                 <h2 className="h2">The reel</h2>
-                <p className="lead mt-4">Clips load only as the reel comes into view, and never auto-play on the LOW tier.</p>
+                <p className="lead mt-4">
+                  Clips load only as the reel comes into view, and never auto-play on the LOW tier.
+                </p>
               </div>
             </div>
           </Reveal>
@@ -396,13 +438,22 @@ export default function NepalPage() {
               <div className="eyebrow">CARRY IT INTO THE WORLD LAYER</div>
               <h2 className="h2 np-out-h">Nepal, on the globe</h2>
               <p className="lead">
-                The same country, seen from orbit. Open the ACTTOLOG Command Center and fly to the Himalaya, or
-                search any place on this page by name.
+                The same country, seen from orbit. Open the ACTTOLOG Command Center and fly to the Himalaya,
+                or search any place on this page by name.
               </p>
               <div className="np-out-cta">
-                <a className="btn btn-p" href="/explore?mode=earth&lat=28.35&lng=84.35"><Icon name="globe" size={15} />OPEN COMMAND CENTER</a>
-                <Link className="btn btn-g" href="/search"><Icon name="search" size={15} />SEARCH THE WORLD</Link>
-                <Link className="btn btn-g" href="/my"><Icon name="heart" size={15} />MY SAVED PLACES</Link>
+                <a className="btn btn-p" href="/explore?mode=earth&lat=28.35&lng=84.35">
+                  <Icon name="globe" size={15} />
+                  OPEN COMMAND CENTER
+                </a>
+                <Link className="btn btn-g" href="/search">
+                  <Icon name="search" size={15} />
+                  SEARCH THE WORLD
+                </Link>
+                <Link className="btn btn-g" href="/my">
+                  <Icon name="heart" size={15} />
+                  MY SAVED PLACES
+                </Link>
               </div>
             </div>
           </Reveal>

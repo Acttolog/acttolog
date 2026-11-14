@@ -79,10 +79,7 @@
         "en": "Kathmandu Valley",
         "ne": "काठमाडौँ उपत्यका"
       },
-      "center": [
-        27.7172,
-        85.324
-      ],
+      "center": [27.7172, 85.324],
       "zoom": 11,
       "accent": "var(--vi)",
       "blurb": {
@@ -96,10 +93,7 @@
         "en": "Khumbu / Sagarmatha",
         "ne": "खुम्बु / सगरमाथा"
       },
-      "center": [
-        27.9881,
-        86.925
-      ],
+      "center": [27.9881, 86.925],
       "zoom": 10,
       "accent": "var(--cy)",
       "blurb": {
@@ -113,10 +107,7 @@
         "en": "Annapurna & Gandaki",
         "ne": "अन्नपूर्ण, गण्डकी"
       },
-      "center": [
-        28.51,
-        83.85
-      ],
+      "center": [28.51, 83.85],
       "zoom": 10,
       "accent": "var(--mg)",
       "blurb": {
@@ -130,10 +121,7 @@
         "en": "Pokhara Valley",
         "ne": "पोखरा उपत्यका"
       },
-      "center": [
-        28.209,
-        83.926
-      ],
+      "center": [28.209, 83.926],
       "zoom": 11,
       "accent": "var(--ok)",
       "blurb": {
@@ -147,10 +135,7 @@
         "en": "Chitwan & Narayani",
         "ne": "चितवन, नारायणी"
       },
-      "center": [
-        27.55,
-        84.45
-      ],
+      "center": [27.55, 84.45],
       "zoom": 10,
       "accent": "var(--gold)",
       "blurb": {
@@ -164,10 +149,7 @@
         "en": "Lumbini",
         "ne": "लुम्बिनी"
       },
-      "center": [
-        27.4697,
-        83.2757
-      ],
+      "center": [27.4697, 83.2757],
       "zoom": 11,
       "accent": "var(--cy)",
       "blurb": {
@@ -181,10 +163,7 @@
         "en": "Langtang & Gosainkunda",
         "ne": "लान्तंग, गोजाकुण्ड"
       },
-      "center": [
-        28.22,
-        85.52
-      ],
+      "center": [28.22, 85.52],
       "zoom": 10,
       "accent": "var(--vi)",
       "blurb": {
@@ -198,10 +177,7 @@
         "en": "Upper Mustang",
         "ne": "माथि मुस्ताङ"
       },
-      "center": [
-        29.1,
-        83.88
-      ],
+      "center": [29.1, 83.88],
       "zoom": 10,
       "accent": "var(--mg)",
       "blurb": {
@@ -215,10 +191,7 @@
         "en": "Dolpo & Far-West Lakes",
         "ne": "डोल्पो, पश्चिमका ताल"
       },
-      "center": [
-        29.2,
-        81.4
-      ],
+      "center": [29.2, 81.4],
       "zoom": 10,
       "accent": "var(--ok)",
       "blurb": {
@@ -232,10 +205,7 @@
         "en": "Kanchenjunga & Ilam",
         "ne": "कञ्चनजङ्घा, इलाम"
       },
-      "center": [
-        27.7025,
-        87.93
-      ],
+      "center": [27.7025, 87.93],
       "zoom": 10,
       "accent": "var(--cy)",
       "blurb": {
@@ -249,10 +219,7 @@
         "en": "Mithila & Terai",
         "ne": "मिथिला, तराई"
       },
-      "center": [
-        26.729,
-        85.925
-      ],
+      "center": [26.729, 85.925],
       "zoom": 10,
       "accent": "var(--gold)",
       "blurb": {
@@ -266,10 +233,7 @@
         "en": "Bardiya & Suklaphanta",
         "ne": "बर्दिया, शुक्लाफाँटा"
       },
-      "center": [
-        28.64,
-        81.35
-      ],
+      "center": [28.64, 81.35],
       "zoom": 10,
       "accent": "var(--mg)",
       "blurb": {
@@ -287,26 +251,15 @@
       },
       "region": "katmandu-valley",
       "type": "heritage",
-      "coords": [
-        27.7149,
-        85.2949
-      ],
+      "coords": [27.7149, 85.2949],
       "unesco": true,
       "desc": {
         "en": "The self-born lotus. Thirteen tiers and five sets of dhyani-Buddha eyes watch the valley from a hill, reached by 365 steps and guarded by resident macaques.",
         "ne": "स्वयम्भूको आँखाले उपत्यका हेर्छ।"
       },
       "image": "nepal/swayambhunath",
-      "best": [
-        "Oct",
-        "Nov",
-        "Mar",
-        "Apr"
-      ],
-      "tags": [
-        "Buddhist",
-        "Viewpoint"
-      ]
+      "best": ["Oct", "Nov", "Mar", "Apr"],
+      "tags": ["Buddhist", "Viewpoint"]
     },
     {
       "id": "boudhanath",
@@ -316,23 +269,15 @@
       },
       "region": "katmandu-valley",
       "type": "heritage",
-      "coords": [
-        27.7228,
-        85.3617
-      ],
+      "coords": [27.7228, 85.3617],
       "unesco": true,
       "desc": {
         "en": "Among the largest domed stupas anywhere, ringed by a circumambulation path where butter lamps gutter and the kora turns clockwise all evening.",
         "ne": "विशाल गुम्बा र परिक्रमा पथ।"
       },
       "image": "nepal/boudhanath",
-      "best": [
-        "All year"
-      ],
-      "tags": [
-        "Buddhist",
-        "Stupa"
-      ]
+      "best": ["All year"],
+      "tags": ["Buddhist", "Stupa"]
     },
     {
       "id": "bhaktapur",
@@ -342,25 +287,15 @@
       },
       "region": "katmandu-valley",
       "type": "heritage",
-      "coords": [
-        27.6725,
-        85.425
-      ],
+      "coords": [27.6725, 85.425],
       "unesco": true,
       "desc": {
         "en": "The valley's best-preserved medieval city: five pagoda tiers of Nyatapola, the 55-window palace, pottery wheels turning in the same lanes as four centuries ago.",
         "ne": "पाँच तले न्यातपोल र ५५ ढोकाको महल।"
       },
       "image": "nepal/bhaktapur-durbar",
-      "best": [
-        "Sep",
-        "Oct",
-        "Apr"
-      ],
-      "tags": [
-        "Newar",
-        "Architecture"
-      ]
+      "best": ["Sep", "Oct", "Apr"],
+      "tags": ["Newar", "Architecture"]
     },
     {
       "id": "patan",
@@ -370,24 +305,15 @@
       },
       "region": "katmandu-valley",
       "type": "heritage",
-      "coords": [
-        27.654,
-        85.322
-      ],
+      "coords": [27.654, 85.322],
       "unesco": true,
       "desc": {
         "en": "The cradle of Newar metalwork and stone carving, whose Krishna Mandir is carved from a single block and whose museum is the finest in the country.",
         "ne": "निकुटिलो शिल्पको जन्मस्थान।"
       },
       "image": "nepal/patan-durbar",
-      "best": [
-        "Oct",
-        "Nov"
-      ],
-      "tags": [
-        "Newar",
-        "Museum"
-      ]
+      "best": ["Oct", "Nov"],
+      "tags": ["Newar", "Museum"]
     },
     {
       "id": "pashupatinath",
@@ -397,24 +323,15 @@
       },
       "region": "katmandu-valley",
       "type": "heritage",
-      "coords": [
-        27.7384,
-        85.352
-      ],
+      "coords": [27.7384, 85.352],
       "unesco": true,
       "desc": {
         "en": "Shiva's own temple on the Bagmati, where cremation ghats, sadhus, and the Mahadev rings of the dead make the valley confront mortality openly.",
         "ne": "बागमती किनारमा शिवको धाम।"
       },
       "image": "nepal/pashupatinath",
-      "best": [
-        "Feb",
-        "Mar"
-      ],
-      "tags": [
-        "Hindu",
-        "Riverside"
-      ],
+      "best": ["Feb", "Mar"],
+      "tags": ["Hindu", "Riverside"],
       "note": {
         "en": "Non-Hindus may view from the east bank; entry to the main temple is restricted.",
         "ne": "अहिन्दूलाई पूर्वी किनारबाट दर्शन।"
@@ -428,25 +345,15 @@
       },
       "region": "katmandu-valley",
       "type": "heritage",
-      "coords": [
-        27.7939,
-        85.4286
-      ],
+      "coords": [27.7939, 85.4286],
       "unesco": true,
       "desc": {
         "en": "The oldest continuously used temple site in the valley, on a ridge of sal trees, holding a 5th-century Lithu inscription — the earliest dated record found in Nepal.",
         "ne": "उपत्यकाको पुरानो निरन्तर पूजित धाम।"
       },
       "image": "nepal/changunarayan",
-      "best": [
-        "Oct",
-        "Nov",
-        "Mar"
-      ],
-      "tags": [
-        "Hindu",
-        "Ridge walk"
-      ]
+      "best": ["Oct", "Nov", "Mar"],
+      "tags": ["Hindu", "Ridge walk"]
     },
     {
       "id": "thamel",
@@ -456,22 +363,14 @@
       },
       "region": "katmandu-valley",
       "type": "city",
-      "coords": [
-        27.7119,
-        85.3132
-      ],
+      "coords": [27.7119, 85.3132],
       "desc": {
         "en": "The trekking capital's bazaars — Thamel for gear and cafes, Asan for spice towers, thread and temple flowers sold from stalls older than most governments.",
         "ne": "ट्रेकिङ राजधानीको बजार।"
       },
       "image": "nepal/thamel",
-      "best": [
-        "All year"
-      ],
-      "tags": [
-        "Shopping",
-        "Food"
-      ]
+      "best": ["All year"],
+      "tags": ["Shopping", "Food"]
     },
     {
       "id": "epc",
@@ -481,25 +380,14 @@
       },
       "region": "khumbu",
       "type": "mountain",
-      "coords": [
-        28.0025,
-        86.8528
-      ],
+      "coords": [28.0025, 86.8528],
       "desc": {
         "en": "Reached on foot through Namche and Tengboche, the Khumbu Icefall's seracs assembled above the glacier bowl in summer, dismantled by winter.",
         "ne": "नामे बजार र थेङ्गबोचे हुँदै पैदल।"
       },
       "image": "nepal/everest-bc",
-      "best": [
-        "Apr",
-        "May",
-        "Oct",
-        "Nov"
-      ],
-      "tags": [
-        "Trek",
-        "5,364 m"
-      ],
+      "best": ["Apr", "May", "Oct", "Nov"],
+      "tags": ["Trek", "5,364 m"],
       "note": {
         "en": "Altitude: acclimatise properly; most programmes include two rest days above Namche.",
         "ne": "उचाइ: नामेमा दुई विश्राम।"
@@ -513,23 +401,14 @@
       },
       "region": "khumbu",
       "type": "mountain",
-      "coords": [
-        28.3239,
-        86.854
-      ],
+      "coords": [28.3239, 86.854],
       "desc": {
         "en": "The black rock at 5,643 m that gives the closest sunset view of Everest's full pyramid that a non-climber will ever get.",
         "ne": "सूर्यास्तमा एभरेस्टको नजिकको दृश्य।"
       },
       "image": "nepal/kalapattar",
-      "best": [
-        "Oct",
-        "Nov"
-      ],
-      "tags": [
-        "Sunrise",
-        "5,643 m"
-      ]
+      "best": ["Oct", "Nov"],
+      "tags": ["Sunrise", "5,643 m"]
     },
     {
       "id": "namche",
@@ -539,22 +418,14 @@
       },
       "region": "khumbu",
       "type": "village",
-      "coords": [
-        27.8023,
-        86.7109
-      ],
+      "coords": [27.8023, 86.7109],
       "desc": {
         "en": "A Sherpa market town terraced into an amphitheatre bowl, busiest on Saturday, and the mandatory acclimatisation stop before the high Khumbu.",
         "ne": "शर्पा बजार, शनिबार सबैभन्दा व्यस्त।"
       },
       "image": "nepal/namche-prayer-flags",
-      "best": [
-        "All year"
-      ],
-      "tags": [
-        "Market",
-        "Acclimatise"
-      ]
+      "best": ["All year"],
+      "tags": ["Market", "Acclimatise"]
     },
     {
       "id": "tengboche",
@@ -564,24 +435,14 @@
       },
       "region": "khumbu",
       "type": "monastery",
-      "coords": [
-        27.8353,
-        86.768
-      ],
+      "coords": [27.8353, 86.768],
       "desc": {
         "en": "The great Nyingma monastery on a forested spur, with Everest and Lhotse framed behind the prayer flags; the dawn chiying puja is open to trekkers.",
         "ne": "हिमालको अगाडि गुम्बा।"
       },
       "image": "nepal/tengboche",
-      "best": [
-        "Oct",
-        "Nov",
-        "Apr"
-      ],
-      "tags": [
-        "Buddhist",
-        "Ceremony"
-      ]
+      "best": ["Oct", "Nov", "Apr"],
+      "tags": ["Buddhist", "Ceremony"]
     },
     {
       "id": "gokyo",
@@ -591,23 +452,14 @@
       },
       "region": "khumbu",
       "type": "lake",
-      "coords": [
-        28.005,
-        86.7
-      ],
+      "coords": [28.005, 86.7],
       "desc": {
         "en": "Six high turquoise lakes below Cho Oyu, the holiest Tibetan Buddhist and Bon site in Nepal, and the quieter alternative to the EBC crowds.",
         "ne": "छो ओयुको काखमा रहेका छ वटा ताल।"
       },
       "image": "nepal/gokyo",
-      "best": [
-        "Oct",
-        "Nov"
-      ],
-      "tags": [
-        "Trek",
-        "Sacred"
-      ]
+      "best": ["Oct", "Nov"],
+      "tags": ["Trek", "Sacred"]
     },
     {
       "id": "abc",
@@ -617,25 +469,14 @@
       },
       "region": "annapurna",
       "type": "mountain",
-      "coords": [
-        28.5333,
-        83.8733
-      ],
+      "coords": [28.5333, 83.8733],
       "desc": {
         "en": "A glacial amphitheatre ringed by thirteen peaks including Annapurna I and Machapuchare, reached through Ghorepani and the bamboo bowls of Chhomrong.",
         "ne": "बाह्र शिखरले घेरेको हिमाली माटो।"
       },
       "image": "nepal/abc",
-      "best": [
-        "Oct",
-        "Nov",
-        "Mar",
-        "Apr"
-      ],
-      "tags": [
-        "Trek",
-        "4,130 m"
-      ]
+      "best": ["Oct", "Nov", "Mar", "Apr"],
+      "tags": ["Trek", "4,130 m"]
     },
     {
       "id": "poonhill",
@@ -645,25 +486,14 @@
       },
       "region": "annapurna",
       "type": "viewpoint",
-      "coords": [
-        28.445,
-        83.802
-      ],
+      "coords": [28.445, 83.802],
       "desc": {
         "en": "At 3,210 m, the classic four-day sunrise view — the whole Annapurna and Dhaulagiri range lit from below in about twenty minutes.",
         "ne": "सूर्योदयको क्लासिक दृश्य।"
       },
       "image": "nepal/poonhill",
-      "best": [
-        "Oct",
-        "Nov",
-        "Mar",
-        "Apr"
-      ],
-      "tags": [
-        "Short trek",
-        "Sunrise"
-      ]
+      "best": ["Oct", "Nov", "Mar", "Apr"],
+      "tags": ["Short trek", "Sunrise"]
     },
     {
       "id": "kandi-gandaki",
@@ -673,23 +503,14 @@
       },
       "region": "annapurna",
       "type": "landscape",
-      "coords": [
-        28.85,
-        83.65
-      ],
+      "coords": [28.85, 83.65],
       "desc": {
         "en": "The river that cut between Dhaulagiri (8,167 m) and Annapurna (8,091 m), producing one of the deepest gorges on the planet and a wind corridor that blows every afternoon.",
         "ne": "संसारकै गहिरो खोंचमध्ये एक।"
       },
       "image": "nepal/kaligandaki",
-      "best": [
-        "Oct",
-        "Apr"
-      ],
-      "tags": [
-        "Scenic",
-        "Wind"
-      ]
+      "best": ["Oct", "Apr"],
+      "tags": ["Scenic", "Wind"]
     },
     {
       "id": "phemwa",
@@ -699,24 +520,14 @@
       },
       "region": "pokhara",
       "type": "lake",
-      "coords": [
-        28.2136,
-        83.945
-      ],
+      "coords": [28.2136, 83.945],
       "desc": {
         "en": "Nepal's second-largest lake, boatable at dawn when Machapuchare doubles in the water, with the Tal Barahi temple on an island and Lakeside trailing behind it.",
         "ne": "बिहानै मच्छापुछ्रेको प्रतिबिम्ब।"
       },
       "image": "nepal/phewa-lake",
-      "best": [
-        "Oct",
-        "Nov",
-        "Mar"
-      ],
-      "tags": [
-        "Boating",
-        "Sunrise"
-      ]
+      "best": ["Oct", "Nov", "Mar"],
+      "tags": ["Boating", "Sunrise"]
     },
     {
       "id": "sarangkot",
@@ -726,25 +537,14 @@
       },
       "region": "pokhara",
       "type": "viewpoint",
-      "coords": [
-        28.25,
-        83.91
-      ],
+      "coords": [28.25, 83.91],
       "desc": {
         "en": "The ridge village above Pokhara for the Annapurna sunrise and, in season, one of the world's better paragliding launches down to the lake.",
         "ne": "हिमाल हेर्ने टुप्पो।"
       },
       "image": "nepal/sarangkot",
-      "best": [
-        "Oct",
-        "Nov",
-        "Mar",
-        "Apr"
-      ],
-      "tags": [
-        "Sunrise",
-        "Paragliding"
-      ]
+      "best": ["Oct", "Nov", "Mar", "Apr"],
+      "tags": ["Sunrise", "Paragliding"]
     },
     {
       "id": "gupteswor",
@@ -758,18 +558,10 @@
         "en": "A limestone cave temple with an idol said to be self-manifested, and across the valley a second cave with a 150-step shaft and bats at dusk.",
         "ne": "चुनढुङ्गाको गुफा।"
       },
-      "coords": [
-        28.3,
-        83.953
-      ],
+      "coords": [28.3, 83.953],
       "image": "nepal/gupteshwor",
-      "best": [
-        "All year"
-      ],
-      "tags": [
-        "Cave",
-        "Family"
-      ]
+      "best": ["All year"],
+      "tags": ["Cave", "Family"]
     },
     {
       "id": "bandipur",
@@ -779,25 +571,14 @@
       },
       "region": "pokhara",
       "type": "village",
-      "coords": [
-        28.222,
-        83.977
-      ],
+      "coords": [28.222, 83.977],
       "desc": {
         "en": "A Newar hilltown preserved against traffic — slate roofs, a wide covered temple courtyard, and an uninterrupted view of the Dhaulagiri range at breakfast.",
         "ne": "पक्की संरक्षित पहाडी नगर।"
       },
       "image": "nepal/bandipur",
-      "best": [
-        "Oct",
-        "Nov",
-        "Mar",
-        "Apr"
-      ],
-      "tags": [
-        "Heritage stay",
-        "Viewpoint"
-      ]
+      "best": ["Oct", "Nov", "Mar", "Apr"],
+      "tags": ["Heritage stay", "Viewpoint"]
     },
     {
       "id": "chitwan-rhino",
@@ -807,29 +588,15 @@
       },
       "region": "chitwan",
       "type": "wildlife",
-      "coords": [
-        27.53,
-        84.42
-      ],
+      "coords": [27.53, 84.42],
       "unesco": true,
       "desc": {
         "en": "Terai grasslands called phanta where rhino, gharial, marsh mugger, leopard and sloth bear live within a day's drive of the capital. Canoe on the Rapti, walk the sal forest, watch Tharu stick-dance.",
         "ne": "गैँडा, घियाल, अग्लो भालु र थारू संस्कृति।"
       },
       "image": "nepal/greater-rhinoceros",
-      "best": [
-        "Oct",
-        "Nov",
-        "Dec",
-        "Jan",
-        "Feb",
-        "Mar"
-      ],
-      "tags": [
-        "Safari",
-        "Rhino",
-        "UNESCO"
-      ]
+      "best": ["Oct", "Nov", "Dec", "Jan", "Feb", "Mar"],
+      "tags": ["Safari", "Rhino", "UNESCO"]
     },
     {
       "id": "lumbini-garden",
@@ -839,27 +606,15 @@
       },
       "region": "lumbini",
       "type": "heritage",
-      "coords": [
-        27.4697,
-        83.2757
-      ],
+      "coords": [27.4697, 83.2757],
       "unesco": true,
       "desc": {
         "en": "The exact birthplace of the Buddha, marked by Ashoka's 3rd-century pillar and the Maya Devi temple, set in a planned grove where monasteries from more than twenty nations stand in quiet rivalry.",
         "ne": "अशोकस्तम्भ र मायादेवी मन्दिर।"
       },
       "image": "nepal/lumbini-maya-devi",
-      "best": [
-        "Oct",
-        "Nov",
-        "Feb",
-        "Mar"
-      ],
-      "tags": [
-        "Buddhist",
-        "Pilgrimage",
-        "UNESCO"
-      ]
+      "best": ["Oct", "Nov", "Feb", "Mar"],
+      "tags": ["Buddhist", "Pilgrimage", "UNESCO"]
     },
     {
       "id": "gosainkunda",
@@ -869,24 +624,14 @@
       },
       "region": "langtang",
       "type": "lake",
-      "coords": [
-        28.083,
-        85.417
-      ],
+      "coords": [28.083, 85.417],
       "desc": {
         "en": "A lake at 4,320 m that Shiva is said to have punched in the mountain with his trident; on Janai Purnima tens of thousands of pilgrims walk up to bathe in it.",
         "ne": "शिवले त्रिशुलेले फोडेको ताल।"
       },
       "image": "nepal/gosainkunda",
-      "best": [
-        "Aug",
-        "Oct",
-        "Nov"
-      ],
-      "tags": [
-        "Trek",
-        "Pilgrimage"
-      ]
+      "best": ["Aug", "Oct", "Nov"],
+      "tags": ["Trek", "Pilgrimage"]
     },
     {
       "id": "kyanjing",
@@ -896,25 +641,14 @@
       },
       "region": "langtang",
       "type": "monastery",
-      "coords": [
-        28.2283,
-        85.51
-      ],
+      "coords": [28.2283, 85.51],
       "desc": {
         "en": "The head of the Langtang valley below the frozen wall of Langtang Lirung — a Tamang and Tibetan settlement of yak herds, a cheese factory, and one of the finest sunrise ridgelines anywhere.",
         "ne": "लान्तंग लिरुङ्गको अगाडि गुम्बा।"
       },
       "image": "nepal/kyanjing",
-      "best": [
-        "Oct",
-        "Nov",
-        "Mar",
-        "Apr"
-      ],
-      "tags": [
-        "Trek",
-        "Cheese"
-      ]
+      "best": ["Oct", "Nov", "Mar", "Apr"],
+      "tags": ["Trek", "Cheese"]
     },
     {
       "id": "lo-manthang",
@@ -924,25 +658,14 @@
       },
       "region": "mustang",
       "type": "heritage",
-      "coords": [
-        29.0972,
-        83.883
-      ],
+      "coords": [29.0972, 83.883],
       "desc": {
         "en": "The walled capital of the Lho kingdom since 1380, three royal palaces and chortens inside a mud-brick perimeter, on a high cold desert that was once the trade road to Tibet.",
         "ne": "१३८० देखि किल्लाभित्रको राजधानी।"
       },
       "image": "nepal/lo-manthang",
-      "best": [
-        "Apr",
-        "May",
-        "Sep",
-        "Oct"
-      ],
-      "tags": [
-        "Restricted",
-        "Kingdom"
-      ]
+      "best": ["Apr", "May", "Sep", "Oct"],
+      "tags": ["Restricted", "Kingdom"]
     },
     {
       "id": "skytombs",
@@ -952,22 +675,14 @@
       },
       "region": "mustang",
       "type": "cave",
-      "coords": [
-        29.35,
-        83.8
-      ],
+      "coords": [29.35, 83.8],
       "desc": {
         "en": "Dozens of painted burial caves bored into vertical cliffs above the Kali Gandaki, some reachable only by ladders, holding wooden coffins and Bon and Buddhist murals.",
         "ne": "ठाडो पर्खालमा चित्रित समाधि गुफा।"
       },
       "image": "nepal/skycaves",
-      "best": [
-        "May",
-        "Sep"
-      ],
-      "tags": [
-        "Archaeology"
-      ]
+      "best": ["May", "Sep"],
+      "tags": ["Archaeology"]
     },
     {
       "id": "phoksundo",
@@ -977,26 +692,14 @@
       },
       "region": "dolpo",
       "type": "lake",
-      "coords": [
-        29.173,
-        81.473
-      ],
+      "coords": [29.173, 81.473],
       "desc": {
         "en": "Nepal's deepest and impossibly turquoise lake, with the oldest Bon monastery in the country on its shore and the village of Shey two days further on.",
         "ne": "गहिरो फिरौजे ताल र बोन गुम्बा।"
       },
       "image": "nepal/phoksundo",
-      "best": [
-        "May",
-        "Jun",
-        "Sep",
-        "Oct"
-      ],
-      "tags": [
-        "Restricted",
-        "Bon",
-        "Lake"
-      ]
+      "best": ["May", "Jun", "Sep", "Oct"],
+      "tags": ["Restricted", "Bon", "Lake"]
     },
     {
       "id": "rara",
@@ -1006,24 +709,14 @@
       },
       "region": "dolpo",
       "type": "lake",
-      "coords": [
-        29.261,
-        81.839
-      ],
+      "coords": [29.261, 81.839],
       "desc": {
         "en": "The largest lake wholly inside Nepal, at 2,960 m, ringed by conifer forest whose colour flips between lapis and pine-green with the hour.",
         "ne": "नेपालकै सबैभन्दा ठूलो ताल।"
       },
       "image": "nepal/rara-lake",
-      "best": [
-        "May",
-        "Oct",
-        "Nov"
-      ],
-      "tags": [
-        "Remote",
-        "Lake"
-      ]
+      "best": ["May", "Oct", "Nov"],
+      "tags": ["Remote", "Lake"]
     },
     {
       "id": "janaki",
@@ -1033,24 +726,14 @@
       },
       "region": "mithila",
       "type": "heritage",
-      "coords": [
-        26.7291,
-        85.9247
-      ],
+      "coords": [26.7291, 85.9247],
       "desc": {
         "en": "A Mithila marble temple to Sita, built 1910–1920, with mirror-work, carved pillars and a two-storey sanctum; the whole town turns out for Ram Navami and Vivah Panchami.",
         "ne": "मिथिला शैलीको सिताको मन्दिर।"
       },
       "image": "nepal/janaki-temple",
-      "best": [
-        "Jan",
-        "Mar",
-        "Apr"
-      ],
-      "tags": [
-        "Hindu",
-        "Mithila"
-      ]
+      "best": ["Jan", "Mar", "Apr"],
+      "tags": ["Hindu", "Mithila"]
     },
     {
       "id": "koshitappu",
@@ -1060,25 +743,14 @@
       },
       "region": "kanchenjunga",
       "type": "wildlife",
-      "coords": [
-        26.64,
-        86.83
-      ],
+      "coords": [26.64, 86.83],
       "desc": {
         "en": "Floodplain wetland east of the Sapta Koshi with some of Asia's best birding — hundreds of species, blackbuck, and the riverine habitat of the gharial.",
         "ne": "चराको स्वर्ग।"
       },
       "image": "nepal/koshitappu",
-      "best": [
-        "Nov",
-        "Dec",
-        "Jan",
-        "Feb"
-      ],
-      "tags": [
-        "Birding",
-        "Wetland"
-      ]
+      "best": ["Nov", "Dec", "Jan", "Feb"],
+      "tags": ["Birding", "Wetland"]
     },
     {
       "id": "bardiya",
@@ -1088,26 +760,14 @@
       },
       "region": "bardiya",
       "type": "wildlife",
-      "coords": [
-        28.64,
-        81.35
-      ],
+      "coords": [28.64, 81.35],
       "desc": {
         "en": "Nepal's largest Terai park on the Karnali — the best place for wild elephant, one-horned rhino at close range, Gangetic dolphin, and Tharu villages untouched by tour buses.",
         "ne": "तराईकै सबैभन्दा ठूलो निकुञ्ज।"
       },
       "image": "nepal/bardiya",
-      "best": [
-        "Nov",
-        "Dec",
-        "Jan",
-        "Feb",
-        "Mar"
-      ],
-      "tags": [
-        "Safari",
-        "Dolphin"
-      ]
+      "best": ["Nov", "Dec", "Jan", "Feb", "Mar"],
+      "tags": ["Safari", "Dolphin"]
     },
     {
       "id": "tansen",
@@ -1117,23 +777,14 @@
       },
       "region": "annapurna",
       "type": "village",
-      "coords": [
-        28.07,
-        83.61
-      ],
+      "coords": [28.07, 83.61],
       "desc": {
         "en": "A ridge town of Newar and Magar lanes above the Kali Gandaki, with the Sikali cave temples, a Goreto garden and the Ghami pipeline of terracotta roofs.",
         "ne": "किनारको शहर।"
       },
       "image": "nepal/tansen",
-      "best": [
-        "Oct",
-        "Nov",
-        "Mar"
-      ],
-      "tags": [
-        "Heritage stay"
-      ]
+      "best": ["Oct", "Nov", "Mar"],
+      "tags": ["Heritage stay"]
     },
     {
       "id": "manakamana",
@@ -1143,24 +794,14 @@
       },
       "region": "pokhara",
       "type": "heritage",
-      "coords": [
-        27.863,
-        84.653
-      ],
+      "coords": [27.863, 84.653],
       "desc": {
         "en": "A hill temple to the wish-fulfilling goddess, reached since 1998 by an aerial tramway across rice fields and river gorges, and by a two-hour foot climb before that.",
         "ne": "आकाशे गाडी र मनकामनाको धाम।"
       },
       "image": "nepal/manakamana",
-      "best": [
-        "Sep",
-        "Oct",
-        "Apr"
-      ],
-      "tags": [
-        "Cable car",
-        "Hindu"
-      ]
+      "best": ["Sep", "Oct", "Apr"],
+      "tags": ["Cable car", "Hindu"]
     }
   ],
   "festivals": [
@@ -1697,15 +1338,8 @@
         "en": "Strenuous, non-technical",
         "ne": "कठिन"
       },
-      "permit": [
-        "KhumbuPasang Lhamu fee",
-        "Sagarmatha NP",
-        "Local guide"
-      ],
-      "season": [
-        "Mar–May",
-        "Sep–Nov"
-      ],
+      "permit": ["KhumbuPasang Lhamu fee", "Sagarmatha NP", "Local guide"],
+      "season": ["Mar–May", "Sep–Nov"],
       "desc": {
         "en": "The walk to the foot of the world. Fly or drive to Lukla, then up the Dudh Koshi through Monjo and Namche, acclimatising at Tengboche and Dingboche before the Kala Patthar dawn.",
         "ne": "लुक्लादेखि सगरमाथाको काखसम्म।"
@@ -1724,14 +1358,8 @@
         "en": "Moderate to strenuous",
         "ne": "मध्यम–कठिन"
       },
-      "season": [
-        "Sep–Nov",
-        "Mar–Apr"
-      ],
-      "permit": [
-        "ACAP entry",
-        "Local guide"
-      ],
+      "season": ["Sep–Nov", "Mar–Apr"],
+      "permit": ["ACAP entry", "Local guide"],
       "desc": {
         "en": "The best-completed trail infrastructure in the mountains: teahouse beds from Birethanti through Chhomrong to MBC, all inside a conservation area where lodging is community-owned.",
         "ne": "टेलहाउस सञ्जाल।"
@@ -1750,16 +1378,8 @@
         "en": "Strenuous, restricted",
         "ne": "कठिन, निषिद्ध"
       },
-      "season": [
-        "Sep–Nov",
-        "Apr–May"
-      ],
-      "permit": [
-        "RAP Manaslu",
-        "MCAP",
-        "ACAP",
-        "Licensed guide, min 2"
-      ],
+      "season": ["Sep–Nov", "Apr–May"],
+      "permit": ["RAP Manaslu", "MCAP", "ACAP", "Licensed guide, min 2"],
       "desc": {
         "en": "The circuit that opened late and is still uncrowded — long suspension bridges over the Budhi Gandaki, Tibetan-looking villages at Lho Gaon and Samdo, and the arduous Larke La with its sudden wall of ice.",
         "ne": "भर्खरै खुलेको शान्त परिक्रमा।"
@@ -1778,13 +1398,8 @@
         "en": "Moderate, restricted",
         "ne": "मध्यम, निषिद्ध"
       },
-      "season": [
-        "Mar–Nov"
-      ],
-      "permit": [
-        "RAP Mustang",
-        "Licensed guide, min 2"
-      ],
+      "season": ["Mar–Nov"],
+      "permit": ["RAP Mustang", "Licensed guide, min 2"],
       "desc": {
         "en": "Rain-shadow trekking above the Kali Gandaki — a landscape more Tibetan than Nepali, walkable in spring and autumn when the rest of the country is wet or cold.",
         "ne": "वर्षा-छायाको उकाली।"
@@ -1803,15 +1418,8 @@
         "en": "Strenuous, restricted",
         "ne": "कठिन, निषिद्ध"
       },
-      "season": [
-        "May–Jun",
-        "Sep–Oct"
-      ],
-      "permit": [
-        "RAP Dolpo",
-        "Shey Phoksundo NP",
-        "Licensed guide, min 2"
-      ],
+      "season": ["May–Jun", "Sep–Oct"],
+      "permit": ["RAP Dolpo", "Shey Phoksundo NP", "Licensed guide, min 2"],
       "desc": {
         "en": "The most demanding classic: cross the Shey La above 5,000 m into an inner valley of Bon monasteries and crystal-clear water, having carried everything for days.",
         "ne": "सबैभन्दा कठिन क्लासिक।"
@@ -1830,14 +1438,8 @@
         "en": "Moderate",
         "ne": "मध्यम"
       },
-      "season": [
-        "Sep–Nov",
-        "Mar–May"
-      ],
-      "permit": [
-        "Langtang NP",
-        "Local guide"
-      ],
+      "season": ["Sep–Nov", "Mar–May"],
+      "permit": ["Langtang NP", "Local guide"],
       "desc": {
         "en": "The nearest great valley to Kathmandu and the one the 2015 earthquake hurt most; going is a direct way to sustain the rebuilding. Ends at Kyanjin above the icefall wall.",
         "ne": "राजधानीनजिकको उपत्यका।"
@@ -1856,13 +1458,8 @@
         "en": "Easy",
         "ne": "सजिलो"
       },
-      "season": [
-        "All year"
-      ],
-      "permit": [
-        "ACAP",
-        "Local guide"
-      ],
+      "season": ["All year"],
+      "permit": ["ACAP", "Local guide"],
       "desc": {
         "en": "The introduction trek — stone stairs through rhododendron forest from Nayapul, overnight at Ghorepani, and a pre-dawn dash to the ridge for the whole wall of peaks.",
         "ne": "सुरुआती ट्रेक।"
@@ -1881,15 +1478,8 @@
         "en": "Strenuous, restricted",
         "ne": "कठिन, निषिद्ध"
       },
-      "season": [
-        "Apr–May",
-        "Sep–Nov"
-      ],
-      "permit": [
-        "RAP Kanchenjunga",
-        "KCA conservation",
-        "Licensed guide, min 2"
-      ],
+      "season": ["Apr–May", "Sep–Nov"],
+      "permit": ["RAP Kanchenjunga", "KCA conservation", "Licensed guide, min 2"],
       "desc": {
         "en": "Eastern Nepal at its wildest: village after village of Kirat Rai, then the north and south base camps of the third-highest mountain on earth, deliberately kept low-volume.",
         "ne": "पूर्वको जङ्गली बाटो।"

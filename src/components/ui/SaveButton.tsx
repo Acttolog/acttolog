@@ -13,7 +13,13 @@ import { Icon } from '@/components/ui/Icon';
  * /api/saved, which is why this works on the static GitHub Pages export as
  * well as on a server-rendered host.
  */
-export function SaveButton({ kind, id, title, route, size = 14 }: {
+export function SaveButton({
+  kind,
+  id,
+  title,
+  route,
+  size = 14,
+}: {
   kind: string;
   id: string;
   title: string;
@@ -30,12 +36,18 @@ export function SaveButton({ kind, id, title, route, size = 14 }: {
       className={`btn btn-sm ${on ? 'btn-p' : 'btn-g'}`}
       onClick={() => toggleSave(kind, id, title, route)}
       aria-pressed={on}
-      title={on
-        ? (ne ? 'My ACTTOLOG मा सुरक्षित' : 'Saved to My ACTTOLOG')
-        : (ne ? 'My ACTTOLOG मा सुरक्षित गर्नुहोस्' : 'Save to My ACTTOLOG')}
+      title={
+        on
+          ? ne
+            ? 'My ACTTOLOG मा सुरक्षित'
+            : 'Saved to My ACTTOLOG'
+          : ne
+            ? 'My ACTTOLOG मा सुरक्षित गर्नुहोस्'
+            : 'Save to My ACTTOLOG'
+      }
     >
       <Icon name={on ? 'check' : 'heart'} size={size} />
-      {on ? (ne ? 'सुरक्षित' : 'SAVED') : (ne ? 'सुरक्षित गर्नु' : 'SAVE')}
+      {on ? (ne ? 'सुरक्षित' : 'SAVED') : ne ? 'सुरक्षित गर्नु' : 'SAVE'}
     </button>
   );
 }

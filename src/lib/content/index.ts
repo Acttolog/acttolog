@@ -1,8 +1,6 @@
 import seedJson from './seed.json';
 import extJson from './extensions.json';
-import type {
-  ActtologDB, Access, Bi, ContentStatus, Locale,
-} from './types';
+import type { ActtologDB, Access, Bi, ContentStatus, Locale } from './types';
 
 /**
  * ACTTOLOG content layer.
@@ -27,15 +25,29 @@ const ext = extJson as unknown as {
 };
 (function mergeExtensions() {
   const today = new Date().toISOString().slice(0, 10);
-  for (const [slug, price] of Object.entries(ext.offerPriceOverrides || {}) as [string, { npr: number; usd: number }][]) {
+  for (const [slug, price] of Object.entries(ext.offerPriceOverrides || {}) as [
+    string,
+    { npr: number; usd: number },
+  ][]) {
     const o = db.offers.find((x) => x.slug === slug);
-    if (o) { o.npr = price.npr; o.usd = price.usd; }
+    if (o) {
+      o.npr = price.npr;
+      o.usd = price.usd;
+    }
   }
   for (const o of ext.newOffers || []) if (!db.offers.some((x) => x.id === o.id)) db.offers.push(o);
   for (const r of ext.drExtra || []) {
     const id = `dr_${r.slug}`;
     if (!db.dr.some((x) => x.id === id)) {
-      db.dr.push({ ...r, id, status: 'published', visible: true, usage: 0, reviewDate: today, adminNotes: '' });
+      db.dr.push({
+        ...r,
+        id,
+        status: 'published',
+        visible: true,
+        usage: 0,
+        reviewDate: today,
+        adminNotes: '',
+      });
     }
   }
   const extDb = db as ActtologDB & Record<string, unknown>;

@@ -10,13 +10,20 @@ import { useSaved, type SavedEntry } from '@/lib/saved';
 import { useToast } from '@/lib/toast';
 import type { SessionUser } from '@/lib/auth/session';
 
-type Tab = 'profile' | 'saved' | 'recent' | 'academy' | 'games' | 'darkroom' | 'ai' | 'notifications' | 'settings';
+type Tab =
+  'profile' | 'saved' | 'recent' | 'academy' | 'games' | 'darkroom' | 'ai' | 'notifications' | 'settings';
 
 /** Static mirrors can never complete OAuth, so the dashboard shows the device-local store instead of a dead sign-in wall. */
 const STATIC_HOST = process.env.NEXT_PUBLIC_STATIC === '1';
 
 /** My Acttolog — simple private dashboard, no profile forms (spec §48–51). */
-export function MyDashboard({ serverUser, initialTab }: { serverUser: SessionUser | null; initialTab?: Tab }) {
+export function MyDashboard({
+  serverUser,
+  initialTab,
+}: {
+  serverUser: SessionUser | null;
+  initialTab?: Tab;
+}) {
   const { user, loading, signOut } = useSession();
   const { t, locale } = useI18n();
   const local: SessionUser = {
@@ -30,7 +37,7 @@ export function MyDashboard({ serverUser, initialTab }: { serverUser: SessionUse
   if (loading && !me) {
     return (
       <section className="pt-[calc(var(--nav)+80px)] pb-20">
-        <div className="wrap text-center dim mono tracking-[.2em] text-[11px]">LOADING SESSION…</div>
+        <div className="wrap dim mono text-center text-[11px] tracking-[.2em]">LOADING SESSION…</div>
       </section>
     );
   }
@@ -39,17 +46,22 @@ export function MyDashboard({ serverUser, initialTab }: { serverUser: SessionUse
     return (
       <section className="pt-[calc(var(--nav)+68px)] pb-20">
         <div className="wrap">
-          <div className="panel p-9 sm:p-14 max-w-[560px] mx-auto text-center">
-            <div className="flex justify-center mb-6">
-              <span className="w-12 h-12 rounded-2xl grid place-items-center" style={{ background: 'var(--grad)', color: '#04060e' }}>
+          <div className="panel mx-auto max-w-[560px] p-9 text-center sm:p-14">
+            <div className="mb-6 flex justify-center">
+              <span
+                className="grid h-12 w-12 place-items-center rounded-2xl"
+                style={{ background: 'var(--grad)', color: '#04060e' }}
+              >
                 <Icon name="users" size={22} />
               </span>
             </div>
             <h1 className="h2">{t('gate.t')}</h1>
             <p className="lead mx-auto mt-5">{t('gate.b')}</p>
             <GoogleButton returnTo="/my" className="mx-auto mt-8" />
-            <p className="dim text-[11.6px] mt-7 leading-relaxed">
-              {locale === 'ne' ? 'लगइन पछि तपाईं My Acttolog मा पुग्नुहुनेछ।' : 'After sign-in you land on My Acttolog.'}
+            <p className="dim mt-7 text-[11.6px] leading-relaxed">
+              {locale === 'ne'
+                ? 'लगइन पछि तपाईं My Acttolog मा पुग्नुहुनेछ।'
+                : 'After sign-in you land on My Acttolog.'}
             </p>
           </div>
         </div>
@@ -60,7 +72,17 @@ export function MyDashboard({ serverUser, initialTab }: { serverUser: SessionUse
   return <DashboardTabs me={me} onSignOut={signOut} local={me.uid === 'guest'} initialTab={initialTab} />;
 }
 
-function DashboardTabs({ me, onSignOut, initialTab, local }: { me: SessionUser; onSignOut: () => void; initialTab?: Tab; local?: boolean }) {
+function DashboardTabs({
+  me,
+  onSignOut,
+  initialTab,
+  local,
+}: {
+  me: SessionUser;
+  onSignOut: () => void;
+  initialTab?: Tab;
+  local?: boolean;
+}) {
   const { t, locale } = useI18n();
   const toast = useToast();
   const { items: saved, toggleSave } = useSaved();
@@ -72,10 +94,18 @@ function DashboardTabs({ me, onSignOut, initialTab, local }: { me: SessionUser; 
     try {
       setRecent(JSON.parse(localStorage.getItem(`act_recent_${me.uid}`) || '[]'));
       setPersonalization(localStorage.getItem('act_personalization') === 'on');
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }, [me.uid]);
 
-  const initials = (me.name || 'A').trim().split(/\s+/).map((w) => w[0]).slice(0, 2).join('').toUpperCase();
+  const initials = (me.name || 'A')
+    .trim()
+    .split(/\s+/)
+    .map((w) => w[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase();
 
   const tabs: [Tab, string, string][] = [
     ['profile', locale === 'ne' ? 'प्रोफाइल' : 'Profile', 'users'],
@@ -94,15 +124,26 @@ function DashboardTabs({ me, onSignOut, initialTab, local }: { me: SessionUser; 
       const res = await fetch('/api/my/deletion', { method: 'POST' });
       const data = await res.json().catch(() => ({}));
       if (res.ok) {
-        toast(locale === 'ne'
-          ? 'मेटाउने अनुरोध पठाइयो — प्रशासनले निजी रूपमा प्रक्रिया गर्नेछ।'
-          : 'Deletion request sent — administration will process it privately.', 'ok', 6000);
+        toast(
+          locale === 'ne'
+            ? 'मेटाउने अनुरोध पठाइयो — प्रशासनले निजी रूपमा प्रक्रिया गर्नेछ।'
+            : 'Deletion request sent — administration will process it privately.',
+          'ok',
+          6000,
+        );
       } else {
-        toast(data.error === 'not_configured'
-          ? (locale === 'ne' ? 'अनुरोध दर्ता प्रणाली अझै कन्फिगर भएको छैन।' : 'The request registry is not configured yet.')
-          : 'Request failed.', 'err');
+        toast(
+          data.error === 'not_configured'
+            ? locale === 'ne'
+              ? 'अनुरोध दर्ता प्रणाली अझै कन्फिगर भएको छैन।'
+              : 'The request registry is not configured yet.'
+            : 'Request failed.',
+          'err',
+        );
       }
-    } catch { toast('Network error.', 'err'); }
+    } catch {
+      toast('Network error.', 'err');
+    }
   };
 
   const savedByKind = (kind: string) => saved.filter((s: SavedEntry) => s.kind === kind);
@@ -110,38 +151,60 @@ function DashboardTabs({ me, onSignOut, initialTab, local }: { me: SessionUser; 
   return (
     <section className="pt-[calc(var(--nav)+44px)] pb-16">
       <div className="wrap">
-        <div className="flex flex-wrap items-center gap-5 mb-9">
-          <span className="w-16 h-16 rounded-2xl grid place-items-center font-display font-bold text-[22px]"
-            style={{ background: 'var(--grad)', color: '#04060e' }}>{initials}</span>
+        <div className="mb-9 flex flex-wrap items-center gap-5">
+          <span
+            className="font-display grid h-16 w-16 place-items-center rounded-2xl text-[22px] font-bold"
+            style={{ background: 'var(--grad)', color: '#04060e' }}
+          >
+            {initials}
+          </span>
           <div className="min-w-0">
             <h1 className="h2 !text-[clamp(1.55rem,3.6vw,2.4rem)]">{t('my')}</h1>
-            <div className="mut text-[13.5px] mt-1">
+            <div className="mut mt-1 text-[13.5px]">
               {me.name} · <span className="mono text-[12.3px]">{me.email}</span>
             </div>
-            <div className="flex flex-wrap gap-2 mt-2.5">
+            <div className="mt-2.5 flex flex-wrap gap-2">
               <span className="badge b-info">{me.role}</span>
-              <span className="badge b-mut">{local ? (locale === 'ne' ? 'यो यन्त्र' : 'THIS DEVICE') : 'Google'}</span>
+              <span className="badge b-mut">
+                {local ? (locale === 'ne' ? 'यो यन्त्र' : 'THIS DEVICE') : 'Google'}
+              </span>
               <span className="badge b-mut">{locale === 'ne' ? 'खाता निजी' : 'PROFILE PRIVATE'}</span>
             </div>
           </div>
-          <div className="ml-auto flex gap-2.5 flex-wrap">
+          <div className="ml-auto flex flex-wrap gap-2.5">
             {(me.role === 'Owner' || me.role === 'Admin') && (
-              <Link className="btn btn-g btn-sm" href="/admin">{t('admin')}</Link>
+              <Link className="btn btn-g btn-sm" href="/admin">
+                {t('admin')}
+              </Link>
             )}
-            {!local && <button className="btn btn-g btn-sm" onClick={onSignOut}>{t('signout')}</button>}
+            {!local && (
+              <button className="btn btn-g btn-sm" onClick={onSignOut}>
+                {t('signout')}
+              </button>
+            )}
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-[240px_1fr] gap-7 items-start">
-          <nav className="panel p-3 space-y-1" aria-label="My Acttolog">
+        <div className="grid items-start gap-7 lg:grid-cols-[240px_1fr]">
+          <nav className="panel space-y-1 p-3" aria-label="My Acttolog">
             {tabs.map(([id, label, icon]) => (
-              <button key={id}
-                className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-[11px] text-[13.5px] transition-colors text-left"
-                style={tab === id
-                  ? { background: 'linear-gradient(90deg,color-mix(in srgb,var(--cy) 16%,transparent),color-mix(in srgb,var(--vi) 8%,transparent))', color: 'var(--txt)', border: '1px solid color-mix(in srgb,var(--cy) 30%,transparent)' }
-                  : { color: 'var(--mut)', border: '1px solid transparent' }}
-                onClick={() => setTab(id)}>
-                <Icon name={icon} size={16} />{label}
+              <button
+                key={id}
+                className="flex w-full items-center gap-3 rounded-[11px] px-3.5 py-2.5 text-left text-[13.5px] transition-colors"
+                style={
+                  tab === id
+                    ? {
+                        background:
+                          'linear-gradient(90deg,color-mix(in srgb,var(--cy) 16%,transparent),color-mix(in srgb,var(--vi) 8%,transparent))',
+                        color: 'var(--txt)',
+                        border: '1px solid color-mix(in srgb,var(--cy) 30%,transparent)',
+                      }
+                    : { color: 'var(--mut)', border: '1px solid transparent' }
+                }
+                onClick={() => setTab(id)}
+              >
+                <Icon name={icon} size={16} />
+                {label}
               </button>
             ))}
           </nav>
@@ -151,19 +214,31 @@ function DashboardTabs({ me, onSignOut, initialTab, local }: { me: SessionUser; 
               <div className="panel p-6 sm:p-8">
                 <div className="eyebrow mb-5">PRIVATE PROFILE</div>
                 <div className="space-y-2.5 text-[13.6px]">
-                  <div className="flex justify-between gap-4"><span className="dim">Name</span><span>{me.name}</span></div>
-                  <div className="flex justify-between gap-4"><span className="dim">Email</span><span className="mono text-[12.6px]">{me.email}</span></div>
-                  <div className="flex justify-between gap-4"><span className="dim">Role</span><span>{me.role}</span></div>
-                  <div className="flex justify-between gap-4"><span className="dim">Provider</span><span>{local ? 'Local' : 'Google'}</span></div>
+                  <div className="flex justify-between gap-4">
+                    <span className="dim">Name</span>
+                    <span>{me.name}</span>
+                  </div>
+                  <div className="flex justify-between gap-4">
+                    <span className="dim">Email</span>
+                    <span className="mono text-[12.6px]">{me.email}</span>
+                  </div>
+                  <div className="flex justify-between gap-4">
+                    <span className="dim">Role</span>
+                    <span>{me.role}</span>
+                  </div>
+                  <div className="flex justify-between gap-4">
+                    <span className="dim">Provider</span>
+                    <span>{local ? 'Local' : 'Google'}</span>
+                  </div>
                 </div>
-                <p className="mut text-[12.8px] leading-relaxed mt-6">
+                <p className="mut mt-6 text-[12.8px] leading-relaxed">
                   {local
-                    ? (locale === 'ne'
+                    ? locale === 'ne'
                       ? 'यो स्थिर पूर्वावलोकनमा खाता सर्भर छैन। सुरक्षित सामग्री र भर्खरै हेरेका पृष्ठहरू यही ब्राउजरमा रहन्छन् — कुनै सर्भरमा पठाइँदैन।'
-                      : 'This static preview has no account server. Saved items and recently viewed pages live in this browser only — nothing is sent anywhere.')
-                    : (locale === 'ne'
+                      : 'This static preview has no account server. Saved items and recently viewed pages live in this browser only — nothing is sent anywhere.'
+                    : locale === 'ne'
                       ? 'Acttolog ले Google पहिचानबाट नाम, इमेल र फोटो मात्र राख्छ। कुनै प्रोफाइल फारम भर्नु पर्दैन। तपाईंको प्रोफाइल सधैं निजी हुन्छ — कुनै सार्वजनिक निर्देशिका छैन।'
-                      : 'Acttolog keeps only name, email and photo from your Google identity. There is no profile form to complete, and your profile is private by default — no public directory, no activity feed.')}
+                      : 'Acttolog keeps only name, email and photo from your Google identity. There is no profile form to complete, and your profile is private by default — no public directory, no activity feed.'}
                 </p>
               </div>
             )}
@@ -179,8 +254,10 @@ function DashboardTabs({ me, onSignOut, initialTab, local }: { me: SessionUser; 
                       const body = (
                         <>
                           <div className="min-w-0 flex-1">
-                            <div className="text-[13.6px] font-medium truncate">{s.title}</div>
-                            <div className="dim mono text-[9.8px] tracking-[.14em] mt-0.5">{s.kind.toUpperCase()}</div>
+                            <div className="truncate text-[13.6px] font-medium">{s.title}</div>
+                            <div className="dim mono mt-0.5 text-[9.8px] tracking-[.14em]">
+                              {s.kind.toUpperCase()}
+                            </div>
                           </div>
                           <Icon name={s.kind === 'search' ? 'search' : 'heart'} size={15} />
                         </>
@@ -191,13 +268,20 @@ function DashboardTabs({ me, onSignOut, initialTab, local }: { me: SessionUser; 
                           {!s.route ? (
                             <div className={linkClass}>{body}</div>
                           ) : s.route.startsWith('/') ? (
-                            <Link href={s.route} className={linkClass}>{body}</Link>
+                            <Link href={s.route} className={linkClass}>
+                              {body}
+                            </Link>
                           ) : (
-                            <a href={s.route} target="_blank" rel="noopener noreferrer" className={linkClass}>{body}</a>
+                            <a href={s.route} target="_blank" rel="noopener noreferrer" className={linkClass}>
+                              {body}
+                            </a>
                           )}
-                          <button className="btn btn-g btn-sm flex-none" title={locale === 'ne' ? 'सुरक्षितबाट हटाउनुहोस्' : 'Remove from saved'}
+                          <button
+                            className="btn btn-g btn-sm flex-none"
+                            title={locale === 'ne' ? 'सुरक्षितबाट हटाउनुहोस्' : 'Remove from saved'}
                             aria-label={locale === 'ne' ? 'सुरक्षितबाट हटाउनुहोस्' : 'Remove from saved'}
-                            onClick={() => toggleSave(s.kind, s.id, s.title)}>
+                            onClick={() => toggleSave(s.kind, s.id, s.title)}
+                          >
                             <Icon name="trash" size={13} />
                           </button>
                         </div>
@@ -216,42 +300,85 @@ function DashboardTabs({ me, onSignOut, initialTab, local }: { me: SessionUser; 
                 {recent.length ? (
                   <div className="space-y-2">
                     {recent.map((r, i) => (
-                      <div key={i} className="flex items-center justify-between gap-3 rounded-xl border p-3.5"
-                        style={{ borderColor: 'var(--line)', background: 'var(--panel2)' }}>
+                      <div
+                        key={i}
+                        className="flex items-center justify-between gap-3 rounded-xl border p-3.5"
+                        style={{ borderColor: 'var(--line)', background: 'var(--panel2)' }}
+                      >
                         <div className="min-w-0">
-                          <div className="text-[13.6px] truncate">{r.title}</div>
-                          <div className="dim mono text-[9.8px] tracking-[.14em] mt-0.5">{r.kind.toUpperCase()}</div>
+                          <div className="truncate text-[13.6px]">{r.title}</div>
+                          <div className="dim mono mt-0.5 text-[9.8px] tracking-[.14em]">
+                            {r.kind.toUpperCase()}
+                          </div>
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <EmptyNote text={locale === 'ne' ? 'भर्खरै हेरेको केही छैन।' : 'Nothing viewed recently.'} />
+                  <EmptyNote
+                    text={locale === 'ne' ? 'भर्खरै हेरेको केही छैन।' : 'Nothing viewed recently.'}
+                  />
                 )}
               </div>
             )}
 
-            {tab === 'academy' && <LinkPanel href="/academy" icon="book"
-              title={locale === 'ne' ? 'मेरो एकेडेमी' : 'My Academy'}
-              body={locale === 'ne' ? 'पाठ्यक्रम र प्रगति निजी हुन्छ।' : 'Your courses and private progress live here.'} />}
-            {tab === 'games' && <LinkPanel href="/games" icon="game"
-              title={locale === 'ne' ? 'मेरो खेलहरू' : 'My Games'}
-              body={locale === 'ne' ? 'स्कोर र उपलब्धिहरू निजी हुन्छन्।' : 'Scores, achievements and favorites — private to you.'} />}
-            {tab === 'darkroom' && <LinkPanel href="/darkroom" icon="search"
-              title="My Darkroom"
-              body={locale === 'ne'
-                ? `तपाईंले सुरक्षित गरेका ${savedByKind('dr').length} स्रोतहरू। खोज सधैं ग्लोबल हुन्छ — व्यक्तिगत पारिँदैन।`
-                : `You have ${savedByKind('dr').length} saved resources. Darkroom search stays global — never personalised.`} />}
-            {tab === 'ai' && <LinkPanel href="/ai" icon="brain"
-              title={locale === 'ne' ? 'एआई कुराकानी' : 'AI Conversations'}
-              body={locale === 'ne' ? 'सुरक्षित कुराकानीहरू निजी हुन्छन् — डाटाबेस जोडिएपछि यहाँ देखिनेछन्।' : 'Saved conversations are private — they appear here once persistence is connected.'} />}
+            {tab === 'academy' && (
+              <LinkPanel
+                href="/academy"
+                icon="book"
+                title={locale === 'ne' ? 'मेरो एकेडेमी' : 'My Academy'}
+                body={
+                  locale === 'ne'
+                    ? 'पाठ्यक्रम र प्रगति निजी हुन्छ।'
+                    : 'Your courses and private progress live here.'
+                }
+              />
+            )}
+            {tab === 'games' && (
+              <LinkPanel
+                href="/games"
+                icon="game"
+                title={locale === 'ne' ? 'मेरो खेलहरू' : 'My Games'}
+                body={
+                  locale === 'ne'
+                    ? 'स्कोर र उपलब्धिहरू निजी हुन्छन्।'
+                    : 'Scores, achievements and favorites — private to you.'
+                }
+              />
+            )}
+            {tab === 'darkroom' && (
+              <LinkPanel
+                href="/darkroom"
+                icon="search"
+                title="My Darkroom"
+                body={
+                  locale === 'ne'
+                    ? `तपाईंले सुरक्षित गरेका ${savedByKind('dr').length} स्रोतहरू। खोज सधैं ग्लोबल हुन्छ — व्यक्तिगत पारिँदैन।`
+                    : `You have ${savedByKind('dr').length} saved resources. Darkroom search stays global — never personalised.`
+                }
+              />
+            )}
+            {tab === 'ai' && (
+              <LinkPanel
+                href="/ai"
+                icon="brain"
+                title={locale === 'ne' ? 'एआई कुराकानी' : 'AI Conversations'}
+                body={
+                  locale === 'ne'
+                    ? 'सुरक्षित कुराकानीहरू निजी हुन्छन् — डाटाबेस जोडिएपछि यहाँ देखिनेछन्।'
+                    : 'Saved conversations are private — they appear here once persistence is connected.'
+                }
+              />
+            )}
 
             {tab === 'notifications' && (
               <div className="panel p-6 sm:p-8">
                 <div className="eyebrow mb-5">NOTIFICATIONS</div>
                 <EmptyNote text={locale === 'ne' ? 'कुनै नयाँ सूचना छैन।' : 'No new notifications.'} />
-                <p className="dim text-[11.8px] mt-4 leading-relaxed">
-                  {locale === 'ne' ? 'सूचना केन्द्र आन्तरिक छ — इमेल आवश्यक छैन।' : 'The notification center is internal — no email required.'}
+                <p className="dim mt-4 text-[11.8px] leading-relaxed">
+                  {locale === 'ne'
+                    ? 'सूचना केन्द्र आन्तरिक छ — इमेल आवश्यक छैन।'
+                    : 'The notification center is internal — no email required.'}
                 </p>
               </div>
             )}
@@ -264,35 +391,53 @@ function DashboardTabs({ me, onSignOut, initialTab, local }: { me: SessionUser; 
                     <span className="mut text-[13.4px]">
                       {locale === 'ne' ? 'व्यक्तिगतकरण (ऐच्छिक)' : 'Personalization (optional)'}
                     </span>
-                    <button className={`sw${personalization ? ' on' : ''}`} aria-pressed={personalization}
+                    <button
+                      className={`sw${personalization ? 'on' : ''}`}
+                      aria-pressed={personalization}
                       aria-label="Personalization"
                       onClick={() => {
                         const next = !personalization;
                         setPersonalization(next);
-                        try { localStorage.setItem('act_personalization', next ? 'on' : 'off'); } catch { /* ignore */ }
-                      }} />
+                        try {
+                          localStorage.setItem('act_personalization', next ? 'on' : 'off');
+                        } catch {
+                          /* ignore */
+                        }
+                      }}
+                    />
                   </label>
-                  <p className="dim text-[11.8px] mt-3 leading-relaxed">
+                  <p className="dim mt-3 text-[11.8px] leading-relaxed">
                     {locale === 'ne'
                       ? 'Darkroom खोज व्यक्तिगतकरणबाट सधैं बाहिर रहन्छ।'
                       : 'Darkroom search always stays outside personalization.'}
                   </p>
                 </div>
 
-                <div className="panel p-6 sm:p-8" style={{ borderColor: 'color-mix(in srgb,var(--err) 26%,transparent)' }}>
-                  <div className="eyebrow mb-4" style={{ color: 'var(--err)' }}>ACCOUNT</div>
-                  <p className="mut text-[13px] leading-relaxed mb-5">
+                <div
+                  className="panel p-6 sm:p-8"
+                  style={{ borderColor: 'color-mix(in srgb,var(--err) 26%,transparent)' }}
+                >
+                  <div className="eyebrow mb-4" style={{ color: 'var(--err)' }}>
+                    ACCOUNT
+                  </div>
+                  <p className="mut mb-5 text-[13px] leading-relaxed">
                     {local
-                      ? (locale === 'ne'
+                      ? locale === 'ne'
                         ? 'यहाँ कुनै खाता छैन। यो ब्राउजरको सुरक्षित सामग्री मेट्न ब्राउजर डाटा खाली गर्नुहोस्।'
-                        : 'There is no account here. To clear what this browser holds, erase this site’s browsing data.')
-                      : (locale === 'ne'
+                        : 'There is no account here. To clear what this browser holds, erase this site’s browsing data.'
+                      : locale === 'ne'
                         ? 'खाता मेटाउने अनुरोध निजी प्रशासन वर्कफ्लोमा जान्छ। तत्काल आत्म-मेटाउने सुविधा छैन — सुरक्षाका लागि।'
-                        : 'Account deletion goes through a private admin workflow — there is no instant self-delete, for your safety. Requests are reviewed before processing.')}
+                        : 'Account deletion goes through a private admin workflow — there is no instant self-delete, for your safety. Requests are reviewed before processing.'}
                   </p>
                   {!local && (
-                    <button className="btn btn-g btn-sm" style={{ color: 'var(--err)', borderColor: 'color-mix(in srgb,var(--err) 40%,transparent)' }}
-                      onClick={requestDeletion}>
+                    <button
+                      className="btn btn-g btn-sm"
+                      style={{
+                        color: 'var(--err)',
+                        borderColor: 'color-mix(in srgb,var(--err) 40%,transparent)',
+                      }}
+                      onClick={requestDeletion}
+                    >
                       <Icon name="trash" size={14} />
                       {locale === 'ne' ? 'खाता मेटाउने अनुरोध' : 'Request Account Deletion'}
                     </button>
@@ -309,8 +454,10 @@ function DashboardTabs({ me, onSignOut, initialTab, local }: { me: SessionUser; 
 
 function EmptyNote({ text }: { text: string }) {
   return (
-    <div className="rounded-xl border p-8 text-center mut text-[13.2px]"
-      style={{ borderColor: 'var(--line)', background: 'var(--panel2)' }}>
+    <div
+      className="mut rounded-xl border p-8 text-center text-[13.2px]"
+      style={{ borderColor: 'var(--line)', background: 'var(--panel2)' }}
+    >
       {text}
     </div>
   );
@@ -318,17 +465,25 @@ function EmptyNote({ text }: { text: string }) {
 
 function LinkPanel({ href, icon, title, body }: { href: string; icon: string; title: string; body: string }) {
   return (
-    <Link href={href} className="panel p-6 sm:p-8 block group">
+    <Link href={href} className="panel group block p-6 sm:p-8">
       <div className="flex items-start gap-4">
-        <span className="w-12 h-12 rounded-2xl grid place-items-center flex-none transition-transform group-hover:-translate-y-1"
-          style={{ background: 'color-mix(in srgb,var(--cy) 12%,transparent)', color: 'var(--cy)', border: '1px solid color-mix(in srgb,var(--cy) 28%,transparent)' }}>
+        <span
+          className="grid h-12 w-12 flex-none place-items-center rounded-2xl transition-transform group-hover:-translate-y-1"
+          style={{
+            background: 'color-mix(in srgb,var(--cy) 12%,transparent)',
+            color: 'var(--cy)',
+            border: '1px solid color-mix(in srgb,var(--cy) 28%,transparent)',
+          }}
+        >
           <Icon name={icon} size={21} />
         </span>
         <div>
-          <h2 className="font-display font-semibold text-[16.5px] mb-1.5">{title}</h2>
+          <h2 className="font-display mb-1.5 text-[16.5px] font-semibold">{title}</h2>
           <p className="mut text-[13px] leading-relaxed">{body}</p>
         </div>
-        <span className="ml-auto" style={{ color: 'var(--cy)' }}><Icon name="arrow" size={17} /></span>
+        <span className="ml-auto" style={{ color: 'var(--cy)' }}>
+          <Icon name="arrow" size={17} />
+        </span>
       </div>
     </Link>
   );

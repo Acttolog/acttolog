@@ -15,7 +15,7 @@ export function getPrisma(): import('@prisma/client').PrismaClient | null {
   if (!process.env.DATABASE_URL) return null;
   if (!prisma) {
     // Lazy require so builds without DATABASE_URL never touch the engine
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
+
     const { PrismaClient } = require('@prisma/client');
     prisma = new PrismaClient();
   }

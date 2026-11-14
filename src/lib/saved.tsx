@@ -5,7 +5,13 @@ import { useSession } from '@/lib/session';
 import { useToast } from '@/lib/toast';
 import { track } from '@/lib/analytics';
 
-export interface SavedEntry { kind: string; id: string; title: string; at: string; route?: string }
+export interface SavedEntry {
+  kind: string;
+  id: string;
+  title: string;
+  at: string;
+  route?: string;
+}
 
 /** Saved items (spec §48) — private per user; guests get browser-local storage. */
 export function useSaved() {
@@ -17,38 +23,61 @@ export function useSaved() {
   useEffect(() => {
     try {
       setItems(JSON.parse(localStorage.getItem(key) || '[]'));
-    } catch { setItems([]); }
+    } catch {
+      setItems([]);
+    }
     if (user) {
       // best-effort server sync when persistence is configured
-      fetch('/api/saved').then((r) => (r.ok ? r.json() : null)).then((d) => {
-        if (d?.items?.length) setItems(d.items);
-      }).catch(() => { /* offline mode is fine */ });
+      fetch('/api/saved')
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => {
+          if (d?.items?.length) setItems(d.items);
+        })
+        .catch(() => {
+          /* offline mode is fine */
+        });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key, user?.uid]);
 
-  const isSaved = useCallback((kind: string, id: string) => items.some((x) => x.kind === kind && x.id === id), [items]);
+  const isSaved = useCallback(
+    (kind: string, id: string) => items.some((x) => x.kind === kind && x.id === id),
+    [items],
+  );
 
-  const toggleSave = useCallback((kind: string, id: string, title: string, route?: string) => {
-    setItems((prev) => {
-      const i = prev.findIndex((x) => x.kind === kind && x.id === id);
-      const next = i >= 0 ? prev.filter((_, j) => j !== i) : [{ kind, id, title, at: new Date().toISOString(), route }, ...prev];
-      try { localStorage.setItem(key, JSON.stringify(next)); } catch { /* ignore */ }
-      if (i < 0) {
-        track('resource_save', { kind, id });
-        toast('Saved to My Acttolog.', 'ok');
-      } else {
-        toast('Removed from saved items.', 'info');
-      }
-      if (user) {
-        fetch('/api/saved', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ kind, id, title, route: route || null, remove: i >= 0 }),
-        }).catch(() => { /* best effort */ });
-      }
-      return next;
-    });
-  }, [key, toast, user]);
+  const toggleSave = useCallback(
+    (kind: string, id: string, title: string, route?: string) => {
+      setItems((prev) => {
+        const i = prev.findIndex((x) => x.kind === kind && x.id === id);
+        const next =
+          i >= 0
+            ? prev.filter((_, j) => j !== i)
+            : [{ kind, id, title, at: new Date().toISOString(), route }, ...prev];
+        try {
+          localStorage.setItem(key, JSON.stringify(next));
+        } catch {
+          /* ignore */
+        }
+        if (i < 0) {
+          track('resource_save', { kind, id });
+          toast('Saved to My Acttolog.', 'ok');
+        } else {
+          toast('Removed from saved items.', 'info');
+        }
+        if (user) {
+          fetch('/api/saved', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ kind, id, title, route: route || null, remove: i >= 0 }),
+          }).catch(() => {
+            /* best effort */
+          });
+        }
+        return next;
+      });
+    },
+    [key, toast, user],
+  );
 
   return { items, isSaved, toggleSave };
 }

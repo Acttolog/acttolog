@@ -29,16 +29,16 @@ ACTTOLOG
 
 ## Stack
 
-| Layer | Choice |
-|---|---|
-| Framework | Next.js 16 (App Router, webpack builder for low-memory CI) · React 19 · TypeScript |
-| Styling | Tailwind CSS v4 + migrated prototype design tokens (dark/light, cyan/violet/magenta) |
-| 3D | three.js + React Three Fiber + drei + postprocessing — `EarthScene` with High/Medium/Low tiers |
-| Fonts | next/font (Space Grotesk · Inter · JetBrains Mono · Noto Sans Devanagari) — build-time, no CDNs |
-| Database | PostgreSQL (Supabase-compatible) via Prisma 6 — optional at runtime (seed-content fallback) |
-| Auth | Google OAuth 2.0 code flow · server-side ID-token verification (jose + Google JWKS) · httpOnly JWT cookie |
-| AI | OpenAI (server-side only) with Acttolog-first retrieval fallback — honest, never fabricates |
-| Analytics | First-party consent-gated events (PostgreSQL) + GA4 after consent |
+| Layer       | Choice                                                                                                                                                                                                                                                            |
+| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Framework   | Next.js 16 (App Router, webpack builder for low-memory CI) · React 19 · TypeScript                                                                                                                                                                                |
+| Styling     | Tailwind CSS v4 + migrated prototype design tokens (dark/light, cyan/violet/magenta)                                                                                                                                                                              |
+| 3D          | three.js + React Three Fiber + drei + postprocessing — `EarthScene` with High/Medium/Low tiers                                                                                                                                                                    |
+| Fonts       | next/font (Space Grotesk · Inter · JetBrains Mono · Noto Sans Devanagari) — build-time, no CDNs                                                                                                                                                                   |
+| Database    | PostgreSQL (Supabase-compatible) via Prisma 6 — optional at runtime (seed-content fallback)                                                                                                                                                                       |
+| Auth        | Google OAuth 2.0 code flow · server-side ID-token verification (jose + Google JWKS) · httpOnly JWT cookie                                                                                                                                                         |
+| AI          | OpenAI (server-side only) with Acttolog-first retrieval fallback — honest, never fabricates                                                                                                                                                                       |
+| Analytics   | First-party consent-gated events (PostgreSQL) + GA4 after consent                                                                                                                                                                                                 |
 | World layer | `/explore` command center (EARTH·MAP·SAT·360·SEARCH), OSM/Esri/Nominatim/Overpass key-free stack, Google Maps Platform behind an honest key gate, procedural ACTTOLOG 360 worlds with hotspots, DISCOVER registry, camera presets, world portals on every section |
 
 ## Quick start
@@ -64,21 +64,21 @@ npx prisma db push          # or prisma migrate deploy
 
 ## Scripts
 
-| Script | Purpose |
-|---|---|
-| `npm run dev` | Development server |
-| `npm run build` | Production build (webpack) |
-| `npm start` | Production server |
-| `npm run lint` | ESLint (flat config, eslint-config-next 16) |
-| `npm run typecheck` | tsc --noEmit |
-| `npm test` | typecheck + lint + build |
-| `npm run db:push` | Prisma schema → database |
-| `npm run db:seed` | Re-extract prototype content → `src/lib/content/seed.json` |
+| Script                          | Purpose                                                                                                                           |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run dev`                   | Development server                                                                                                                |
+| `npm run build`                 | Production build (webpack)                                                                                                        |
+| `npm start`                     | Production server                                                                                                                 |
+| `npm run lint`                  | ESLint (flat config, eslint-config-next 16)                                                                                       |
+| `npm run typecheck`             | tsc --noEmit                                                                                                                      |
+| `npm test`                      | typecheck + lint + build                                                                                                          |
+| `npm run db:push`               | Prisma schema → database                                                                                                          |
+| `npm run db:seed`               | Re-extract prototype content → `src/lib/content/seed.json`                                                                        |
 | `node tools/world-qa.js [base]` | Targeted browser QA for the world layer (first visit, ⌘K commands + places, modes/keyboard/discover, deep links, portals, mobile) |
 
 ## Architecture notes
 
-- **Content layer** (`src/lib/content`): typed seed content extracted *mechanically* from the audited
+- **Content layer** (`src/lib/content`): typed seed content extracted _mechanically_ from the audited
   prototype (tool: `tools/extract-seed.mjs`). When `DATABASE_URL` is set, Prisma becomes the source of
   truth; until then the site serves the same real copy with zero fabricated metrics.
 - **Honesty rules** (enforced in code): no sample data presented as traffic; AI never invents sources;

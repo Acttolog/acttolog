@@ -25,30 +25,56 @@ const IC: Record<string, string> = {
   gear: '<circle cx="12" cy="12" r="3.2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>',
   menu: '<path d="M4 6h16M4 12h16M4 18h10"/>',
   eye: '<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>',
-  users: '<circle cx="9" cy="8" r="3.4"/><path d="M2.5 20a6.5 6.5 0 0113 0M17 11.5a3 3 0 100-6M18 20a5.6 5.6 0 00-2-4.3"/>',
+  users:
+    '<circle cx="9" cy="8" r="3.4"/><path d="M2.5 20a6.5 6.5 0 0113 0M17 11.5a3 3 0 100-6M18 20a5.6 5.6 0 00-2-4.3"/>',
   rocket: '<path d="M5 15c-1.5 1.5-2 6-2 6s4.5-.5 6-2M12 15l-3-3c1-4 4-9 9-9 0 5-5 8-9 9zM9 12l3 3"/>',
-  image: '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="M21 16l-5-5-9 9"/>',
+  image:
+    '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="M21 16l-5-5-9 9"/>',
   shield: '<path d="M12 3l8 3v6c0 5-3.4 8.4-8 9-4.6-.6-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>',
   db: '<ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>',
-  brain: '<path d="M9 4a3 3 0 00-3 3 3 3 0 00-1 5 3 3 0 002 5 3 3 0 005 1V5a3 3 0 00-3-1zM15 4a3 3 0 013 3 3 3 0 011 5 3 3 0 01-2 5 3 3 0 01-5 1"/>',
+  brain:
+    '<path d="M9 4a3 3 0 00-3 3 3 3 0 00-1 5 3 3 0 002 5 3 3 0 005 1V5a3 3 0 00-3-1zM15 4a3 3 0 013 3 3 3 0 011 5 3 3 0 01-2 5 3 3 0 01-5 1"/>',
   home: '<path d="M3 10l9-7 9 7v10a1 1 0 01-1 1h-5v-7H9v7H4a1 1 0 01-1-1z"/>',
   bell: '<path d="M18 8a6 6 0 10-12 0c0 7-3 8-3 8h18s-3-1-3-8M13.7 21a2 2 0 01-3.4 0"/>',
-  heart: '<path d="M20.8 5.6a5 5 0 00-7.1 0L12 7.3l-1.7-1.7a5 5 0 10-7.1 7.1L12 21.4l8.8-8.7a5 5 0 000-7.1z"/>',
+  heart:
+    '<path d="M20.8 5.6a5 5 0 00-7.1 0L12 7.3l-1.7-1.7a5 5 0 10-7.1 7.1L12 21.4l8.8-8.7a5 5 0 000-7.1z"/>',
   star: '<path d="M12 3l2.7 6 6.3.6-4.8 4.2 1.5 6.2L12 16.8 6.3 20l1.5-6.2L3 9.6 9.3 9z"/>',
   down: '<path d="M12 3v13M7 12l5 5 5-5M4 21h16"/>',
   trash: '<path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/>',
+  facebook:
+    '<rect x="3" y="3" width="18" height="18" rx="4.5"/><path fill="currentColor" stroke="none" d="M13.4 21v-6.5h2.2l.35-2.8H13.4V9.9c0-.8.25-1.35 1.4-1.35h1.3V6.05c-.25-.03-1.05-.1-1.9-.1-1.9 0-3.15 1.15-3.15 3.25v2.5H8.9v2.8h2.15V21z"/>',
+  whatsapp:
+    '<path d="M12 3a9 9 0 00-7.7 13.7L3 21l4.5-1.2A9 9 0 1012 3z"/><path d="M8.7 8.3c-.4.9-.25 2 .5 3.2.85 1.35 2.1 2.35 3.5 2.85 1 .35 2 .25 2.5-.25l.4-.55-1.7-1.05-.6.55c-.95-.45-1.75-1.2-2.3-2.15l.55-.6-1.05-1.7z"/>',
 };
 
 export type IconName = keyof typeof IC | string;
 
-export function Icon({ name, size = 18, strokeWidth = 1.7, className, style }: {
-  name: IconName; size?: number; strokeWidth?: number; className?: string; style?: React.CSSProperties;
+export function Icon({
+  name,
+  size = 18,
+  strokeWidth = 1.7,
+  className,
+  style,
+}: {
+  name: IconName;
+  size?: number;
+  strokeWidth?: number;
+  className?: string;
+  style?: React.CSSProperties;
 }) {
   return (
     <svg
-      width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round"
-      className={className} style={style} aria-hidden="true"
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      style={style}
+      aria-hidden="true"
       dangerouslySetInnerHTML={{ __html: IC[name] || IC.spark }}
     />
   );

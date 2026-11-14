@@ -33,25 +33,32 @@ export function ConsentProvider({ children }: { children: ReactNode }) {
     try {
       const raw = localStorage.getItem(KEY);
       if (raw) setConsent(JSON.parse(raw));
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }, []);
 
   const save = useCallback((analytics: boolean, personalization: boolean) => {
     const next: ConsentState = { necessary: true, analytics, personalization, at: new Date().toISOString() };
     setConsent(next);
-    try { localStorage.setItem(KEY, JSON.stringify(next)); } catch { /* ignore */ }
+    try {
+      localStorage.setItem(KEY, JSON.stringify(next));
+    } catch {
+      /* ignore */
+    }
     if (analytics) window.dispatchEvent(new CustomEvent('acttolog:consent-analytics'));
   }, []);
 
   const reset = useCallback(() => {
     setConsent(null);
-    try { localStorage.removeItem(KEY); } catch { /* ignore */ }
+    try {
+      localStorage.removeItem(KEY);
+    } catch {
+      /* ignore */
+    }
   }, []);
 
-  const value = useMemo(
-    () => ({ consent, decided: consent !== null, save, reset }),
-    [consent, save, reset],
-  );
+  const value = useMemo(() => ({ consent, decided: consent !== null, save, reset }), [consent, save, reset]);
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
 

@@ -9,13 +9,19 @@ export const nf = (n: number | undefined | null): string => Number(n || 0).toLoc
 export function fdate(d: string | Date | undefined | null): string {
   if (!d) return '—';
   const t = new Date(d);
-  return isNaN(t.getTime()) ? '—' : t.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+  return isNaN(t.getTime())
+    ? '—'
+    : t.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
 }
 
 export function fktm(d: string | Date | undefined | null): string {
   if (!d) return '—';
   try {
-    return new Intl.DateTimeFormat('en-GB', { dateStyle: 'medium', timeStyle: 'short', timeZone: KTM }).format(new Date(d)) + ' NPT';
+    return (
+      new Intl.DateTimeFormat('en-GB', { dateStyle: 'medium', timeStyle: 'short', timeZone: KTM }).format(
+        new Date(d),
+      ) + ' NPT'
+    );
   } catch {
     return fdate(d);
   }
@@ -23,21 +29,38 @@ export function fktm(d: string | Date | undefined | null): string {
 
 /** Reading time in minutes (~210 wpm, prototype `rt()`). */
 export const rt = (t: string | undefined): number =>
-  Math.max(1, Math.round(String(t || '').split(/\s+/).filter(Boolean).length / 210));
+  Math.max(
+    1,
+    Math.round(
+      String(t || '')
+        .split(/\s+/)
+        .filter(Boolean).length / 210,
+    ),
+  );
 
 export function slugify(s: string): string {
-  return String(s || '').toLowerCase().trim()
-    .replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').slice(0, 70);
+  return String(s || '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .slice(0, 70);
 }
 
 /* ── currency ───────────────────────────────────────────────────── */
 
-export function money(o: { npr?: number; usd?: number } | undefined, cur: 'NPR' | 'USD', rate: number, locale: Locale): string {
+export function money(
+  o: { npr?: number; usd?: number } | undefined,
+  cur: 'NPR' | 'USD',
+  rate: number,
+  locale: Locale,
+): string {
   if (!o) return '';
   const npr = Number(o.npr || 0);
   const usd = Number(o.usd || 0);
   const use = cur === 'NPR';
-  const v = use ? (npr || usd * rate) : (usd || (npr ? npr / rate : 0));
+  const v = use ? npr || usd * rate : usd || (npr ? npr / rate : 0);
   if (!v) return locale === 'ne' ? 'विशेष दायरा' : 'Custom scope';
   return use ? `रु ${nf(Math.round(v))} NPR` : `$${nf(Math.round(v * 100) / 100)} USD`;
 }
@@ -83,17 +106,25 @@ ${stars(w, h, kind)}
 
 function hash(s: string): number {
   let h = 2166136261;
-  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
   return h >>> 0;
 }
 
 function stars(w: number, h: number, kind: string): string {
   let s = hash(kind) || 7;
-  const rn = () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; };
+  const rn = () => {
+    s = (s * 1664525 + 1013904223) >>> 0;
+    return s / 4294967296;
+  };
   let out = '';
   const n = 90;
   for (let i = 0; i < n; i++) {
-    const x = (rn() * w).toFixed(1), y = (rn() * h).toFixed(1), r = (rn() * 1.5 + 0.3).toFixed(2);
+    const x = (rn() * w).toFixed(1),
+      y = (rn() * h).toFixed(1),
+      r = (rn() * 1.5 + 0.3).toFixed(2);
     out += `<circle cx="${x}" cy="${y}" r="${r}" fill="#fff" opacity="${(rn() * 0.6 + 0.1).toFixed(2)}"/>`;
   }
   return out;
@@ -103,7 +134,7 @@ const artCache = new Map<string, string>();
 
 /** Resolve a CMS image reference (`art:kind`, URL, or path) to a usable src. */
 export function resolveImage(src: string | Bi | undefined, kind = 'nebula'): string {
-  const raw = typeof src === 'object' && src ? src.en : (src || '');
+  const raw = typeof src === 'object' && src ? src.en : src || '';
   const key = raw || `art:${kind}`;
   if (artCache.has(key)) return artCache.get(key)!;
   let out: string;
@@ -127,29 +158,92 @@ export function md2html(src: string | undefined): string {
       .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
       .replace(/`([^`]+)`/g, '<code>$1</code>');
   const ls = String(src).replace(/\r/g, '').split('\n');
-  let out = '', ul = 0, ol = 0;
+  let out = '',
+    ul = 0,
+    ol = 0;
   const p: string[] = [];
-  const fp = () => { if (p.length) { out += '<p>' + inl(p.join(' ')) + '</p>'; p.length = 0; } };
-  const cl = () => { if (ul) { out += '</ul>'; ul = 0; } if (ol) { out += '</ol>'; ol = 0; } };
+  const fp = () => {
+    if (p.length) {
+      out += '<p>' + inl(p.join(' ')) + '</p>';
+      p.length = 0;
+    }
+  };
+  const cl = () => {
+    if (ul) {
+      out += '</ul>';
+      ul = 0;
+    }
+    if (ol) {
+      out += '</ol>';
+      ol = 0;
+    }
+  };
   for (const raw of ls) {
     const l = raw.trimEnd();
     let m: RegExpMatchArray | null;
-    if (!l.trim()) { fp(); cl(); continue; }
-    if (/^---+$/.test(l.trim())) { fp(); cl(); out += '<hr>'; continue; }
-    if ((m = l.match(/^(#{2,4})\s+(.*)$/))) { fp(); cl(); const n = m[1].length; out += `<h${n}>` + inl(m[2]) + `</h${n}>`; continue; }
-    if ((m = l.match(/^>\s?(.*)$/))) { fp(); cl(); out += '<blockquote>' + inl(m[1]) + '</blockquote>'; continue; }
-    if ((m = l.match(/^[-*]\s+(.*)$/))) { fp(); if (ol) { out += '</ol>'; ol = 0; } if (!ul) { out += '<ul>'; ul = 1; } out += '<li>' + inl(m[1]) + '</li>'; continue; }
-    if ((m = l.match(/^\d+[.)]\s+(.*)$/))) { fp(); if (ul) { out += '</ul>'; ul = 0; } if (!ol) { out += '<ol>'; ol = 1; } out += '<li>' + inl(m[1]) + '</li>'; continue; }
+    if (!l.trim()) {
+      fp();
+      cl();
+      continue;
+    }
+    if (/^---+$/.test(l.trim())) {
+      fp();
+      cl();
+      out += '<hr>';
+      continue;
+    }
+    if ((m = l.match(/^(#{2,4})\s+(.*)$/))) {
+      fp();
+      cl();
+      const n = m[1].length;
+      out += `<h${n}>` + inl(m[2]) + `</h${n}>`;
+      continue;
+    }
+    if ((m = l.match(/^>\s?(.*)$/))) {
+      fp();
+      cl();
+      out += '<blockquote>' + inl(m[1]) + '</blockquote>';
+      continue;
+    }
+    if ((m = l.match(/^[-*]\s+(.*)$/))) {
+      fp();
+      if (ol) {
+        out += '</ol>';
+        ol = 0;
+      }
+      if (!ul) {
+        out += '<ul>';
+        ul = 1;
+      }
+      out += '<li>' + inl(m[1]) + '</li>';
+      continue;
+    }
+    if ((m = l.match(/^\d+[.)]\s+(.*)$/))) {
+      fp();
+      if (ul) {
+        out += '</ul>';
+        ul = 0;
+      }
+      if (!ol) {
+        out += '<ol>';
+        ol = 1;
+      }
+      out += '<li>' + inl(m[1]) + '</li>';
+      continue;
+    }
     cl();
     p.push(l.trim());
   }
-  fp(); cl();
+  fp();
+  cl();
   return out;
 }
 
 export function escapeHtml(s: unknown): string {
-  return String(s == null ? '' : s).replace(/[&<>"']/g, (c) =>
-    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c] as string);
+  return String(s == null ? '' : s).replace(
+    /[&<>"']/g,
+    (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c] as string,
+  );
 }
 
 /* ── csv export (prototype `toCSV`) ─────────────────────────────── */
@@ -157,9 +251,15 @@ export function escapeHtml(s: unknown): string {
 export function toCSV(rows: Record<string, unknown>[]): string {
   if (!rows.length) return '';
   const ks = Object.keys(rows[0]);
-  return [ks.join(','), ...rows.map((r) =>
-    ks.map((k) => {
-      const v = r[k] == null ? '' : String(r[k]);
-      return /[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v;
-    }).join(','))].join('\n');
+  return [
+    ks.join(','),
+    ...rows.map((r) =>
+      ks
+        .map((k) => {
+          const v = r[k] == null ? '' : String(r[k]);
+          return /[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v;
+        })
+        .join(','),
+    ),
+  ].join('\n');
 }

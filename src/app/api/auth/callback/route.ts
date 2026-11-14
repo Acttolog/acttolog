@@ -51,7 +51,10 @@ export async function GET(req: Request) {
  * foreign key, so the Google identity has to exist in Postgres before a
  * session can own rows. Without a database the provider id stays the subject.
  */
-async function persistUser(profile: { sub: string; email: string; name: string; picture?: string }, role: 'Owner' | 'Admin' | 'Member'): Promise<string> {
+async function persistUser(
+  profile: { sub: string; email: string; name: string; picture?: string },
+  role: 'Owner' | 'Admin' | 'Member',
+): Promise<string> {
   const prisma = getPrisma();
   if (!prisma) return `g_${profile.sub}`;
   try {
@@ -59,12 +62,19 @@ async function persistUser(profile: { sub: string; email: string; name: string; 
     const user = await prisma.user.upsert({
       where: { providerId: profile.sub },
       create: {
-        providerId: profile.sub, email: profile.email, name: profile.name,
-        picture: profile.picture, role: dbRole, lastLoginAt: new Date(),
+        providerId: profile.sub,
+        email: profile.email,
+        name: profile.name,
+        picture: profile.picture,
+        role: dbRole,
+        lastLoginAt: new Date(),
       },
       update: {
-        email: profile.email, name: profile.name, picture: profile.picture,
-        role: dbRole, lastLoginAt: new Date(),
+        email: profile.email,
+        name: profile.name,
+        picture: profile.picture,
+        role: dbRole,
+        lastLoginAt: new Date(),
       },
     });
     return user.id;

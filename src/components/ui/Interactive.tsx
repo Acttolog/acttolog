@@ -24,10 +24,20 @@ export function FaqAccordion({ items }: { items: { q: Bi; a: Bi }[] }) {
     <div className="space-y-2.5">
       {items.map((f, i) => (
         <div key={i} className="panel overflow-hidden">
-          <button className="w-full flex items-center justify-between gap-4 p-5 text-left"
-            aria-expanded={open === i} onClick={() => setOpen(open === i ? null : i)}>
-            <span className="font-display font-semibold text-[14.6px]">{L(f.q)}</span>
-            <span style={{ color: 'var(--cy)', transform: open === i ? 'rotate(90deg)' : 'none', transition: '.3s', flex: 'none' }}>
+          <button
+            className="flex w-full items-center justify-between gap-4 p-5 text-left"
+            aria-expanded={open === i}
+            onClick={() => setOpen(open === i ? null : i)}
+          >
+            <span className="font-display text-[14.6px] font-semibold">{L(f.q)}</span>
+            <span
+              style={{
+                color: 'var(--cy)',
+                transform: open === i ? 'rotate(90deg)' : 'none',
+                transition: '.3s',
+                flex: 'none',
+              }}
+            >
               <Icon name="arrow" size={16} />
             </span>
           </button>
@@ -46,21 +56,33 @@ export function FaqAccordion({ items }: { items: { q: Bi; a: Bi }[] }) {
  * Members gate (spec §29–31, §40): preview stays visible (blurred), full
  * content unlocks with Continue with Google. No forms, no passwords.
  */
-export function MembersGate({ returnTo, reason, children }: {
-  returnTo: string; reason?: Bi | string; children?: React.ReactNode;
+export function MembersGate({
+  returnTo,
+  reason,
+  children,
+}: {
+  returnTo: string;
+  reason?: Bi | string;
+  children?: React.ReactNode;
 }) {
   const { user } = useSession();
   const { t, locale, L } = useI18n();
   if (user) return <>{children}</>;
   return (
     <div className="relative">
-      {children && <div className="lockblur" aria-hidden="true">{children}</div>}
-      <div className="panel p-8 sm:p-10 text-center max-w-[560px] mx-auto mt-6">
-        <div className="badge b-vi mb-4">{typeof reason === 'object' ? L(reason) : (reason || t('members'))}</div>
+      {children && (
+        <div className="lockblur" aria-hidden="true">
+          {children}
+        </div>
+      )}
+      <div className="panel mx-auto mt-6 max-w-[560px] p-8 text-center sm:p-10">
+        <div className="badge b-vi mb-4">
+          {typeof reason === 'object' ? L(reason) : reason || t('members')}
+        </div>
         <h3 className="h3 mb-3">{t('gate.t')}</h3>
-        <p className="mut text-[13.6px] leading-relaxed max-w-[46ch] mx-auto mb-7">{t('gate.b')}</p>
+        <p className="mut mx-auto mb-7 max-w-[46ch] text-[13.6px] leading-relaxed">{t('gate.b')}</p>
         <GoogleButton returnTo={returnTo} className="mx-auto" />
-        <p className="dim text-[11.4px] mt-5 leading-relaxed">
+        <p className="dim mt-5 text-[11.4px] leading-relaxed">
           {locale === 'ne'
             ? 'लगइन पछि तपाईं ठ्याक्कै यहीँ फर्कनुहुनेछ।'
             : 'You will return exactly here after signing in.'}

@@ -9,10 +9,7 @@ import { track } from '@/lib/analytics';
 import type { Bi, ResearchPackage } from '@/lib/content/types';
 
 /** Packages (Silver/Gold/Diamond — fully CMS-editable, currency-aware) + FAQ. */
-export function ResearchBody({ packages, faq }: {
-  packages: ResearchPackage[];
-  faq: { q: Bi; a: Bi }[];
-}) {
+export function ResearchBody({ packages, faq }: { packages: ResearchPackage[]; faq: { q: Bi; a: Bi }[] }) {
   const { L, t, locale } = useI18n();
 
   return (
@@ -35,33 +32,50 @@ export function ResearchBody({ packages, faq }: {
             </div>
           </Reveal>
 
-          <div className="grid md:grid-cols-3 gap-5">
+          <div className="grid gap-5 md:grid-cols-3">
             {packages.map((p, i) => (
               <Reveal key={p.id} delay={i * 70}>
-                <div className="card p-7 h-full flex flex-col relative"
-                  style={i === 1 ? { borderColor: 'color-mix(in srgb,var(--cy) 40%,transparent)' } : undefined}>
-                  {i === 1 && (
-                    <span className="badge b-info absolute top-5 right-5">{t('featured')}</span>
-                  )}
-                  <div className="mono text-[10px] tracking-[.24em] dim mb-2">THESYN {p.name.toUpperCase()}</div>
-                  <h3 className="font-display font-bold text-[22px] tracking-[-.02em] mb-1"
-                    style={{ color: p.accent || 'var(--txt)' }}>{p.name}</h3>
-                  <p className="mut text-[12.8px] mb-5">{L(p.tagline)}</p>
-                  <div className="font-display font-bold text-[30px] tracking-[-.03em] mb-1">
+                <div
+                  className="card relative flex h-full flex-col p-7"
+                  style={
+                    i === 1 ? { borderColor: 'color-mix(in srgb,var(--cy) 40%,transparent)' } : undefined
+                  }
+                >
+                  {i === 1 && <span className="badge b-info absolute top-5 right-5">{t('featured')}</span>}
+                  <div className="mono dim mb-2 text-[10px] tracking-[.24em]">
+                    THESYN {p.name.toUpperCase()}
+                  </div>
+                  <h3
+                    className="font-display mb-1 text-[22px] font-bold tracking-[-.02em]"
+                    style={{ color: p.accent || 'var(--txt)' }}
+                  >
+                    {p.name}
+                  </h3>
+                  <p className="mut mb-5 text-[12.8px]">{L(p.tagline)}</p>
+                  <div className="font-display mb-1 text-[30px] font-bold tracking-[-.03em]">
                     <CurrencyPrice npr={p.npr} usd={p.usd} />
                   </div>
-                  <div className="dim mono text-[10px] tracking-[.14em] mb-6">{L(p.interval).toUpperCase()}</div>
-                  <p className="mut text-[13px] leading-relaxed mb-6">{L(p.desc)}</p>
-                  <ul className="space-y-2.5 mb-8 flex-1">
+                  <div className="dim mono mb-6 text-[10px] tracking-[.14em]">
+                    {L(p.interval).toUpperCase()}
+                  </div>
+                  <p className="mut mb-6 text-[13px] leading-relaxed">{L(p.desc)}</p>
+                  <ul className="mb-8 flex-1 space-y-2.5">
                     {(p.features || []).map((f, j) => (
-                      <li key={j} className="flex items-start gap-2.5 text-[12.9px] mut">
-                        <span style={{ color: 'var(--ok)', flex: 'none', marginTop: 2 }}><Icon name="check" size={13} /></span>
+                      <li key={j} className="mut flex items-start gap-2.5 text-[12.9px]">
+                        <span style={{ color: 'var(--ok)', flex: 'none', marginTop: 2 }}>
+                          <Icon name="check" size={13} />
+                        </span>
                         {L(f)}
                       </li>
                     ))}
                   </ul>
-                  <Link href="/contact" className="btn btn-p w-full"
-                    onClick={() => track('offer_interaction', { offer: p.name.toLowerCase(), where: 'research_packages' })}>
+                  <Link
+                    href="/contact"
+                    className="btn btn-p w-full"
+                    onClick={() =>
+                      track('offer_interaction', { offer: p.name.toLowerCase(), where: 'research_packages' })
+                    }
+                  >
                     {p.mode === 'inquiry' ? t('inq') : t('both')} <Icon name="arrow" size={15} />
                   </Link>
                 </div>
@@ -69,7 +83,7 @@ export function ResearchBody({ packages, faq }: {
             ))}
           </div>
 
-          <p className="dim text-[12.2px] mt-6 leading-relaxed max-w-[80ch]">
+          <p className="dim mt-6 max-w-[80ch] text-[12.2px] leading-relaxed">
             {locale === 'ne'
               ? 'मूल्य परियोजनाको दायराअनुसार फरक हुन सक्छ — काम सुरु हुनुअघि लिखित कार्यक्षेत्र पठाइन्छ। कुनै विश्वविद्यालयसँगको सम्बन्धन दाबी गरिँदैन।'
               : 'Final pricing depends on project scope — a written scope is provided before any work begins. No university affiliation is claimed or implied.'}

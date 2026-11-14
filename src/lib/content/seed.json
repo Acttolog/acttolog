@@ -74,7 +74,7 @@
   "address": "",
   "usdToNpr": 133,
   "social": {
-   "facebook": "",
+   "facebook": "https://www.facebook.com/profile.php?id=61586303026922",
    "instagram": "",
    "youtube": "",
    "tiktok": "",
@@ -104,6 +104,16 @@
    },
    "route": "/nepal",
    "order": 2,
+   "visible": true
+  },
+  {
+   "id": "n5",
+   "label": {
+    "en": "Loksewa Ghar",
+    "ne": "लोकसेवा घर"
+   },
+   "route": "/loksewa",
+   "order": 2.5,
    "visible": true
   },
   {
@@ -1311,6 +1321,304 @@
   ]
  },
  "games": [
+  {
+   "id": "g5",
+   "slug": "cube-26",
+   "title": {
+    "en": "CUBE/26",
+    "ne": "क्युब/२६"
+   },
+   "desc": {
+    "en": "A studio-grade 3D cube lab for 2×2 and 3×3 puzzles: scramble, solve, or paint any position sticker by sticker, then run the verified solve plan on the cube.",
+    "ne": "२×२ र ३×३ पजलका लागि स्टुडियो-स्तरको ३डी क्युब ल्याब: स्क्र्याम्बल गर्नुहोस्, समाधान गर्नुहोस्, वा जुनसुकै अवस्था स्टिकर-स्टिकर रङ्गाउनुहोस्, अनि प्रमाणित समाधान योजना क्युबमा चल्न दिनुहोस्।"
+   },
+   "thumb": "/media/cube26.jpg",
+   "url": "/cube26/",
+   "launch": "live",
+   "engine": "cube-26",
+   "category": "Puzzle",
+   "tags": [
+    "3d",
+    "rubik",
+    "solver"
+   ],
+   "release": "2026-10-29",
+   "featured": true,
+   "visible": true,
+   "status": "published",
+   "access": "public"
+  },
+  {
+   "id": "g6",
+   "slug": "khoja-nepal",
+   "title": {
+    "en": "Khoja Nepal",
+    "ne": "खोज नेपाल"
+   },
+   "desc": {
+    "en": "A daily photo hunt across Nepal: five real places, five map pins. Drop your best guess, learn the distance, then share the score.",
+    "ne": "नेपालभरका पाँच वास्तविक ठाउँको दैनिक फोटो खोजी: नक्सामा अनुमान राख्नुहोस्, दूरी थाहा पाउनुहोस् र स्कोर साझा गर्नुहोस्।"
+   },
+   "thumb": "/media/arcade/thumbs/khoja-nepal.jpg",
+   "url": "/arcade/index.html?game=khoja-nepal",
+   "launch": "live",
+   "engine": "arcade-khoja",
+   "category": "Geography",
+   "tags": [
+    "nepal",
+    "map",
+    "daily"
+   ],
+   "release": "2026-10-30",
+   "featured": true,
+   "visible": true,
+   "status": "published",
+   "access": "public"
+  },
+  {
+   "id": "g7",
+   "slug": "merge-himalaya",
+   "title": {
+    "en": "Merge Himalaya",
+    "ne": "मर्ज हिमालय"
+   },
+   "desc": {
+    "en": "The 2048 formula rebuilt as a Himalayan expedition. Merge tea houses, trekkers and base camps all the way to the 2048 Himalaya tile.",
+    "ne": "२०४८ सूत्रलाई हिमाली अभियानमा बदलिएको खेल। चिया घर, ट्रेकर र आधार शिविर मिलाउँदै २०४८ को हिमालय टाइलसम्म पुग्नुहोस्।"
+   },
+   "thumb": "/media/arcade/thumbs/merge-himalaya.jpg",
+   "url": "/arcade/index.html?game=merge-himalaya",
+   "launch": "live",
+   "engine": "arcade-merge",
+   "category": "Puzzle",
+   "tags": [
+    "nepal",
+    "2048",
+    "merge"
+   ],
+   "release": "2026-10-30",
+   "featured": true,
+   "visible": true,
+   "status": "published",
+   "access": "public"
+  },
+  {
+   "id": "g8",
+   "slug": "himalaya-stack",
+   "title": {
+    "en": "Himalaya Stack",
+    "ne": "हिमालय स्ट्याक"
+   },
+   "desc": {
+    "en": "Stack blocks from Base Camp upward. One tap drops each block; perfect drops keep your tower wide while misses shave it thin. Climb toward 8,848 m.",
+    "ne": "आधार शिविरदेखि माथि ब्लकहरू थप्दै जानुहोस्। एउटा ट्यापमा ब्लक खस्छ; सटीक खसाल्दा टावर चौडा रहन्छ, चुक्दा साँघुरो हुन्छ। ८,८४८ मिटरतर्फ लक्ष्य राख्नुहोस्।"
+   },
+   "thumb": "/media/arcade/thumbs/himalaya-stack.jpg",
+   "url": "/arcade/index.html?game=himalaya-stack",
+   "launch": "live",
+   "engine": "arcade-stack",
+   "category": "Arcade",
+   "tags": [
+    "nepal",
+    "tower",
+    "one-tap"
+   ],
+   "release": "2026-10-30",
+   "featured": false,
+   "visible": true,
+   "status": "published",
+   "access": "public"
+  },
+  {
+   "id": "g9",
+   "slug": "typerush-nepal",
+   "title": {
+    "en": "TypeRush Nepal",
+    "ne": "टाइपरश नेपाल"
+   },
+   "desc": {
+    "en": "Sixty seconds, one passage about Nepal. Type facts or romanized Nepali words against the clock and chase a clean words-per-minute score.",
+    "ne": "साठी सेकेन्ड, नेपालबारे एउटा अनुच्छेद। नेपालका तथ्य वा रोमन लिपिमा नेपाली शब्द समयसँग दौडिएर टाइप गर्नुहोस् र उच्च WPM स्कोर बनाउनुहोस्।"
+   },
+   "thumb": "/media/arcade/thumbs/typerush-nepal.jpg",
+   "url": "/arcade/index.html?game=typerush-nepal",
+   "launch": "live",
+   "engine": "arcade-typerush",
+   "category": "Typing",
+   "tags": [
+    "nepal",
+    "typing",
+    "wpm"
+   ],
+   "release": "2026-10-30",
+   "featured": false,
+   "visible": true,
+   "status": "published",
+   "access": "public"
+  },
+  {
+   "id": "g10",
+   "slug": "nepal-daily",
+   "title": {
+    "en": "Nepal Daily",
+    "ne": "नेपाल डेली"
+   },
+   "desc": {
+    "en": "Ten questions a day on Nepal's mountains, culture, wildlife, food and history. The same set for everyone; practice never breaks your streak.",
+    "ne": "नेपालका हिमाल, संस्कृति, वन्यजन्तु, खानपान र इतिहासबारे दिनका दस प्रश्न। सबैका लागि एउटै सेट; अभ्यासले स्ट्रिक भाँड्दैन।"
+   },
+   "thumb": "/media/arcade/thumbs/nepal-daily.jpg",
+   "url": "/arcade/index.html?game=nepal-daily",
+   "launch": "live",
+   "engine": "arcade-daily",
+   "category": "Trivia",
+   "tags": [
+    "nepal",
+    "quiz",
+    "daily"
+   ],
+   "release": "2026-10-30",
+   "featured": false,
+   "visible": true,
+   "status": "published",
+   "access": "public"
+  },
+  {
+   "id": "g11",
+   "slug": "ludo-himalaya",
+   "title": {
+    "en": "Ludo Himalaya",
+    "ne": "लुडो हिमालय"
+   },
+   "desc": {
+    "en": "The classic ludo table in three dimensions: walnut, brass and glass. Roll six to leave the yard, capture rivals, then race four marbles up your home column.",
+    "ne": "तीन आयाममा क्लासिक लुडो टेबल: ओखरको काठ, पित्तल र काँच। छक्का परे घरबाट निस्कनुहोस्, प्रतिद्वन्द्वीलाई काट्नुहोस् र चार गोटी आ-आफ्नो घरतर्फ दौडाउनुहोस्।"
+   },
+   "thumb": "/media/arcade/thumbs/ludo-himalaya.jpg",
+   "url": "/arcade/index.html?game=ludo-himalaya",
+   "launch": "live",
+   "engine": "arcade-ludo",
+   "category": "Board",
+   "tags": [
+    "nepal",
+    "ludo",
+    "dice",
+    "3d"
+   ],
+   "release": "2026-10-30",
+   "featured": true,
+   "visible": true,
+   "status": "published",
+   "access": "public"
+  },
+  {
+   "id": "g12",
+   "slug": "snake-himalaya",
+   "title": {
+    "en": "Snake Himalaya",
+    "ne": "स्नेक हिमालय"
+   },
+   "desc": {
+    "en": "The classic snake as a neon trail across the high grid. Eat momo to grow and quicken the pulse; walls and your own tail end the run. Arrows, WASD or swipe.",
+    "ne": "क्लासिक स्नेक खेल उच्च ग्रिडमा नियोन ट्रेलका रूपमा। मःम खाएर लामो हुनुहोस् र गति बढाउनुहोस्; भित्ता र आफ्नै पुच्छरले खेल सकिन्छ।"
+   },
+   "thumb": "/media/arcade/thumbs/snake-himalaya.jpg",
+   "url": "/arcade/index.html?game=snake-himalaya",
+   "launch": "live",
+   "engine": "arcade-snake",
+   "category": "Arcade",
+   "tags": [
+    "nepal",
+    "snake",
+    "neon"
+   ],
+   "release": "2026-11-14",
+   "featured": false,
+   "visible": true,
+   "status": "published",
+   "access": "public"
+  },
+  {
+   "id": "g13",
+   "slug": "himalaya-breakout",
+   "title": {
+    "en": "Himalaya Breakout",
+    "ne": "हिमालय ब्रेकआउट"
+   },
+   "desc": {
+    "en": "Break a five-row prayer-flag wall with one glowing ball and three lives. Clear the wall to climb a level — the ball only gets faster. Mouse, touch or arrow keys.",
+    "ne": "पाँच पङ्क्तिको prayer-flag पर्खाललाई एउटा चम्किलो बल र तीन जीवनले तोड्नुहोस्। पर्खाल सफा गरेपछि अर्को तह — बल झन् छिटो हुन्छ।"
+   },
+   "thumb": "/media/arcade/thumbs/himalaya-breakout.jpg",
+   "url": "/arcade/index.html?game=himalaya-breakout",
+   "launch": "live",
+   "engine": "arcade-breakout",
+   "category": "Arcade",
+   "tags": [
+    "nepal",
+    "breakout",
+    "bricks"
+   ],
+   "release": "2026-11-14",
+   "featured": false,
+   "visible": true,
+   "status": "published",
+   "access": "public"
+  },
+  {
+   "id": "g14",
+   "slug": "danphe-flight",
+   "title": {
+    "en": "Danphe Flight",
+    "ne": "डाँफे उडान"
+   },
+   "desc": {
+    "en": "Fly Nepal's national bird, the Himalayan monal, between carved temple pillars. One tap per wingbeat; the gap tightens with every point you score.",
+    "ne": "नेपालको राष्ट्रिय पन्छी डाँफेलाई मन्दिरका स्तम्भहरूबीच उडाउनुहोस्। एक ट्यापमा एक पखेटा; स्कोर बढ्दै जाँदा खाँचो साँघुरो हुन्छ।"
+   },
+   "thumb": "/media/arcade/thumbs/danphe-flight.jpg",
+   "url": "/arcade/index.html?game=danphe-flight",
+   "launch": "live",
+   "engine": "arcade-danphe",
+   "category": "Arcade",
+   "tags": [
+    "nepal",
+    "danphe",
+    "one-tap"
+   ],
+   "release": "2026-11-14",
+   "featured": false,
+   "visible": true,
+   "status": "published",
+   "access": "public"
+  },
+  {
+   "id": "g15",
+   "slug": "memory-nepal",
+   "title": {
+    "en": "Memory Nepal",
+    "ne": "मेमोरी नेपाल"
+   },
+   "desc": {
+    "en": "Flip, remember, match: eight pairs of Nepal icons — momo, danphe, laligurans and more. A move counter, a clock and a personal best for the fewest moves.",
+    "ne": "पल्टाउनुहोस्, सम्झनुहोस्, मिलाउनुहोस्: नेपालका आठ जोडी चिन्ह — मःम, डाँफे, लालीगुराँस र अरू। कम चालमा सक्ने व्यक्तिगत कीर्तिमान सहित।"
+   },
+   "thumb": "/media/arcade/thumbs/memory-nepal.jpg",
+   "url": "/arcade/index.html?game=memory-nepal",
+   "launch": "live",
+   "engine": "arcade-memory",
+   "category": "Puzzle",
+   "tags": [
+    "nepal",
+    "memory",
+    "pairs"
+   ],
+   "release": "2026-11-14",
+   "featured": false,
+   "visible": true,
+   "status": "published",
+   "access": "public"
+  },
   {
    "id": "g1",
    "slug": "orbit-recall",
@@ -3186,6 +3494,236 @@
    "access": "public",
    "validUntil": "",
    "featured": false
+  },
+  {
+   "id": "o10",
+   "slug": "loksewa-pack-aptitude",
+   "division": "academy",
+   "title": {
+    "en": "Loksewa Paper Pack — Administration Aptitude",
+    "ne": "लोकसेवा पेपर प्याक — प्रशासनिक योग्यता"
+   },
+   "short": {
+    "en": "Teaching slides, folder checklist and revision sheets for the first paper.",
+    "ne": "पहिलो पेपरको पढाइ स्लाइड, फोल्डर चेकलिस्ट र दोहोरो पठान पाना।"
+   },
+   "desc": {
+    "en": "The classroom pack for Administration Aptitude: a slide deck per subject built from the published syllabus points, the printable folder checklist and the model question sheet with its answer key.",
+    "ne": "प्रशासनिक योग्यताको कक्षा प्याक: विषसूचीका बुँदाबाट बनाइएको हरेक विषयको स्लाइड डेक, छापिने फोल्डर चेकलिस्ट र उत्तर कुञ्जीसहित नमुना प्रश्नपत्र।"
+   },
+   "npr": 300,
+   "usd": 3,
+   "mode": "inquiry",
+   "features": [
+    {
+     "en": "PPTX slide deck for all subjects of the paper",
+     "ne": "पेपरका सबै विषयको PPTX स्लाइड डेक"
+    },
+    {
+     "en": "Print-ready folder checklist PDF",
+     "ne": "छापिने फोल्डर चेकलिस्ट PDF"
+    },
+    {
+     "en": "Model questions with answer key and explanations",
+     "ne": "व्याख्यासहित उत्तर कुञ्जी र नमुना प्रश्न"
+    }
+   ],
+   "terms": {
+    "en": "Files are sent after the payment is confirmed. Online payment is not yet live on this site — place the order through the contact form and pay by the method agreed there.",
+    "ne": "भुक्तानी पुष्टि भएपछि फाइल पठाइन्छ। यो साइटमा अझै अनलाइन भुक्तानी चल्दैन — सम्पर्क फारमबाट अर्डर दिनुहोस् र तयार भएको तरिकाले भुक्तानी गर्नुहोस्।"
+   },
+   "art": "offers",
+   "accent": "#35e0ff",
+   "status": "published",
+   "audience": "np",
+   "access": "public",
+   "validUntil": "2026-12-31",
+   "featured": false,
+   "visible": true
+  },
+  {
+   "id": "o11",
+   "slug": "loksewa-pack-governance",
+   "division": "academy",
+   "title": {
+    "en": "Loksewa Paper Pack — Governance System",
+    "ne": "लोकसेवा पेपर प्याक — सुशासन प्रणाली"
+   },
+   "short": {
+    "en": "Teaching slides, folder checklist and revision sheets for the governance paper.",
+    "ne": "सुशासन पेपरको पढाइ स्लाइड, फोल्डर चेकलिस्ट र दोहोरो पठान पाना।"
+   },
+   "desc": {
+    "en": "The classroom pack for the Governance System paper: state structure, constitution and law, public service and resources — one slide deck per subject plus the printable checklist and model questions.",
+    "ne": "सुशासन प्रणाली पेपरको कक्षा प्याक: राज्य संरचना, संविधान र कानून, लोकसेवा र स्रोतसाधन — हरेक विषयको स्लाइड डेक, छापिने चेकलिस्ट र नमुना प्रश्नसहित।"
+   },
+   "npr": 300,
+   "usd": 3,
+   "mode": "inquiry",
+   "features": [
+    {
+     "en": "PPTX slide deck for all subjects of the paper",
+     "ne": "पेपरका सबै विषयको PPTX स्लाइड डेक"
+    },
+    {
+     "en": "Print-ready folder checklist PDF",
+     "ne": "छापिने फोल्डर चेकलिस्ट PDF"
+    },
+    {
+     "en": "Law reading list with official sources",
+     "ne": "आधिकारिक स्रोतसहित कानून पढ्ने सूची"
+    }
+   ],
+   "terms": {
+    "en": "Files are sent after the payment is confirmed. Online payment is not yet live on this site — place the order through the contact form and pay by the method agreed there.",
+    "ne": "भुक्तानी पुष्टि भएपछि फाइल पठाइन्छ। यो साइटमा अझै अनलाइन भुक्तानी चल्दैन — सम्पर्क फारमबाट अर्डर दिनुहोस् र तयार भएको तरिकाले भुक्तानी गर्नुहोस्।"
+   },
+   "art": "offers",
+   "accent": "#7c5cff",
+   "status": "published",
+   "audience": "np",
+   "access": "public",
+   "validUntil": "2026-12-31",
+   "featured": false,
+   "visible": true
+  },
+  {
+   "id": "o12",
+   "slug": "loksewa-pack-contemporary",
+   "division": "academy",
+   "title": {
+    "en": "Loksewa Paper Pack — Contemporary Issues",
+    "ne": "लोकसेवा पेपर प्याक — समकालीन मुद्दा"
+   },
+   "short": {
+    "en": "Teaching slides, folder checklist and revision sheets for contemporary issues.",
+    "ne": "समकालीन मुद्दा पेपरको पढाइ स्लाइड, फोल्डर चेकलिस्ट र दोहोरो पठान पाना।"
+   },
+   "desc": {
+    "en": "The classroom pack for Contemporary Issues: society, economy, development and environment — one slide deck per subject plus the printable checklist and model questions.",
+    "ne": "समकालीन मुद्दा पेपरको कक्षा प्याक: समाज, अर्थतन्त्र, विकास र वातावरण — हरेक विषयको स्लाइड डेक, छापिने चेकलिस्ट र नमुना प्रश्नसहित।"
+   },
+   "npr": 300,
+   "usd": 3,
+   "mode": "inquiry",
+   "features": [
+    {
+     "en": "PPTX slide deck for all subjects of the paper",
+     "ne": "पेपरका सबै विषयको PPTX स्लाइड डेक"
+    },
+    {
+     "en": "Print-ready folder checklist PDF",
+     "ne": "छापिने फोल्डर चेकलिस्ट PDF"
+    },
+    {
+     "en": "Weekly study plan PDF",
+     "ne": "हप्तागत तयारी योजना PDF"
+    }
+   ],
+   "terms": {
+    "en": "Files are sent after the payment is confirmed. Online payment is not yet live on this site — place the order through the contact form and pay by the method agreed there.",
+    "ne": "भुक्तानी पुष्टि भएपछि फाइल पठाइन्छ। यो साइटमा अझै अनलाइन भुक्तानी चल्दैन — सम्पर्क फारमबाट अर्डर दिनुहोस् र तयार भएको तरिकाले भुक्तानी गर्नुहोस्।"
+   },
+   "art": "offers",
+   "accent": "#ff4ecd",
+   "status": "published",
+   "audience": "np",
+   "access": "public",
+   "validUntil": "2026-12-31",
+   "featured": false,
+   "visible": true
+  },
+  {
+   "id": "o13",
+   "slug": "loksewa-pack-service",
+   "division": "academy",
+   "title": {
+    "en": "Loksewa Paper Pack — Service Subject",
+    "ne": "लोकसेवा पेपर प्याक — सेवा विषय"
+   },
+   "short": {
+    "en": "Teaching slides, folder checklist and revision sheets for the service paper.",
+    "ne": "सेवा विषय पेपरको पढाइ स्लाइड, फोल्डर चेकलिस्ट र दोहोरो पठान पाना।"
+   },
+   "desc": {
+    "en": "The classroom pack for the Service Subject paper: management, revenue, accounting and federalism — one slide deck per subject plus the printable checklist and model questions.",
+    "ne": "सेवा विषय पेपरको कक्षा प्याक: प्रबन्ध, राजस्व, लेखा र सङ्घीयता — हरेक विषयको स्लाइड डेक, छापिने चेकलिस्ट र नमुना प्रश्नसहित।"
+   },
+   "npr": 300,
+   "usd": 3,
+   "mode": "inquiry",
+   "features": [
+    {
+     "en": "PPTX slide deck for all subjects of the paper",
+     "ne": "पेपरका सबै विषयको PPTX स्लाइड डेक"
+    },
+    {
+     "en": "Print-ready folder checklist PDF",
+     "ne": "छापिने फोल्डर चेकलिस्ट PDF"
+    },
+    {
+     "en": "Model questions with answer key and explanations",
+     "ne": "व्याख्यासहित उत्तर कुञ्जी र नमुना प्रश्न"
+    }
+   ],
+   "terms": {
+    "en": "Files are sent after the payment is confirmed. Online payment is not yet live on this site — place the order through the contact form and pay by the method agreed there.",
+    "ne": "भुक्तानी पुष्टि भएपछि फाइल पठाइन्छ। यो साइटमा अझै अनलाइन भुक्तानी चल्दैन — सम्पर्क फारमबाट अर्डर दिनुहोस् र तयार भएको तरिकाले भुक्तानी गर्नुहोस्।"
+   },
+   "art": "offers",
+   "accent": "#3ddc97",
+   "status": "published",
+   "audience": "np",
+   "access": "public",
+   "validUntil": "2026-12-31",
+   "featured": false,
+   "visible": true
+  },
+  {
+   "id": "o14",
+   "slug": "loksewa-pack-full",
+   "division": "academy",
+   "title": {
+    "en": "Loksewa Full House Pack — all four papers",
+    "ne": "लोकसेवा पूर्ण प्याक — चारै पेपर"
+   },
+   "short": {
+    "en": "Every slide deck, checklist and plan for the officer-level selection.",
+    "ne": "अधिकृत तहको छनौटका सबै स्लाइड डेक, चेकलिस्ट र योजना।"
+   },
+   "desc": {
+    "en": "All four paper packs together with the complete syllabus map, the twelve-week plan, the law reading list and the full model question set — the whole house in one download bundle.",
+    "ne": "चारै पेपर प्याकसँगै सम्पूर्ण पाठ्यक्रम नक्सा, बाह्र हप्ताको योजना, कानून सूची र पूरा नमुना प्रश्नपत्र — समग्र घर एकै डाउनलोड बान्डलमा।"
+   },
+   "npr": 600,
+   "usd": 5,
+   "mode": "inquiry",
+   "features": [
+    {
+     "en": "All four PPTX slide decks",
+     "ne": "चारै PPTX स्लाइड डेक"
+    },
+    {
+     "en": "Complete syllabus map and twelve-week plan",
+     "ne": "सम्पूर्ण पाठ्यक्रम नक्सा र बाह्र हप्ताको योजना"
+    },
+    {
+     "en": "Orientation video file",
+     "ne": "परिचयात्मक भिडियो फाइल"
+    }
+   ],
+   "terms": {
+    "en": "Cheaper than four separate packs. Files are sent after the payment is confirmed; online payment is not yet live on this site.",
+    "ne": "छुट्टाछुट्टै चार प्याकभन्दा सस्तो। भुक्तानी पुष्टिपछि फाइल पठाइन्छ; यो साइटमा अझै अनलाइन भुक्तानी चल्दैन।"
+   },
+   "art": "offers",
+   "accent": "#f5c26b",
+   "status": "published",
+   "audience": "np",
+   "access": "public",
+   "validUntil": "2026-12-31",
+   "featured": true,
+   "visible": true
   }
  ],
  "orders": [],
@@ -3310,11 +3848,11 @@
   "tw": "summary_large_image",
   "pages": {
    "/": {
-    "title": "ACTTOLOG — Welcome to Acttolog World",
-    "desc": "Acttolog is a digital ecosystem connecting technology, research, education, entertainment, creativity, useful resources and emerging digital opportunities.",
+    "title": "ACTTOLOG — Research, Learning, Media & Games from Nepal",
+    "desc": "ACTTOLOG joins thesis and research support, courses, verified resources, stories and games into one bilingual world built in Nepal. Start the descent.",
     "canon": "https://www.acttolog.com/",
-    "titleNe": "ACTTOLOG — Acttolog संसारमा स्वागत छ",
-    "descNe": "Acttolog एउटा डिजिटल इकोसिस्टम हो जसले प्रविधि, अनुसन्धान, शिक्षा, मनोरञ्जन र उपयोगी स्रोतहरूलाई जोड्छ।"
+    "titleNe": "एक्टोलग — नेपालको अनुसन्धान, शिक्षा र खेल",
+    "descNe": "एक्टोलगले थेसिन र अनुसन्धान सहयोग, पाठ्यक्रम, प्रमाणित स्रोत, कथा र खेललाई एकै ठाउँ जोड्छ — नेपालमा निर्मित दुई भाषाको डिजिटल संसार।"
    },
    "/research": {
     "title": "Thesyn Research",
@@ -3324,21 +3862,21 @@
     "descNe": "विषय छनोटदेखि भाइभा तयारीसम्म अनुसन्धान सहयोग।"
    },
    "/entertainment": {
-    "title": "Entertainment",
+    "title": "AI Stories, Short Films, Music and Comedy",
     "desc": "AI stories, comedy, drama, horror, short films, music and cinematic work from the Acttolog world.",
     "canon": "https://www.acttolog.com/entertainment",
     "titleNe": "मनोरञ्जन",
     "descNe": "Acttolog संसारबाट एआई कथा, कमेडी, ड्रामा र संगीत।"
    },
    "/academy": {
-    "title": "Academy",
+    "title": "Courses in Research Methods and Data Analysis",
     "desc": "Structured courses, modules and lessons on research methods, data analysis, economics and immersive web.",
     "canon": "https://www.acttolog.com/academy",
     "titleNe": "एकेडेमी",
     "descNe": "अनुसन्धान विधि, डाटा विश्लेषण र इमर्सिभ वेबका पाठ्यक्रम।"
    },
    "/games": {
-    "title": "Games",
+    "title": "Free Browser Games and Educational Play",
     "desc": "Browser games, mini games, educational play and experimental interactive experiences.",
     "canon": "https://www.acttolog.com/games",
     "titleNe": "खेलहरू",
@@ -3359,35 +3897,35 @@
     "descNe": "नेपालको अन्तरक्रियात्मक मार्गदर्शन: हिमाली क्षेत्र, घुम्ने ठाउँ, चाडपर्व, संस्कृति, खाना, वन्यजन्तु, ट्रेक अनुमति र यात्रा आचरण।"
    },
    "/blog": {
-    "title": "Blog",
+    "title": "Research Guides, Tech Notes and Student Advice",
     "desc": "Research practice, technology craft, education design and creative systems from the Acttolog world.",
     "canon": "https://www.acttolog.com/blog",
     "titleNe": "ब्लग",
     "descNe": "Acttolog संसारबाट अनुसन्धान, प्रविधि, शिक्षा र सिर्जनशीलता।"
    },
    "/offers": {
-    "title": "Offers",
+    "title": "Research, Course and Media Offers in NPR and USD",
     "desc": "Acttolog offers across research, academy, entertainment, games and Darkroom. NPR and USD.",
     "canon": "https://www.acttolog.com/offers",
     "titleNe": "अफरहरू",
     "descNe": "अनुसन्धान, एकेडेमी, मनोरञ्जन र खेलका Acttolog अफर।"
    },
    "/about": {
-    "title": "About",
+    "title": "Our Purpose, Vision, Mission and Five Divisions",
     "desc": "Acttolog purpose, vision, mission, values, divisions and responsible technology position.",
     "canon": "https://www.acttolog.com/about",
     "titleNe": "हाम्रो बारेमा",
     "descNe": "Acttolog को उद्देश्य, दृष्टिकोण, लक्ष्य, मूल्य र विभागहरू।"
    },
    "/contact": {
-    "title": "Contact",
+    "title": "Talk to the Team — Form, Phone and Email",
     "desc": "Contact Acttolog. Public contact form — no login required.",
     "canon": "https://www.acttolog.com/contact",
     "titleNe": "सम्पर्क",
     "descNe": "Acttolog सम्पर्क। सार्वजनिक फारम — लगइन आवश्यक छैन।"
    },
    "/ai": {
-    "title": "Acttolog AI",
+    "title": "Acttolog AI Assistant",
     "desc": "Acttolog-first assistant for discovering research, resources, courses, media and offers.",
     "canon": "https://www.acttolog.com/ai",
     "titleNe": "Acttolog एआई",

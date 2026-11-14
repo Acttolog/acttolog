@@ -5,7 +5,12 @@ import { md2html } from '@/lib/utils';
 import type { Bi } from '@/lib/content/types';
 
 /** Locale-aware bilingual text renderer with fallback flagging (prototype `L()` + `mflag()`). */
-export function BiText({ value, flag, className, as: Tag = 'span' }: {
+export function BiText({
+  value,
+  flag,
+  className,
+  as: Tag = 'span',
+}: {
   value: Bi | string | undefined;
   flag?: boolean;
   className?: string;
@@ -17,7 +22,10 @@ export function BiText({ value, flag, className, as: Tag = 'span' }: {
     <Tag className={className}>
       {text}
       {flag && missingNe(value) && (
-        <span className="badge b-warn ml-2 align-middle" title="Nepali translation missing — falls back to English">
+        <span
+          className="badge b-warn ml-2 align-middle"
+          title="Nepali translation missing — falls back to English"
+        >
           नेपाली बाँकी
         </span>
       )}

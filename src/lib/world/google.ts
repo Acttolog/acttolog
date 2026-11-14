@@ -70,7 +70,10 @@ export function loadGoogleMaps(libraries: string = 'maps,places'): Promise<Googl
     const s = document.createElement('script');
     s.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(key)}&libraries=${encodeURIComponent(libraries)}&callback=${cbName}&loading=async`;
     s.async = true;
-    s.onerror = () => { mapsPromise = null; reject(new Error('GOOGLE_MAPS_LOAD_FAILED')); };
+    s.onerror = () => {
+      mapsPromise = null;
+      reject(new Error('GOOGLE_MAPS_LOAD_FAILED'));
+    };
     document.head.appendChild(s);
   });
   return mapsPromise;
@@ -128,7 +131,9 @@ export async function googlePlaceSuggestions(query: string): Promise<GooglePlace
 }
 
 /** Resolve a Google placeId to coordinates (PlacesService details). */
-export async function googlePlaceLocation(placeId: string): Promise<{ lat: number; lon: number; name: string } | null> {
+export async function googlePlaceLocation(
+  placeId: string,
+): Promise<{ lat: number; lon: number; name: string } | null> {
   if (!googleMapsConfigured()) return null;
   try {
     const maps = await loadGoogleMaps('places');

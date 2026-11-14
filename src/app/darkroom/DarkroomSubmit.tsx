@@ -20,19 +20,26 @@ export function DarkroomSubmit({ onClose }: { onClose: () => void }) {
 
   if (!user) {
     return (
-      <div className="mbd" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div
+        className="mbd"
+        onMouseDown={(e) => {
+          if (e.target === e.currentTarget) onClose();
+        }}
+      >
         <div className="mcard" role="dialog" aria-modal="true">
           <div className="p-8 text-center">
-            <div className="eyebrow justify-center mb-4">{t('dark.submit').toUpperCase()}</div>
+            <div className="eyebrow mb-4 justify-center">{t('dark.submit').toUpperCase()}</div>
             <h3 className="h3 mb-3">{t('gate.t')}</h3>
-            <p className="mut text-[13.4px] leading-relaxed max-w-[46ch] mx-auto mb-7">
+            <p className="mut mx-auto mb-7 max-w-[46ch] text-[13.4px] leading-relaxed">
               {locale === 'ne'
                 ? 'स्रोत पेश गर्न Google साइन-इन आवश्यक छ। पेश गरेपछि स्वचालित प्री-चेक र प्रशासन समीक्षा हुन्छ।'
                 : 'Only signed-in Google users can submit resources. After submission: automated pre-check, then private admin review.'}
             </p>
             <GoogleButton returnTo="/darkroom" className="mx-auto" />
-            <div className="flex justify-center mt-5">
-              <button className="btn btn-g btn-sm" onClick={onClose}>{t('close')}</button>
+            <div className="mt-5 flex justify-center">
+              <button className="btn btn-g btn-sm" onClick={onClose}>
+                {t('close')}
+              </button>
             </div>
           </div>
         </div>
@@ -42,20 +49,33 @@ export function DarkroomSubmit({ onClose }: { onClose: () => void }) {
 
   if (done) {
     return (
-      <div className="mbd" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div
+        className="mbd"
+        onMouseDown={(e) => {
+          if (e.target === e.currentTarget) onClose();
+        }}
+      >
         <div className="mcard" role="dialog" aria-modal="true">
           <div className="p-9 text-center">
-            <span className="w-16 h-16 rounded-2xl grid place-items-center mx-auto mb-5"
-              style={{ background: 'color-mix(in srgb,var(--ok) 14%,transparent)', border: '1px solid color-mix(in srgb,var(--ok) 34%,transparent)', color: 'var(--ok)' }}>
+            <span
+              className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-2xl"
+              style={{
+                background: 'color-mix(in srgb,var(--ok) 14%,transparent)',
+                border: '1px solid color-mix(in srgb,var(--ok) 34%,transparent)',
+                color: 'var(--ok)',
+              }}
+            >
               <Icon name="check" size={26} />
             </span>
-            <h3 className="h2 !text-[24px] mb-3">{t('dark.got')}</h3>
-            <p className="mut text-[13.5px] leading-relaxed max-w-[46ch] mx-auto">
+            <h3 className="h2 mb-3 !text-[24px]">{t('dark.got')}</h3>
+            <p className="mut mx-auto max-w-[46ch] text-[13.5px] leading-relaxed">
               {locale === 'ne'
                 ? 'प्रशासनले निजी रूपमा समीक्षा गर्छ। स्वीकृत भएमा स्रोत Darkroom मा देखा पर्नेछ। कुनै इमेल सूचना पठाइँदैन।'
                 : 'Administration reviews submissions privately. If accepted, the resource appears in Darkroom. No approval/rejection email is sent — by design.'}
             </p>
-            <button className="btn btn-p mt-7" onClick={onClose}>{t('close')}</button>
+            <button className="btn btn-p mt-7" onClick={onClose}>
+              {t('close')}
+            </button>
           </div>
         </div>
       </div>
@@ -77,7 +97,8 @@ export function DarkroomSubmit({ onClose }: { onClose: () => void }) {
     setBusy(true);
     try {
       const res = await fetch('/api/darkroom/check', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: form.url.trim(), name: form.name.trim() }),
       });
       const data = await res.json();
@@ -91,15 +112,36 @@ export function DarkroomSubmit({ onClose }: { onClose: () => void }) {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validate()) { toast(locale === 'ne' ? 'हाइलाइट गरिएका फिल्ड सच्याउनुहोस्।' : 'Please correct the highlighted fields.', 'err'); return; }
+    if (!validate()) {
+      toast(
+        locale === 'ne' ? 'हाइलाइट गरिएका फिल्ड सच्याउनुहोस्।' : 'Please correct the highlighted fields.',
+        'err',
+      );
+      return;
+    }
     setBusy(true);
     try {
       const res = await fetch('/api/darkroom/submit', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, url: form.url.trim(), name: form.name.trim(), desc: form.desc.trim(), why: form.why.trim() }),
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...form,
+          url: form.url.trim(),
+          name: form.name.trim(),
+          desc: form.desc.trim(),
+          why: form.why.trim(),
+        }),
       });
       const data = await res.json();
-      if (!res.ok) { toast(data.error === 'duplicate' ? 'This URL already exists in Darkroom or is pending review.' : (data.error || 'Submission failed.'), 'err'); return; }
+      if (!res.ok) {
+        toast(
+          data.error === 'duplicate'
+            ? 'This URL already exists in Darkroom or is pending review.'
+            : data.error || 'Submission failed.',
+          'err',
+        );
+        return;
+      }
       setDone(true);
     } catch {
       toast('Network error — please try again.', 'err');
@@ -110,33 +152,54 @@ export function DarkroomSubmit({ onClose }: { onClose: () => void }) {
 
   const fld = (k: keyof typeof form, label: string, ta = false) => (
     <label className="fld">
-      <span>{label}{k === 'tags' ? <em className="dim normal-case"> — {locale === 'ne' ? 'ऐच्छिक' : 'optional'}</em> : ' *'}</span>
+      <span>
+        {label}
+        {k === 'tags' ? (
+          <em className="dim normal-case"> — {locale === 'ne' ? 'ऐच्छिक' : 'optional'}</em>
+        ) : (
+          ' *'
+        )}
+      </span>
       {ta ? (
-        <textarea className={`ta${errors[k] ? ' err' : ''}`} rows={3} value={form[k]}
-          onChange={(e) => setForm({ ...form, [k]: e.target.value })} />
+        <textarea
+          className={`ta${errors[k] ? 'err' : ''}`}
+          rows={3}
+          value={form[k]}
+          onChange={(e) => setForm({ ...form, [k]: e.target.value })}
+        />
       ) : (
-        <input className={`inp${errors[k] ? ' err' : ''}${k === 'url' ? ' mono !text-[13px]' : ''}`} value={form[k]}
+        <input
+          className={`inp${errors[k] ? 'err' : ''}${k === 'url' ? 'mono !text-[13px]' : ''}`}
+          value={form[k]}
           placeholder={k === 'url' ? 'https://' : k === 'tags' ? 'comma, separated' : undefined}
-          onChange={(e) => setForm({ ...form, [k]: e.target.value })} />
+          onChange={(e) => setForm({ ...form, [k]: e.target.value })}
+        />
       )}
     </label>
   );
 
   return (
-    <div className="mbd" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+    <div
+      className="mbd"
+      onMouseDown={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       <div className="mcard" role="dialog" aria-modal="true" aria-label={t('dark.submit')}>
         <div className="p-7">
-          <div className="flex items-start justify-between gap-4 mb-5">
+          <div className="mb-5 flex items-start justify-between gap-4">
             <div>
               <div className="eyebrow mb-3">{t('dark.submit').toUpperCase()}</div>
               <h3 className="h3">{locale === 'ne' ? 'स्रोत पेश गर्नुहोस्' : 'Submit a resource'}</h3>
-              <p className="mut text-[13.1px] mt-2 max-w-[58ch]">
+              <p className="mut mt-2 max-w-[58ch] text-[13.1px]">
                 {locale === 'ne'
                   ? 'नाम, URL, श्रेणी, विवरण र किन उपयोगी छ — मात्र। कुनै थप प्रश्न छैन।'
                   : 'Name, URL, category, description and why it is useful — nothing more. No profile questions.'}
               </p>
             </div>
-            <button className="btn btn-g btn-sm" onClick={onClose} aria-label={t('close')}>✕</button>
+            <button className="btn btn-g btn-sm" onClick={onClose} aria-label={t('close')}>
+              ✕
+            </button>
           </div>
 
           <form onSubmit={submit} noValidate>
@@ -144,10 +207,28 @@ export function DarkroomSubmit({ onClose }: { onClose: () => void }) {
             {fld('url', 'URL')}
             <label className="fld">
               <span>{locale === 'ne' ? 'श्रेणी' : 'Category'}</span>
-              <select className="sel" value={form.cat} onChange={(e) => setForm({ ...form, cat: e.target.value })}>
+              <select
+                className="sel"
+                value={form.cat}
+                onChange={(e) => setForm({ ...form, cat: e.target.value })}
+              >
                 <option value="">—</option>
-                {['Research', 'Software', 'AI', 'Databases', 'Government', 'Education', 'Developer', 'Creative', 'Business', 'Documents', 'Other'].map((c) => (
-                  <option key={c} value={c}>{c}</option>
+                {[
+                  'Research',
+                  'Software',
+                  'AI',
+                  'Databases',
+                  'Government',
+                  'Education',
+                  'Developer',
+                  'Creative',
+                  'Business',
+                  'Documents',
+                  'Other',
+                ].map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
                 ))}
               </select>
             </label>
@@ -155,25 +236,35 @@ export function DarkroomSubmit({ onClose }: { onClose: () => void }) {
             {fld('why', locale === 'ne' ? 'किन उपयोगी?' : 'Why is it useful?', true)}
             {fld('tags', locale === 'ne' ? 'ट्यागहरू' : 'Tags')}
 
-            <div className="flex flex-wrap gap-2.5 mb-5">
-              <button type="button" className="btn btn-g btn-sm" onClick={runPrecheck} disabled={busy || !form.url.trim()}>
-                <Icon name="shield" size={14} />{locale === 'ne' ? 'प्री-चेक चलाउनुहोस्' : 'Run automated pre-check'}
+            <div className="mb-5 flex flex-wrap gap-2.5">
+              <button
+                type="button"
+                className="btn btn-g btn-sm"
+                onClick={runPrecheck}
+                disabled={busy || !form.url.trim()}
+              >
+                <Icon name="shield" size={14} />
+                {locale === 'ne' ? 'प्री-चेक चलाउनुहोस्' : 'Run automated pre-check'}
               </button>
             </div>
 
             {precheck && (
-              <div className="rounded-xl border p-4 mb-5" style={{ borderColor: 'var(--line)', background: 'var(--panel2)' }}>
-                <div className="mono text-[9.7px] tracking-[.2em] dim mb-3">AUTOMATED PRE-CHECK</div>
+              <div
+                className="mb-5 rounded-xl border p-4"
+                style={{ borderColor: 'var(--line)', background: 'var(--panel2)' }}
+              >
+                <div className="mono dim mb-3 text-[9.7px] tracking-[.2em]">AUTOMATED PRE-CHECK</div>
                 {precheck.map(([label, ok]) => (
-                  <div key={label} className="flex items-center gap-2.5 text-[12.7px] py-1">
+                  <div key={label} className="flex items-center gap-2.5 py-1 text-[12.7px]">
                     <span style={{ color: ok ? 'var(--ok)' : 'var(--err)' }}>
                       <Icon name={ok ? 'check' : 'trash'} size={13} />
                     </span>
                     <span className="mut">{label}</span>
                   </div>
                 ))}
-                <p className="dim text-[11.3px] mt-3 leading-relaxed">
-                  These checks do not guarantee that a destination is safe. Human admin verification is required before publication.
+                <p className="dim mt-3 text-[11.3px] leading-relaxed">
+                  These checks do not guarantee that a destination is safe. Human admin verification is
+                  required before publication.
                 </p>
               </div>
             )}
@@ -182,7 +273,7 @@ export function DarkroomSubmit({ onClose }: { onClose: () => void }) {
               <button className="btn btn-p" type="submit" disabled={busy}>
                 {t('submit')} <Icon name="arrow" size={15} />
               </button>
-              <span className="dim mono text-[10.3px] tracking-[.14em] self-center">
+              <span className="dim mono self-center text-[10.3px] tracking-[.14em]">
                 AUTOMATED PRE-CHECK → ADMIN REVIEW → PUBLISH
               </span>
             </div>

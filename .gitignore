@@ -69,3 +69,10 @@ qa-shots/
 
 # Nepal photography originals (120 MB, never served or committed)
 media-source/
+
+# paid teaching material — built locally, delivered after payment, never deployed
+.lk-paid/
+
+# video frame intermediates and local screenshots
+.frames/
+.shots/

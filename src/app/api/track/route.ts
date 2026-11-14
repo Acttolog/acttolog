@@ -4,14 +4,27 @@ import { getPrisma } from '@/lib/db';
 export const dynamic = 'force-dynamic';
 
 const DIVS: Record<string, string> = {
-  research: 'research', entertainment: 'entertainment', academy: 'academy', games: 'games',
-  darkroom: 'darkroom', blog: 'blog', offers: 'offers', about: 'about', contact: 'contact',
-  ai: 'ai', my: 'account', admin: 'admin', search: 'search',
+  research: 'research',
+  entertainment: 'entertainment',
+  academy: 'academy',
+  games: 'games',
+  darkroom: 'darkroom',
+  blog: 'blog',
+  offers: 'offers',
+  about: 'about',
+  contact: 'contact',
+  ai: 'ai',
+  my: 'account',
+  admin: 'admin',
+  search: 'search',
 };
 const divOf = (p: string) => DIVS[(p || '/').split('/')[1] || ''] || 'home';
 
 interface TrackBody {
-  t?: string; path?: string; sid?: string; q?: string;
+  t?: string;
+  path?: string;
+  sid?: string;
+  q?: string;
   [k: string]: unknown;
 }
 

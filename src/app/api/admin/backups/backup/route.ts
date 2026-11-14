@@ -32,12 +32,24 @@ export async function POST(req: Request) {
   try {
     const file = await uploadBackup(kind, `acttolog-db-${stamp}.json`, payload);
     const rec = await prisma.backupRecord.create({
-      data: { kind, provider: 'google_drive', location: `ACTTOLOG/Backups/${kind}/${file.name}`, status: 'ok', note: `drive file ${file.id}` },
+      data: {
+        kind,
+        provider: 'google_drive',
+        location: `ACTTOLOG/Backups/${kind}/${file.name}`,
+        status: 'ok',
+        note: `drive file ${file.id}`,
+      },
     });
     return NextResponse.json({ ok: true, backup: rec });
   } catch (e) {
     const rec = await prisma.backupRecord.create({
-      data: { kind, provider: 'google_drive', location: '-', status: 'failed', note: String(e).slice(0, 300) },
+      data: {
+        kind,
+        provider: 'google_drive',
+        location: '-',
+        status: 'failed',
+        note: String(e).slice(0, 300),
+      },
     });
     return NextResponse.json({ ok: false, backup: rec }, { status: 500 });
   }
@@ -51,7 +63,11 @@ export async function GET() {
   const records = await prisma.backupRecord.findMany({ orderBy: { createdAt: 'desc' }, take: 100 });
   let drive: unknown = null;
   if (driveConfigured()) {
-    try { drive = await listBackups('Database'); } catch { drive = 'unreachable'; }
+    try {
+      drive = await listBackups('Database');
+    } catch {
+      drive = 'unreachable';
+    }
   }
   return NextResponse.json({ configured: driveConfigured(), records, drive });
 }

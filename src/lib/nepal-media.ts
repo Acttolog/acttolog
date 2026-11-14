@@ -25,7 +25,11 @@ const FILE_RE = /^(.+)-(480|1024|1600)\.(avif|jpe?g|webp|png)$/i;
 export function readMediaFiles(dir = NEPAL_MEDIA_DIR): string[] {
   try {
     return fs.readdirSync(dir).filter((f) => {
-      try { return fs.statSync(path.join(dir, f)).isFile(); } catch { return false; }
+      try {
+        return fs.statSync(path.join(dir, f)).isFile();
+      } catch {
+        return false;
+      }
     });
   } catch {
     return [];

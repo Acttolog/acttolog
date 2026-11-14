@@ -10,7 +10,14 @@ import { loadLeaflet, TILE_URLS, TILE_ATTR, LEAFLET_SKIN } from '@/lib/leaflet';
  * MAP: OSM standard · SAT: Esri World Imagery.
  */
 
-export function MapMode({ center, zoom, layer, onMove, onPick, marker }: {
+export function MapMode({
+  center,
+  zoom,
+  layer,
+  onMove,
+  onPick,
+  marker,
+}: {
   center: [number, number];
   zoom: number;
   layer: 'map' | 'sat';
@@ -28,24 +35,46 @@ export function MapMode({ center, zoom, layer, onMove, onPick, marker }: {
 
   useEffect(() => {
     let cancelled = false;
-    loadLeaflet().then((L) => {
-      if (cancelled || !divRef.current || mapRef.current) return;
-      const c = center, z = zoom;
-      const map = L.map(divRef.current, {
-        center: c, zoom: z, zoomControl: false, attributionControl: true,
-        worldCopyJump: true, preferCanvas: true,
+    loadLeaflet()
+      .then((L) => {
+        if (cancelled || !divRef.current || mapRef.current) return;
+        const c = center,
+          z = zoom;
+        const map = L.map(divRef.current, {
+          center: c,
+          zoom: z,
+          zoomControl: false,
+          attributionControl: true,
+          worldCopyJump: true,
+          preferCanvas: true,
+        });
+        mapRef.current = map;
+        map.on('moveend', () => {
+          const cc = map.getCenter();
+          cbRef.current.onMove([cc.lat, cc.lng], map.getZoom());
+        });
+        map.on('click', (e: any) => cbRef.current.onPick(e.latlng.lat, e.latlng.lng));
+        tileRef.current = L.tileLayer(TILE_URLS[layer], {
+          attribution: TILE_ATTR[layer],
+          maxZoom: 19,
+          crossOrigin: true,
+        }).addTo(map);
+      })
+      .catch(() => {
+        if (!cancelled) setFailed(true);
       });
-      mapRef.current = map;
-      map.on('moveend', () => {
-        const cc = map.getCenter();
-        cbRef.current.onMove([cc.lat, cc.lng], map.getZoom());
-      });
-      map.on('click', (e: any) => cbRef.current.onPick(e.latlng.lat, e.latlng.lng));
-      tileRef.current = L.tileLayer(TILE_URLS[layer], { attribution: TILE_ATTR[layer], maxZoom: 19, crossOrigin: true }).addTo(map);
-    }).catch(() => { if (!cancelled) setFailed(true); });
     return () => {
       cancelled = true;
-      if (mapRef.current) { try { mapRef.current.remove(); } catch { /* ignore */ } mapRef.current = null; tileRef.current = null; markRef.current = null; }
+      if (mapRef.current) {
+        try {
+          mapRef.current.remove();
+        } catch {
+          /* ignore */
+        }
+        mapRef.current = null;
+        tileRef.current = null;
+        markRef.current = null;
+      }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -59,11 +88,19 @@ export function MapMode({ center, zoom, layer, onMove, onPick, marker }: {
     if (tileRef.current) map.removeLayer(tileRef.current);
     const el = divRef.current;
     if (el) el.style.opacity = '0.25';
-    const t = L.tileLayer(TILE_URLS[layer], { attribution: TILE_ATTR[layer], maxZoom: 19, crossOrigin: true });
-    t.on('load', () => { if (el) el.style.opacity = '1'; });
+    const t = L.tileLayer(TILE_URLS[layer], {
+      attribution: TILE_ATTR[layer],
+      maxZoom: 19,
+      crossOrigin: true,
+    });
+    t.on('load', () => {
+      if (el) el.style.opacity = '1';
+    });
     t.addTo(map);
     tileRef.current = t;
-    setTimeout(() => { if (el) el.style.opacity = '1'; }, 900);
+    setTimeout(() => {
+      if (el) el.style.opacity = '1';
+    }, 900);
   }, [layer]);
 
   // external center/zoom sync
@@ -71,7 +108,11 @@ export function MapMode({ center, zoom, layer, onMove, onPick, marker }: {
     const map = mapRef.current;
     if (!map) return;
     const cur = map.getCenter();
-    if (Math.abs(cur.lat - center[0]) > 1e-6 || Math.abs(cur.lng - center[1]) > 1e-6 || map.getZoom() !== zoom) {
+    if (
+      Math.abs(cur.lat - center[0]) > 1e-6 ||
+      Math.abs(cur.lng - center[1]) > 1e-6 ||
+      map.getZoom() !== zoom
+    ) {
       map.flyTo(center, zoom, { duration: 1.4 });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -83,11 +124,18 @@ export function MapMode({ center, zoom, layer, onMove, onPick, marker }: {
     if (!map) return;
     const L = (window as any).L;
     if (!L) return;
-    if (!marker) { if (markRef.current) { map.removeLayer(markRef.current); markRef.current = null; } return; }
+    if (!marker) {
+      if (markRef.current) {
+        map.removeLayer(markRef.current);
+        markRef.current = null;
+      }
+      return;
+    }
     const icon = L.divIcon({
       className: 'atl-pin',
       html: `<span class="atl-pin-dot"></span><span class="atl-pin-ring"></span>`,
-      iconSize: [26, 26], iconAnchor: [13, 13],
+      iconSize: [26, 26],
+      iconAnchor: [13, 13],
     });
     if (markRef.current) markRef.current.setLatLng(marker);
     else markRef.current = L.marker(marker, { icon }).addTo(map);
@@ -96,15 +144,20 @@ export function MapMode({ center, zoom, layer, onMove, onPick, marker }: {
   return (
     <div className="absolute inset-0" style={{ transition: 'opacity .45s' }}>
       {failed ? (
-        <div className="w-full h-full grid place-items-center p-8">
-          <div className="panel p-8 max-w-md text-center">
-            <div className="font-display font-bold text-[17px] mb-2">MAP UNAVAILABLE</div>
-            <p className="mut text-[13px] leading-relaxed mb-4">The map library could not be loaded from its CDN (offline or blocked). EARTH (3D) and SAT modes remain available; place data still works via search.</p>
-            <button className="btn btn-g btn-sm" onClick={() => window.location.reload()}>Retry</button>
+        <div className="grid h-full w-full place-items-center p-8">
+          <div className="panel max-w-md p-8 text-center">
+            <div className="font-display mb-2 text-[17px] font-bold">MAP UNAVAILABLE</div>
+            <p className="mut mb-4 text-[13px] leading-relaxed">
+              The map library could not be loaded from its CDN (offline or blocked). EARTH (3D) and SAT modes
+              remain available; place data still works via search.
+            </p>
+            <button className="btn btn-g btn-sm" onClick={() => window.location.reload()}>
+              Retry
+            </button>
           </div>
         </div>
       ) : (
-        <div ref={divRef} className="w-full h-full" style={{ background: 'var(--bg)', zIndex: 0 }} />
+        <div ref={divRef} className="h-full w-full" style={{ background: 'var(--bg)', zIndex: 0 }} />
       )}
       <style>{`
         .atl-pin { position: relative; }
@@ -118,4 +171,3 @@ export function MapMode({ center, zoom, layer, onMove, onPick, marker }: {
     </div>
   );
 }
-

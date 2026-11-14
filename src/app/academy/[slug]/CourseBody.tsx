@@ -18,16 +18,21 @@ export function CourseBody({ course }: { course: AcademyCourse }) {
       {mods.map((m, i) => (
         <Reveal key={i} delay={i * 40}>
           <div className="panel p-5 sm:p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <span className="mono text-[10px] tracking-[.2em] dim">MODULE {String(i + 1).padStart(2, '0')}</span>
+            <div className="mb-4 flex items-center gap-3">
+              <span className="mono dim text-[10px] tracking-[.2em]">
+                MODULE {String(i + 1).padStart(2, '0')}
+              </span>
               <span className="hr flex-1" />
             </div>
-            <h2 className="font-display font-semibold text-[15.8px] mb-3">{titleOf(m.title, L)}</h2>
+            <h2 className="font-display mb-3 text-[15.8px] font-semibold">{titleOf(m.title, L)}</h2>
             <ol className="space-y-2">
               {(m.lessons || []).map((l, j) => (
-                <li key={j} className="flex items-center gap-3 text-[13.2px] mut rounded-lg px-3 py-2"
-                  style={{ background: 'var(--panel2)' }}>
-                  <span className="mono text-[10px] dim w-6">{String(j + 1).padStart(2, '0')}</span>
+                <li
+                  key={j}
+                  className="mut flex items-center gap-3 rounded-lg px-3 py-2 text-[13.2px]"
+                  style={{ background: 'var(--panel2)' }}
+                >
+                  <span className="mono dim w-6 text-[10px]">{String(j + 1).padStart(2, '0')}</span>
                   <Icon name="play" size={13} />
                   {titleOf(l, L)}
                 </li>
@@ -43,11 +48,15 @@ export function CourseBody({ course }: { course: AcademyCourse }) {
     <div>
       <div className="eyebrow mb-5">{locale === 'ne' ? 'पाठ्यक्रम संरचना' : 'CURRICULUM'}</div>
       {course.access === 'members' ? (
-        <MembersGate returnTo={`/academy/${course.slug}`}
-          reason={locale === 'ne' ? 'सदस्य-विशेष पाठ्यक्रम' : 'Members-only course'}>
+        <MembersGate
+          returnTo={`/academy/${course.slug}`}
+          reason={locale === 'ne' ? 'सदस्य-विशेष पाठ्यक्रम' : 'Members-only course'}
+        >
           {curriculum}
         </MembersGate>
-      ) : curriculum}
+      ) : (
+        curriculum
+      )}
     </div>
   );
 }

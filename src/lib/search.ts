@@ -5,7 +5,17 @@ import { nepalGuide, bi as nepalBi, regionName } from '@/lib/content/nepal';
 /** Global search index (spec §55) — server-side, published content only. */
 
 export interface SearchEntry {
-  k: 'division' | 'blog' | 'darkroom' | 'games' | 'entertainment' | 'academy' | 'research' | 'offers' | 'nepal' | 'trek';
+  k:
+    | 'division'
+    | 'blog'
+    | 'darkroom'
+    | 'games'
+    | 'entertainment'
+    | 'academy'
+    | 'research'
+    | 'offers'
+    | 'nepal'
+    | 'trek';
   title: string;
   sub: string;
   route: string;
@@ -19,29 +29,94 @@ export function buildSearchIndex(locale: 'en' | 'ne' = 'en'): SearchEntry[] {
   const o: SearchEntry[] = [];
   const L = (v: Parameters<typeof resolveBi>[0]) => resolveBi(v, locale);
 
-  db.divisions.filter((d) => d.visible !== false).forEach((d) =>
-    o.push({ k: 'division', title: L(d.name), sub: L(d.sub), route: d.route, txt: `${L(d.name)} ${L(d.sub)} ${L(d.desc)}`.toLowerCase() }));
+  db.divisions
+    .filter((d) => d.visible !== false)
+    .forEach((d) =>
+      o.push({
+        k: 'division',
+        title: L(d.name),
+        sub: L(d.sub),
+        route: d.route,
+        txt: `${L(d.name)} ${L(d.sub)} ${L(d.desc)}`.toLowerCase(),
+      }),
+    );
 
   pub(db.posts).forEach((p) =>
-    o.push({ k: 'blog', title: L(p.title), sub: p.category, route: `/blog/${p.slug}`, txt: `${L(p.title)} ${L(p.excerpt)} ${L(p.content)} ${(p.tags || []).join(' ')}`.toLowerCase(), mem: p.access === 'members' }));
+    o.push({
+      k: 'blog',
+      title: L(p.title),
+      sub: p.category,
+      route: `/blog/${p.slug}`,
+      txt: `${L(p.title)} ${L(p.excerpt)} ${L(p.content)} ${(p.tags || []).join(' ')}`.toLowerCase(),
+      mem: p.access === 'members',
+    }),
+  );
 
   pub(db.dr).forEach((r) =>
-    o.push({ k: 'darkroom', title: r.name, sub: `${r.category} · ${r.subcategory}`, route: r.presentation === 'profile' ? `/darkroom/${r.slug}` : r.url, ext: r.presentation !== 'profile', txt: `${r.name} ${L(r.short)} ${(r.tags || []).join(' ')} ${r.category} ${r.pricing}`.toLowerCase() }));
+    o.push({
+      k: 'darkroom',
+      title: r.name,
+      sub: `${r.category} · ${r.subcategory}`,
+      route: r.presentation === 'profile' ? `/darkroom/${r.slug}` : r.url,
+      ext: r.presentation !== 'profile',
+      txt: `${r.name} ${L(r.short)} ${(r.tags || []).join(' ')} ${r.category} ${r.pricing}`.toLowerCase(),
+    }),
+  );
 
   pub(db.games).forEach((g) =>
-    o.push({ k: 'games', title: L(g.title), sub: g.category, route: `/games/${g.slug}`, txt: `${L(g.title)} ${L(g.desc)}`.toLowerCase(), mem: g.access === 'members' }));
+    o.push({
+      k: 'games',
+      title: L(g.title),
+      sub: g.category,
+      route: `/games/${g.slug}`,
+      txt: `${L(g.title)} ${L(g.desc)}`.toLowerCase(),
+      mem: g.access === 'members',
+    }),
+  );
 
   pub(db.entertainment).forEach((e) =>
-    o.push({ k: 'entertainment', title: L(e.title), sub: e.category, route: `/entertainment/${e.slug}`, txt: `${L(e.title)} ${L(e.desc)}`.toLowerCase(), mem: e.access === 'members' }));
+    o.push({
+      k: 'entertainment',
+      title: L(e.title),
+      sub: e.category,
+      route: `/entertainment/${e.slug}`,
+      txt: `${L(e.title)} ${L(e.desc)}`.toLowerCase(),
+      mem: e.access === 'members',
+    }),
+  );
 
   pub(db.academy.courses).forEach((c) =>
-    o.push({ k: 'academy', title: L(c.title), sub: c.level, route: `/academy/${c.slug}`, txt: `${L(c.title)} ${L(c.summary)}`.toLowerCase(), mem: c.access === 'members' }));
+    o.push({
+      k: 'academy',
+      title: L(c.title),
+      sub: c.level,
+      route: `/academy/${c.slug}`,
+      txt: `${L(c.title)} ${L(c.summary)}`.toLowerCase(),
+      mem: c.access === 'members',
+    }),
+  );
 
   pub(db.services).forEach((sv) =>
-    o.push({ k: 'research', title: L(sv.title), sub: L(sv.summary), route: '/research', txt: `${L(sv.title)} ${L(sv.summary)}`.toLowerCase(), mem: sv.access === 'members' }));
+    o.push({
+      k: 'research',
+      title: L(sv.title),
+      sub: L(sv.summary),
+      route: '/research',
+      txt: `${L(sv.title)} ${L(sv.summary)}`.toLowerCase(),
+      mem: sv.access === 'members',
+    }),
+  );
 
   pub(db.offers).forEach((x) =>
-    o.push({ k: 'offers', title: L(x.title), sub: L(x.short), route: `/offers/${x.slug}`, txt: `${L(x.title)} ${L(x.short)} ${L(x.desc)}`.toLowerCase(), mem: x.access === 'members' }));
+    o.push({
+      k: 'offers',
+      title: L(x.title),
+      sub: L(x.short),
+      route: `/offers/${x.slug}`,
+      txt: `${L(x.title)} ${L(x.short)} ${L(x.desc)}`.toLowerCase(),
+      mem: x.access === 'members',
+    }),
+  );
 
   /* Nepal guide travels with the bundle, so a place stays findable even when
      the third-party geocoder is slow or blocked. */
@@ -53,7 +128,8 @@ export function buildSearchIndex(locale: 'en' | 'ne' = 'en'): SearchEntry[] {
       sub: `${regionName(p.region, locale)} · ${p.type}${p.unesco ? ' · UNESCO' : ''}`,
       route: `/nepal#place-${p.id}`,
       txt: `${nepalBi(p.name, locale)} ${nepalBi(p.desc, locale)} ${p.type} ${regionName(p.region, locale)} ${(p.tags || []).join(' ')}`.toLowerCase(),
-    }));
+    }),
+  );
 
   ng.treks.forEach((tr) =>
     o.push({
@@ -62,7 +138,8 @@ export function buildSearchIndex(locale: 'en' | 'ne' = 'en'): SearchEntry[] {
       sub: `${tr.days} · ${regionName(tr.region, locale)}`,
       route: '/nepal#treks',
       txt: `${nepalBi(tr.name, locale)} ${nepalBi(tr.desc, locale)} ${nepalBi(tr.grade, locale)} trek ${regionName(tr.region, locale)} ${(tr.season || []).join(' ')}`.toLowerCase(),
-    }));
+    }),
+  );
 
   return o;
 }

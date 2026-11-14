@@ -4,11 +4,27 @@
  */
 const puppeteer = require('puppeteer');
 const BASE = process.argv[2] || 'https://acttolog.github.io';
-const ROUTES = ['/', '/nepal', '/explore', '/search?q=pokhara', '/offers', '/about', '/contact', '/my', '/my/saved', '/my/settings', '/games', '/academy'];
+const ROUTES = [
+  '/',
+  '/nepal',
+  '/explore',
+  '/search?q=pokhara',
+  '/offers',
+  '/about',
+  '/contact',
+  '/my',
+  '/my/saved',
+  '/my/settings',
+  '/games',
+  '/academy',
+];
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 (async () => {
-  const b = await puppeteer.launch({ headless: 'shell', args: ['--no-sandbox', '--disable-dev-shm-usage', '--enable-unsafe-swiftshader'] });
+  const b = await puppeteer.launch({
+    headless: 'shell',
+    args: ['--no-sandbox', '--disable-dev-shm-usage', '--enable-unsafe-swiftshader'],
+  });
   let bad = 0;
   for (const width of [390, 320]) {
     for (const route of ROUTES) {
@@ -16,7 +32,10 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
       await p.setViewport({ width, height: 844 });
       await p.evaluateOnNewDocument(() => {
         try {
-          localStorage.setItem('act_consent', JSON.stringify({ necessary: true, analytics: false, personalization: false }));
+          localStorage.setItem(
+            'act_consent',
+            JSON.stringify({ necessary: true, analytics: false, personalization: false }),
+          );
           localStorage.setItem('act_welcomed', '1');
         } catch {}
       });
@@ -42,7 +61,9 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
         });
         const ok = r.over <= 1;
         if (!ok) bad++;
-        console.log(`${ok ? 'PASS' : 'FAIL'}  ${width}px ${route}  over=${r.over}${r.offenders.length ? '  ' + r.offenders.join(' | ') : ''}`);
+        console.log(
+          `${ok ? 'PASS' : 'FAIL'}  ${width}px ${route}  over=${r.over}${r.offenders.length ? '  ' + r.offenders.join(' | ') : ''}`,
+        );
       } catch (e) {
         bad++;
         console.log(`ERR   ${width}px ${route}  ${e.message.slice(0, 80)}`);
@@ -53,4 +74,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   await b.close();
   console.log(`\n${24 - bad}/24 clean`);
   if (bad) process.exit(1);
-})().catch((e) => { console.error(e); process.exit(1); });
+})().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

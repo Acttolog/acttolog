@@ -29,7 +29,7 @@ function PageViewTracker() {
   const { user } = useSession();
   useEffect(() => {
     track('page_view', { path: pathname });
-    const div = (pathname.split('/')[1] || 'home');
+    const div = pathname.split('/')[1] || 'home';
     if (['research', 'entertainment', 'academy', 'games', 'darkroom'].includes(div)) {
       track('division_view', { division: div });
     }
@@ -42,20 +42,33 @@ function PageViewTracker() {
         const prev = JSON.parse(localStorage.getItem(key) || '[]');
         const title = document.title.replace(/\s*\|\s*ACTTOLOG\s*$/, '').trim() || pathname;
         const rest = Array.isArray(prev) ? prev.filter((x) => x && x.id !== pathname) : [];
-        const next = [{ kind: 'page', id: pathname, title, at: new Date().toISOString() }, ...rest].slice(0, 30);
+        const next = [{ kind: 'page', id: pathname, title, at: new Date().toISOString() }, ...rest].slice(
+          0,
+          30,
+        );
         localStorage.setItem(key, JSON.stringify(next));
-      } catch { /* private mode */ }
+      } catch {
+        /* private mode */
+      }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname, user?.uid]);
   return null;
 }
 
-export function Providers({ usdToNpr, gaId, children }: {
-  usdToNpr: number; gaId?: string; children: ReactNode;
+export function Providers({
+  usdToNpr,
+  gaId,
+  children,
+}: {
+  usdToNpr: number;
+  gaId?: string;
+  children: ReactNode;
 }) {
+  // The URL owns the language on /ne so server HTML matches the hreflang claim.
+  const pathname = usePathname();
+  const neRoute = pathname === '/ne' || pathname.startsWith('/ne/');
   return (
-    <LocaleProvider>
+    <LocaleProvider initial={neRoute ? 'ne' : 'en'} lock={neRoute}>
       <PrefsProvider usdToNpr={usdToNpr}>
         <QualityProvider>
           <ConsentProvider>

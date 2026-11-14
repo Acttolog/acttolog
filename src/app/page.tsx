@@ -1,98 +1,27 @@
 import type { Metadata } from 'next';
-import { Hero } from '@/components/home/Hero';
-import { WorldShowcase } from '@/components/home/WorldShowcase';
-import { NepalPromo } from '@/components/home/NepalPromo';
-import fs from 'node:fs';
-import path from 'node:path';
-import { HomeLayers, type HomeData, type LatestItem } from '@/components/home/HomeLayers';
-import { getDB, pub, homeSection, seoFor, divisions as getDivisions } from '@/lib/content';
-import { nepalGuide } from '@/lib/content/nepal';
-import type { Bi } from '@/lib/content/types';
+import { HomeView } from '@/components/home/HomeView';
+import { seoFor } from '@/lib/content';
+
+const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.acttolog.com.np';
+const OG = [{ url: '/media/og-home.jpg', width: 1200, height: 630, alt: seoFor('/').title }];
 
 export const metadata: Metadata = {
   title: seoFor('/').title,
   description: seoFor('/').desc,
-  alternates: { canonical: '/' },
-  openGraph: { title: seoFor('/').title, description: seoFor('/').desc, url: '/' },
+  alternates: {
+    // Absolute, so the trailing slash survives and / declares /ne as its Nepali twin.
+    canonical: `${SITE}/`,
+    languages: { en: `${SITE}/`, ne: `${SITE}/ne`, 'x-default': `${SITE}/` },
+  },
+  openGraph: {
+    title: seoFor('/').title,
+    description: seoFor('/').desc,
+    url: `${SITE}/`,
+    images: OG,
+  },
+  twitter: { card: 'summary_large_image', images: OG },
 };
 
 export default function HomePage() {
-  const db = getDB();
-  const ng = nepalGuide();
-  const dvs = getDivisions();
-  const posts = pub(db.posts).slice().sort((a, b) => String(b.publishedAt).localeCompare(String(a.publishedAt)));
-  const ents = pub(db.entertainment);
-  const drs = pub(db.dr);
-  const courses = pub(db.academy.courses);
-  const games = pub(db.games);
-  const offers = pub(db.offers);
-
-  // latest feed (prototype h6)
-  const mediaDir = path.join(process.cwd(), 'public', 'media');
-  const shots = ['world', 'research', 'darkroom', 'academy', 'entertainment', 'games']
-    .filter((id) => fs.existsSync(path.join(mediaDir, `${id}.jpg`)));
-
-  const feed: LatestItem[] = [];
-  posts.slice(0, 4).forEach((p) => feed.push({ title: p.title as Bi, kind: 'Blog', date: p.publishedAt, route: `/blog/${p.slug}`, color: 'var(--vi)', icon: 'doc', mem: p.access === 'members' }));
-  ents.filter((e) => e.featured).slice(0, 2).forEach((e) => feed.push({ title: e.title as Bi, kind: 'Entertainment', date: e.date, route: `/entertainment/${e.slug}`, color: 'var(--mg)', icon: 'play', mem: e.access === 'members' }));
-  drs.filter((r) => r.featured).slice(0, 2).forEach((r) => feed.push({ title: { en: r.name, ne: r.name }, kind: 'Darkroom', date: r.reviewDate, route: r.presentation === 'profile' ? `/darkroom/${r.slug}` : r.url, ext: r.presentation !== 'profile', color: 'var(--gold)', icon: 'search', mem: false }));
-  games.slice(0, 2).forEach((g) => feed.push({ title: g.title as Bi, kind: 'Games', date: g.release, route: `/games/${g.slug}`, color: 'var(--ok)', icon: 'game', mem: g.access === 'members' }));
-  feed.sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
-
-  const sections: HomeData['sections'] = {};
-  for (const id of ['nepal', 'intro', 'eco', 'divisions', 'featured', 'latest', 'academy', 'darkroom', 'offers', 'about', 'cta']) {
-    sections[id] = homeSection(id);
-  }
-
-  const data: HomeData = {
-    shots,
-    sections,
-    settings: db.settings,
-    divisions: dvs,
-    counts: {
-      research: pub(db.services).length,
-      entertainment: ents.length,
-      academy: courses.length,
-      games: games.length,
-      darkroom: drs.length,
-      posts: posts.length,
-      resources: drs.length,
-    },
-    featured: {
-      post: posts.find((p) => p.featured) || posts[0],
-      offer: offers.find((o) => o.featured) || offers[0],
-      ent: ents.find((e) => e.featured),
-      dr: drs.find((r) => r.featured),
-    },
-    latest: feed,
-    courses,
-    drCats: db.drCats.filter((c) => c.visible !== false),
-    drFeatured: drs.filter((r) => r.featured).slice(0, 6),
-    offers: offers.filter((o) => o.featured).slice(0, 3).length ? offers.filter((o) => o.featured).slice(0, 3) : offers.slice(0, 3),
-  };
-
-  const esc = (x: string) => x.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  const ticker: string[] = [
-    `<b>LIVE</b> ACTTOLOG WORLD NETWORK`,
-    ...dvs.map((d) => `${esc(d.name.en.toUpperCase())} <b>ONLINE</b>`),
-    `NEPAL GUIDE <b>${ng.places.length}</b> PLACES · <b>${ng.regions.length}</b> REGIONS <b>LIVE</b>`,
-    `BLOG ENTRIES <b>${posts.length}</b>`,
-    `DARKROOM RESOURCES <b>${drs.length}</b> VERIFIED FEED`,
-    `ACADEMY COURSES <b>${courses.length}</b>`,
-    `GAMES <b>${games.length}</b>`,
-    `OFFERS <b>${offers.length}</b> NPR/USD`,
-    `ENTERTAINMENT <b>${ents.length}</b> ITEMS`,
-    ...posts.slice(0, 3).map((pp) => `NEW · ${esc(pp.title.en.toUpperCase())}`),
-    ...drs.filter((r) => r.featured).slice(0, 4).map((r) => `FEATURED RESOURCE · ${esc(r.name.toUpperCase())}`),
-    `DISCOVER · LEARN · CREATE · CONNECT`,
-  ];
-
-  return (
-    <>
-      <Hero settings={db.settings} ticker={ticker} />
-      <WorldShowcase shots={shots} />
-      <NepalPromo section={data.sections.nepal} />
-      <HomeLayers data={data} />
-    </>
-  );
+  return <HomeView altLang={{ href: '/ne', label: 'नेपाली संस्करण', lang: 'ne' }} />;
 }

@@ -15,11 +15,26 @@ export function MobileNav() {
   // router.push, not location.href: a full document reload tears down the
   // WebGL Earth and re-fetches every chunk, which on a phone is seconds.
   const items: { label: string; icon: string; act: () => void; on?: boolean }[] = [
-    { label: locale === 'ne' ? 'अन्वेषण' : 'Explore', icon: 'compass', act: () => router.push('/explore'), on: pathname.startsWith('/explore') },
+    {
+      label: locale === 'ne' ? 'अन्वेषण' : 'Explore',
+      icon: 'compass',
+      act: () => router.push('/explore'),
+      on: pathname.startsWith('/explore'),
+    },
     { label: locale === 'ne' ? 'खोज' : 'Search', icon: 'search', act: openSearch, on: false },
     { label: 'Earth', icon: 'globe', act: () => router.push('/explore?mode=earth'), on: false },
-    { label: locale === 'ne' ? 'सुरक्षित' : 'Saved', icon: 'heart', act: () => router.push('/my/saved'), on: pathname.startsWith('/my/saved') },
-    { label: locale === 'ne' ? 'प्रोफाइल' : 'Profile', icon: 'users', act: () => router.push('/my'), on: pathname.startsWith('/my') && !pathname.startsWith('/my/saved') },
+    {
+      label: locale === 'ne' ? 'सुरक्षित' : 'Saved',
+      icon: 'heart',
+      act: () => router.push('/my/saved'),
+      on: pathname.startsWith('/my/saved'),
+    },
+    {
+      label: locale === 'ne' ? 'प्रोफाइल' : 'Profile',
+      icon: 'users',
+      act: () => router.push('/my'),
+      on: pathname.startsWith('/my') && !pathname.startsWith('/my/saved'),
+    },
   ];
 
   return (

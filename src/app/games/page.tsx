@@ -18,15 +18,26 @@ export const metadata: Metadata = {
 
 export default function GamesPage() {
   const d = db.divisions.find((x) => x.id === 'games');
-  const games = pub(db.games).slice().sort((a, b) => String(b.release).localeCompare(String(a.release)));
+  const games = pub(db.games)
+    .slice()
+    .sort((a, b) => String(b.release).localeCompare(String(a.release)));
 
   return (
     <>
-      <PageHead kicker="ACTTOLOG DIVISION · GAMES" title={d?.name.en || 'Games'}
-        body={d?.desc.en} art="games" />
-      <WorldPortal world="arena" title="Games World" titleNe="गेम्स वर्ल्ड"
+      <PageHead
+        kicker="ACTTOLOG DIVISION · GAMES"
+        title={d?.name.en || 'Games'}
+        body={d?.desc.en}
+        art="games"
+      />
+      <WorldPortal
+        world="arena"
+        title="Games World"
+        titleNe="गेम्स वर्ल्ड"
         subtitle="A futuristic game lobby in 360° — hotspots lead into Entertainment and back to the ACTTOLOG world hub."
-        accent="var(--ok)" earthLink="/explore?mode=earth&lat=35.68100&lng=139.76700" />
+        accent="var(--ok)"
+        earthLink="/explore?mode=earth&lat=35.68100&lng=139.76700"
+      />
 
       <section className="sec pt-2">
         <div className="wrap">
@@ -34,19 +45,41 @@ export default function GamesPage() {
           <GamesExtraGrid />
 
           <Reveal>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-12">
+            <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {[
-                ['Scores & achievements', 'Leaderboards stay private to you — progress is tracked, never published.', 'star'],
-                ['Favorites & recents', 'Your game activity lives in My Acttolog, visible to nobody else.', 'heart'],
-                ['Educational play', 'Some titles teach research methods and division knowledge through play.', 'book'],
-                ['Experimental lab', 'New interactive experiments ship here first — some are marked in development.', 'rocket'],
+                [
+                  'Scores & achievements',
+                  'Leaderboards stay private to you — progress is tracked, never published.',
+                  'star',
+                ],
+                [
+                  'Favorites & recents',
+                  'Your game activity lives in My Acttolog, visible to nobody else.',
+                  'heart',
+                ],
+                [
+                  'Educational play',
+                  'Some titles teach research methods and division knowledge through play.',
+                  'book',
+                ],
+                [
+                  'Experimental lab',
+                  'New interactive experiments ship here first — some are marked in development.',
+                  'rocket',
+                ],
               ].map(([title, body, icon]) => (
                 <div key={title} className="card p-6">
-                  <span className="w-10 h-10 rounded-xl grid place-items-center mb-4"
-                    style={{ background: 'color-mix(in srgb,var(--ok) 12%,transparent)', color: 'var(--ok)', border: '1px solid color-mix(in srgb,var(--ok) 28%,transparent)' }}>
+                  <span
+                    className="mb-4 grid h-10 w-10 place-items-center rounded-xl"
+                    style={{
+                      background: 'color-mix(in srgb,var(--ok) 12%,transparent)',
+                      color: 'var(--ok)',
+                      border: '1px solid color-mix(in srgb,var(--ok) 28%,transparent)',
+                    }}
+                  >
                     <Icon name={icon} size={18} />
                   </span>
-                  <h3 className="font-display font-semibold text-[14.4px] mb-2">{title}</h3>
+                  <h3 className="font-display mb-2 text-[14.4px] font-semibold">{title}</h3>
                   <p className="mut text-[12.6px] leading-relaxed">{body}</p>
                 </div>
               ))}
@@ -54,12 +87,14 @@ export default function GamesPage() {
           </Reveal>
 
           <Reveal>
-            <div className="panel p-6 mt-10 flex flex-wrap items-center justify-between gap-4">
-              <p className="mut text-[13.2px] max-w-[70ch]">
-                Advanced game systems (persistent scores, achievements, tournaments) activate as the platform matures —
-                architecture is ready, nothing is announced before it works.
+            <div className="panel mt-10 flex flex-wrap items-center justify-between gap-4 p-6">
+              <p className="mut max-w-[70ch] text-[13.2px]">
+                Advanced game systems (persistent scores, achievements, tournaments) activate as the platform
+                matures — architecture is ready, nothing is announced before it works.
               </p>
-              <Link href="/my/games" className="btn btn-g btn-sm">My games <Icon name="arrow" size={14} /></Link>
+              <Link href="/my/games" className="btn btn-g btn-sm">
+                My games <Icon name="arrow" size={14} />
+              </Link>
             </div>
           </Reveal>
         </div>

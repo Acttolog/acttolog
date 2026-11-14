@@ -25,11 +25,17 @@ export async function POST(req: Request) {
 
   const db = getDB();
   const intent = parseIntent(body.q, db.drCats);
-  const matches = drRank(db.dr.filter((r) => r.visible !== false && r.status === 'published'), body.q, db.drW, body.locale).slice(0, 8);
+  const matches = drRank(
+    db.dr.filter((r) => r.visible !== false && r.status === 'published'),
+    body.q,
+    db.drW,
+    body.locale,
+  ).slice(0, 8);
 
-  const note = body.locale === 'ne'
-    ? 'इन्टेन्ट तलका फिल्टरहरूमा लागू गर्न सकिन्छ। साधारण खोजहरू OpenAI मा पठाइँदैन।'
-    : 'Intent can be applied as filters below. Simple queries never reach OpenAI.';
+  const note =
+    body.locale === 'ne'
+      ? 'इन्टेन्ट तलका फिल्टरहरूमा लागू गर्न सकिन्छ। साधारण खोजहरू OpenAI मा पठाइँदैन।'
+      : 'Intent can be applied as filters below. Simple queries never reach OpenAI.';
 
   return NextResponse.json({
     intent: {

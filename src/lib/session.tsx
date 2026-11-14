@@ -29,7 +29,10 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [notice, setNotice] = useState(false);
 
   const refresh = useCallback(async () => {
-    if (STATIC_HOST) { setLoading(false); return; }
+    if (STATIC_HOST) {
+      setLoading(false);
+      return;
+    }
     try {
       const res = await fetch('/api/auth/session', { cache: 'no-store' });
       const data = await res.json();
@@ -41,10 +44,15 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  useEffect(() => { refresh(); }, [refresh]);
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
 
   const signIn = useCallback((returnTo?: string) => {
-    if (STATIC_HOST) { setNotice(true); return; }
+    if (STATIC_HOST) {
+      setNotice(true);
+      return;
+    }
     const rt = returnTo || window.location.pathname + window.location.search;
     window.location.href = `/api/auth/google?returnTo=${encodeURIComponent(rt)}`;
   }, []);
@@ -66,21 +74,32 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 function StaticAuthNotice({ onClose }: { onClose: () => void }) {
   const { t } = useI18n();
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [onClose]);
   return (
-    <div className="mbd" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+    <div
+      className="mbd"
+      onMouseDown={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       <div className="mcard" role="dialog" aria-modal="true" aria-label={t('auth.staticTitle')}>
         <div className="p-7">
-          <div className="flex items-start justify-between gap-4 mb-4">
+          <div className="mb-4 flex items-start justify-between gap-4">
             <h3 className="h3">{t('auth.staticTitle')}</h3>
-            <button className="btn btn-g btn-sm" onClick={onClose}>{t('close')}</button>
+            <button className="btn btn-g btn-sm" onClick={onClose}>
+              {t('close')}
+            </button>
           </div>
           <p className="prose !text-[14px]">{t('auth.staticBody')}</p>
           <div className="mt-6 flex justify-end">
-            <button className="btn btn-p btn-sm" onClick={onClose}>{t('auth.staticDismiss')}</button>
+            <button className="btn btn-p btn-sm" onClick={onClose}>
+              {t('auth.staticDismiss')}
+            </button>
           </div>
         </div>
       </div>

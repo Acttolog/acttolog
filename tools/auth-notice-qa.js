@@ -23,18 +23,25 @@ async function open(browser, url, width = 1280, height = 900) {
   await page.setViewport({ width, height, deviceScaleFactor: 1 });
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
-  page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
+  page.on('console', (m) => {
+    if (m.type() === 'error') errors.push(m.text());
+  });
   await page.goto(url, { waitUntil: 'networkidle2', timeout: 90000 });
   return { page, errors };
 }
 
 async function dialogState(page) {
   return page.evaluate(() => {
-    const d = document.querySelector('[role="alertdialog"]') || document.querySelector('[role="dialog"][aria-modal="true"]');
+    const d =
+      document.querySelector('[role="alertdialog"]') ||
+      document.querySelector('[role="dialog"][aria-modal="true"]');
     if (!d) return null;
     const r = d.getBoundingClientRect();
     return {
-      title: d.querySelector('#auth-notice-title')?.textContent?.trim() || d.querySelector('h3')?.textContent?.trim() || '',
+      title:
+        d.querySelector('#auth-notice-title')?.textContent?.trim() ||
+        d.querySelector('h3')?.textContent?.trim() ||
+        '',
       body: d.querySelector('p')?.textContent?.trim() || '',
       buttons: [...d.querySelectorAll('button, a')].map((b) => b.textContent.trim()).filter(Boolean),
       focused: document.activeElement?.textContent?.trim() || '',
@@ -53,7 +60,9 @@ async function main() {
 
   // Static mirrors ship without /api routes: retry cannot leave for an OAuth
   // start, so the honest outcome is the in-page preview notice.
-  const staticHost = await fetch(`${BASE}/api/auth/session`).then((r) => r.status === 404).catch(() => false);
+  const staticHost = await fetch(`${BASE}/api/auth/session`)
+    .then((r) => r.status === 404)
+    .catch(() => false);
   console.log(`TARGET ${BASE} — ${staticHost ? 'static mirror' : 'SSR runtime'}`);
 
   // 1. not_configured on /contact
@@ -64,8 +73,16 @@ async function main() {
     check('contact: dialog appears for oauth=not_configured', !!d, d ? d.title : 'no dialog');
     if (d) {
       check('contact: not-configured copy', /not switched on yet/i.test(d.title), d.title);
-      check('contact: no dead-end retry button', !d.buttons.some((b) => /try again/i.test(b)), d.buttons.join(' | '));
-      check('contact: offers CONTACT + CLOSE', d.buttons.some((b) => /contact/i.test(b)) && d.buttons.some((b) => /close/i.test(b)), d.buttons.join(' | '));
+      check(
+        'contact: no dead-end retry button',
+        !d.buttons.some((b) => /try again/i.test(b)),
+        d.buttons.join(' | '),
+      );
+      check(
+        'contact: offers CONTACT + CLOSE',
+        d.buttons.some((b) => /contact/i.test(b)) && d.buttons.some((b) => /close/i.test(b)),
+        d.buttons.join(' | '),
+      );
       check('contact: focus moved into dialog', !!d.focused, d.focused);
     }
     await page.screenshot({ path: `${OUT}/auth-notice-contact.png` });
@@ -76,7 +93,11 @@ async function main() {
     let closed = false;
     for (const c of closers) {
       const txt = await c.evaluate((el) => el.textContent.trim());
-      if (/close/i.test(txt)) { await c.click(); closed = true; break; }
+      if (/close/i.test(txt)) {
+        await c.click();
+        closed = true;
+        break;
+      }
     }
     await sleep(600);
     const afterUrl = page.url();
@@ -98,7 +119,11 @@ async function main() {
     check('home: dialog appears for state_mismatch', !!d, d ? d.title : 'no dialog');
     if (d) {
       check('home: expired copy', /expired/i.test(d.title), d.title);
-      check('home: offers TRY AGAIN', d.buttons.some((b) => /try again/i.test(b)), d.buttons.join(' | '));
+      check(
+        'home: offers TRY AGAIN',
+        d.buttons.some((b) => /try again/i.test(b)),
+        d.buttons.join(' | '),
+      );
     }
     await page.screenshot({ path: `${OUT}/auth-notice-expired.png` });
 
@@ -106,17 +131,32 @@ async function main() {
     const btns = await page.$$('[role="alertdialog"] button');
     for (const b of btns) {
       const txt = await b.evaluate((el) => el.textContent.trim());
-      if (/try again/i.test(txt)) { await b.click(); break; }
+      if (/try again/i.test(txt)) {
+        await b.click();
+        break;
+      }
     }
     await sleep(2500);
     const url = page.url();
     const d2 = await dialogState(page);
     if (staticHost) {
       check('home: TRY AGAIN stays on the page', new URL(url).pathname === '/', url);
-      check('home: retry surfaces the preview notice', !!d2 && /available in this preview/i.test(d2.title), d2 ? d2.title : 'no dialog');
+      check(
+        'home: retry surfaces the preview notice',
+        !!d2 && /available in this preview/i.test(d2.title),
+        d2 ? d2.title : 'no dialog',
+      );
     } else {
-      check('home: TRY AGAIN reaches oauth start', /\/contact\?oauth=not_configured|\/api\/auth\/google/.test(url), url);
-      check('home: retry surfaces the real blocker', !!d2 && /not switched on yet/i.test(d2.title), d2 ? d2.title : 'no dialog');
+      check(
+        'home: TRY AGAIN reaches oauth start',
+        /\/contact\?oauth=not_configured|\/api\/auth\/google/.test(url),
+        url,
+      );
+      check(
+        'home: retry surfaces the real blocker',
+        !!d2 && /not switched on yet/i.test(d2.title),
+        d2 ? d2.title : 'no dialog',
+      );
     }
     check('home: no page errors', errors.length === 0, errors.slice(0, 2).join(' / '));
     await page.close();
@@ -127,7 +167,11 @@ async function main() {
     const { page } = await open(browser, `${BASE}/?auth=error&reason=token_verification_failed`);
     await sleep(900);
     const d = await dialogState(page);
-    check('home: generic failure copy', !!d && /could not complete/i.test(d.title), d ? d.title : 'no dialog');
+    check(
+      'home: generic failure copy',
+      !!d && /could not complete/i.test(d.title),
+      d ? d.title : 'no dialog',
+    );
     await page.screenshot({ path: `${OUT}/auth-notice-failed.png` });
     await page.close();
   }
@@ -137,7 +181,11 @@ async function main() {
     const { page } = await open(browser, `${BASE}/contact?oauth=not_configured`, 390, 844);
     await sleep(900);
     const d = await dialogState(page);
-    check('mobile: dialog fits 390px', !!d && d.width <= 390 && !d.overflowX, d ? `${d.width}px, overflowX=${d.overflowX}` : 'no dialog');
+    check(
+      'mobile: dialog fits 390px',
+      !!d && d.width <= 390 && !d.overflowX,
+      d ? `${d.width}px, overflowX=${d.overflowX}` : 'no dialog',
+    );
     check('mobile: dialog not clipped left', !!d && d.offsetLeft >= 0, d ? `left=${d.offsetLeft}` : '');
     await page.screenshot({ path: `${OUT}/auth-notice-mobile.png`, fullPage: false });
     await page.close();
@@ -156,7 +204,13 @@ async function main() {
   await browser.close();
   const failed = results.filter((r) => !r.ok);
   console.log(`\n${results.length - failed.length}/${results.length} passed`);
-  if (failed.length) { console.log('FAILED: ' + failed.map((f) => f.name).join('; ')); process.exit(1); }
+  if (failed.length) {
+    console.log('FAILED: ' + failed.map((f) => f.name).join('; '));
+    process.exit(1);
+  }
 }
 
-main().catch((e) => { console.error(e); process.exit(1); });
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

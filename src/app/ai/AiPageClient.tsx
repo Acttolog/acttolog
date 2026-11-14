@@ -17,16 +17,19 @@ export function AiPageClient() {
   useEffect(() => {
     const onOpen = (e: Event) => {
       const q = (e as CustomEvent).detail as string | undefined;
-      if (q) { setPrefill(q); setSignal((x) => x + 1); }
+      if (q) {
+        setPrefill(q);
+        setSignal((x) => x + 1);
+      }
     };
     window.addEventListener('acttolog:ai-open', onOpen);
     return () => window.removeEventListener('acttolog:ai-open', onOpen);
   }, []);
 
   return (
-    <div className="grid lg:grid-cols-[1.35fr_.65fr] gap-6 items-start">
+    <div className="grid items-start gap-6 lg:grid-cols-[1.35fr_.65fr]">
       <Reveal>
-        <div className="panel p-0 overflow-hidden" style={{ height: 'min(64vh, 620px)' }}>
+        <div className="panel overflow-hidden p-0" style={{ height: 'min(64vh, 620px)' }}>
           <AiChat variant="page" prefill={prefill} openSignal={signal} />
         </div>
       </Reveal>
@@ -35,8 +38,8 @@ export function AiPageClient() {
         <Reveal delay={80}>
           <div className="panel p-6">
             <div className="eyebrow mb-4">MODEL</div>
-            <p className="mut text-[13.1px] leading-relaxed mb-4">{db.ai.note}</p>
-            <div className="mono text-[11.4px] dim space-y-1.5">
+            <p className="mut mb-4 text-[13.1px] leading-relaxed">{db.ai.note}</p>
+            <div className="mono dim space-y-1.5 text-[11.4px]">
               <div>provider: {db.ai.provider}</div>
               <div>model: {db.ai.model}</div>
               <div>web mode: {db.ai.webMode}</div>
@@ -48,8 +51,12 @@ export function AiPageClient() {
         <Reveal delay={140}>
           <div className="panel p-6">
             <div className="eyebrow mb-4">PRIVACY</div>
-            <ul className="space-y-2.5 text-[13.1px] mut">
-              <li>{user ? 'Your conversations can be saved privately to your account.' : 'Guest conversations are temporary — sign in to keep them.'}</li>
+            <ul className="mut space-y-2.5 text-[13.1px]">
+              <li>
+                {user
+                  ? 'Your conversations can be saved privately to your account.'
+                  : 'Guest conversations are temporary — sign in to keep them.'}
+              </li>
               <li>Darkroom search stays globally non-personalised, always.</li>
               <li>Personalization is opt-in under My Acttolog → Settings.</li>
             </ul>
@@ -61,11 +68,10 @@ export function AiPageClient() {
             <div className="panel p-6">
               <div className="eyebrow mb-4">SAVED CONVERSATIONS</div>
               <p className="mut text-[12.8px] leading-relaxed">
-                Conversations you keep appear here — reopen, continue, rename or delete. They are private to you.
+                Conversations you keep appear here — reopen, continue, rename or delete. They are private to
+                you.
               </p>
-              <p className="dim text-[11.6px] mt-3">
-                Persistence activates once the database is connected.
-              </p>
+              <p className="dim mt-3 text-[11.6px]">Persistence activates once the database is connected.</p>
             </div>
           </Reveal>
         )}

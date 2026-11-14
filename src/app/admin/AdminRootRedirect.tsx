@@ -15,7 +15,7 @@ export function AdminRootRedirect() {
   }, [user, loading, router]);
   return (
     <section className="pt-[calc(var(--nav)+88px)] pb-24">
-      <div className="wrap text-center dim mono text-[11px] tracking-[.24em]">LOADING ADMIN…</div>
+      <div className="wrap dim mono text-center text-[11px] tracking-[.24em]">LOADING ADMIN…</div>
     </section>
   );
 }

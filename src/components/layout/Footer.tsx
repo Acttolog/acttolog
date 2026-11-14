@@ -29,15 +29,32 @@ export function Footer() {
   const subscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     const v = email.trim();
-    if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(v)) { setEmailErr(true); toast(locale === 'ne' ? 'मान्य इमेल ठेगाना राख्नुहोस्।' : 'Enter a valid email address.', 'err'); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(v)) {
+      setEmailErr(true);
+      toast(locale === 'ne' ? 'मान्य इमेल ठेगाना राख्नुहोस्।' : 'Enter a valid email address.', 'err');
+      return;
+    }
     setEmailErr(false);
     try {
-      const res = await fetch('/api/newsletter', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: v }) });
+      const res = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: v }),
+      });
       const data = await res.json().catch(() => ({}));
-      if (res.ok) { track('newsletter_subscribe'); toast(data.note || (locale === 'ne' ? 'सदस्यता दर्ता भयो।' : 'Subscribed.'), 'ok'); setEmail(''); }
-      else toast(data.error || 'Subscription failed.', 'err');
+      if (res.ok) {
+        track('newsletter_subscribe');
+        toast(data.note || (locale === 'ne' ? 'सदस्यता दर्ता भयो।' : 'Subscribed.'), 'ok');
+        setEmail('');
+      } else toast(data.error || 'Subscription failed.', 'err');
     } catch {
-      toast(locale === 'ne' ? 'यस पूर्वदर्शनमा सदस्यता उपलब्ध छैन — पूरा उत्पादनमा चाँडै।' : 'Signups activate on the full production deployment.', 'info', 5000);
+      toast(
+        locale === 'ne'
+          ? 'यस पूर्वदर्शनमा सदस्यता उपलब्ध छैन — पूरा उत्पादनमा चाँडै।'
+          : 'Signups activate on the full production deployment.',
+        'info',
+        5000,
+      );
     }
   };
 
@@ -47,27 +64,39 @@ export function Footer() {
         <div className="grid gap-11 lg:grid-cols-[1.6fr_1fr_1fr_1fr_1.25fr]">
           <div>
             <Logo variant="horizontal" width={190} />
-            <p className="mut text-[13.6px] leading-relaxed mt-5 max-w-[38ch]">{L(s.purpose)}</p>
-            <div className="flex flex-wrap gap-2 mt-5">
-              {socials.length
-                ? socials.map(([k, v]) => (
-                  <a key={k} href={v} target="_blank" rel="noopener noreferrer" className="chip capitalize">{k}</a>
+            <p className="mut mt-5 max-w-[38ch] text-[13.6px] leading-relaxed">{L(s.purpose)}</p>
+            <div className="mt-5 flex flex-wrap gap-2">
+              {socials.length ? (
+                socials.map(([k, v]) => (
+                  <a key={k} href={v} target="_blank" rel="noopener noreferrer" className="chip capitalize">
+                    {k}
+                  </a>
                 ))
-                : <span className="chip">{locale === 'ne' ? 'सोसल लिङ्क एडमिनबाट थपिनेछ' : 'Social links added by admin'}</span>}
+              ) : (
+                <span className="chip">
+                  {locale === 'ne' ? 'सोसल लिङ्क एडमिनबाट थपिनेछ' : 'Social links added by admin'}
+                </span>
+              )}
             </div>
-            <div className="mt-6 space-y-1.5 text-[13.4px] mut">
+            <div className="mut mt-6 space-y-1.5 text-[13.4px]">
               <a href={`tel:${s.phone}`} className="flex items-center gap-2.5 hover:text-[var(--cy)]">
-                <Icon name="chat" size={15} />{s.phone}
+                <Icon name="chat" size={15} />
+                {s.phone}
               </a>
               <a href={`mailto:${s.email}`} className="flex items-center gap-2.5 hover:text-[var(--cy)]">
-                <Icon name="mail" size={15} />{s.email}
+                <Icon name="mail" size={15} />
+                {s.email}
               </a>
             </div>
           </div>
 
           <div className="fcol">
             <h4>{t('nav.div')}</h4>
-            {divs.map((d) => <Link key={d.id} href={d.route}>{L(d.name)}</Link>)}
+            {divs.map((d) => (
+              <Link key={d.id} href={d.route}>
+                {L(d.name)}
+              </Link>
+            ))}
           </div>
 
           <div className="fcol">
@@ -83,15 +112,22 @@ export function Footer() {
 
           <div className="fcol">
             <h4>{locale === 'ne' ? 'खाता' : 'Account'}</h4>
-            {user
-              ? <Link href="/my">{t('my')}</Link>
-              : <button onClick={() => signIn()} className="text-left hover:text-[var(--cy)] transition-colors">{t('signin')}</button>}
+            {user ? (
+              <Link href="/my">{t('my')}</Link>
+            ) : (
+              <button onClick={() => signIn()} className="text-left transition-colors hover:text-[var(--cy)]">
+                {t('signin')}
+              </button>
+            )}
             {isStaff && <Link href="/admin">{t('admin')}</Link>}
-            <button onClick={() => setPrivacyOpen(true)} className="text-left hover:text-[var(--cy)] transition-colors">
+            <button
+              onClick={() => setPrivacyOpen(true)}
+              className="text-left transition-colors hover:text-[var(--cy)]"
+            >
               {locale === 'ne' ? 'गोपनीयता' : 'Privacy'}
             </button>
             {consent && (
-              <button onClick={resetConsent} className="text-left hover:text-[var(--cy)] transition-colors">
+              <button onClick={resetConsent} className="text-left transition-colors hover:text-[var(--cy)]">
                 {locale === 'ne' ? 'सहमति सेटिङ' : 'Consent settings'}
               </button>
             )}
@@ -99,13 +135,21 @@ export function Footer() {
 
           <div className="fcol">
             <h4>{locale === 'ne' ? 'सूचना सूची' : 'Dispatch'}</h4>
-            <p className="mut text-[13.1px] leading-relaxed mb-4">{L(s.nlNote)}</p>
-            <form onSubmit={subscribe} noValidate className="flex gap-2 flex-wrap">
-              <input className={`inp flex-1 min-w-[150px]${emailErr ? ' err' : ''}`} type="email" value={email}
-                onChange={(e) => setEmail(e.target.value)} placeholder="you@email.com" aria-label="Email" />
-              <button className="btn btn-p btn-sm" type="submit">{locale === 'ne' ? 'सदस्यता' : 'Subscribe'}</button>
+            <p className="mut mb-4 text-[13.1px] leading-relaxed">{L(s.nlNote)}</p>
+            <form onSubmit={subscribe} noValidate className="flex flex-wrap gap-2">
+              <input
+                className={`inp flex-1 min-w-[150px]${emailErr ? 'err' : ''}`}
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@email.com"
+                aria-label="Email"
+              />
+              <button className="btn btn-p btn-sm" type="submit">
+                {locale === 'ne' ? 'सदस्यता' : 'Subscribe'}
+              </button>
             </form>
-            <p className="dim text-[11.4px] mt-3 leading-relaxed">
+            <p className="dim mt-3 text-[11.4px] leading-relaxed">
               {locale === 'ne'
                 ? 'इमेल सेवा नजोडिएसम्म सूचना सर्भरमा मात्र दर्ता हुन्छ।'
                 : 'Until an email provider is connected, signups are recorded server-side only.'}
@@ -114,9 +158,12 @@ export function Footer() {
         </div>
 
         <hr className="hr my-8" />
-        <div className="flex flex-wrap gap-4 items-center justify-between">
-          <p className="dim text-[12.2px] mono">© {new Date().getFullYear()} {s.org} — {process.env.NEXT_PUBLIC_SITE_URL || 'https://www.acttolog.com.np'}</p>
-          <p className="dim text-[12.2px] mono flex items-center gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <p className="dim mono text-[12.2px]">
+            © {new Date().getFullYear()} {s.org} —{' '}
+            {process.env.NEXT_PUBLIC_SITE_URL || 'https://www.acttolog.com.np'}
+          </p>
+          <p className="dim mono flex items-center gap-2 text-[12.2px]">
             <span className="dot" /> {L(s.footerNote)}
           </p>
         </div>
@@ -131,17 +178,27 @@ function PrivacyModal({ onClose }: { onClose: () => void }) {
   const { t, locale } = useI18n();
   const { consent, reset: resetConsent } = useConsent();
   return (
-    <div className="mbd" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+    <div
+      className="mbd"
+      onMouseDown={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       <div className="mcard" role="dialog" aria-modal="true" aria-label={t('privacy')}>
         <div className="p-7">
-          <div className="flex items-start justify-between gap-4 mb-5">
+          <div className="mb-5 flex items-start justify-between gap-4">
             <h3 className="h3">{locale === 'ne' ? 'गोपनीयता र डाटा' : 'Privacy & data'}</h3>
-            <button className="btn btn-g btn-sm" onClick={onClose}>{t('close')}</button>
+            <button className="btn btn-g btn-sm" onClick={onClose}>
+              {t('close')}
+            </button>
           </div>
           <div className="prose !text-[14px]">
             {locale === 'ne' ? (
               <>
-                <p>Acttolog ले आवश्यक कार्य सञ्चालनका लागि मात्र डाटा प्रशोधन गर्छ। एनालिटिक्स र व्यक्तिगतकरण ऐच्छिक छन् र तपाईंको सहमतिपछि मात्र सक्रिय हुन्छन्।</p>
+                <p>
+                  Acttolog ले आवश्यक कार्य सञ्चालनका लागि मात्र डाटा प्रशोधन गर्छ। एनालिटिक्स र व्यक्तिगतकरण
+                  ऐच्छिक छन् र तपाईंको सहमतिपछि मात्र सक्रिय हुन्छन्।
+                </p>
                 <h3>हामी के राख्छौं</h3>
                 <ul>
                   <li>Google साइन-इन: नाम, इमेल, प्रोफाइल फोटो र प्रदायक ID — अरू केही होइन।</li>
@@ -158,7 +215,10 @@ function PrivacyModal({ onClose }: { onClose: () => void }) {
               </>
             ) : (
               <>
-                <p>Acttolog processes only what is necessary to operate. Analytics and personalisation are optional and activate only after your consent.</p>
+                <p>
+                  Acttolog processes only what is necessary to operate. Analytics and personalisation are
+                  optional and activate only after your consent.
+                </p>
                 <h3>What we keep</h3>
                 <ul>
                   <li>Google sign-in: name, email, profile photo and provider ID — nothing else.</li>
@@ -174,10 +234,12 @@ function PrivacyModal({ onClose }: { onClose: () => void }) {
                 <p>To delete your account: My Acttolog → Settings → Request Account Deletion.</p>
               </>
             )}
-            <p className="dim text-[12.4px] mt-4">
+            <p className="dim mt-4 text-[12.4px]">
               {consent
                 ? `${locale === 'ne' ? 'यस ब्राउजरको सहमति स्थिति' : 'Consent state in this browser'}: analytics ${consent.analytics ? '✓' : '✗'} · personalisation ${consent.personalization ? '✓' : '✗'}`
-                : locale === 'ne' ? 'अझै कुनै सहमति चयन रेकर्ड छैन।' : 'No consent choice recorded yet.'}
+                : locale === 'ne'
+                  ? 'अझै कुनै सहमति चयन रेकर्ड छैन।'
+                  : 'No consent choice recorded yet.'}
             </p>
           </div>
         </div>

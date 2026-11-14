@@ -21,37 +21,68 @@ export default function OffersPage() {
 
   return (
     <>
-      <PageHead kicker="ACTTOLOG · OFFERS" title="Offers"
+      <PageHead
+        kicker="ACTTOLOG · OFFERS"
+        title="Offers"
         body="Selected commercial opportunities across the Acttolog ecosystem. Transparent scope, honest pricing in NPR and USD."
-        art="offers" />
-      <WorldPortal world="offers" title="Offers World" titleNe="अफर वर्ल्ड"
+        art="offers"
+      />
+      <WorldPortal
+        world="offers"
+        title="Offers World"
+        titleNe="अफर वर्ल्ड"
         subtitle="A premium service presentation environment — showcases and hotspots into the ACTTOLOG world."
-        accent="var(--gold)" earthLink="/explore?mode=earth&lat=27.71700&lng=85.32400" />
+        accent="var(--gold)"
+        earthLink="/explore?mode=earth&lat=27.71700&lng=85.32400"
+      />
 
       <section className="sec pt-2">
         <div className="wrap">
           <OffersClient offers={offers} divisions={divisions} />
           <Reveal>
-            <div className="panel p-6 sm:p-8 mt-12">
-              <div className="grid md:grid-cols-3 gap-6">
+            <div className="panel mt-12 p-6 sm:p-8">
+              <div className="grid gap-6 md:grid-cols-3">
                 {[
-                  ['Inquiry only', 'Send an inquiry — scope and pricing are confirmed in writing before any work begins.', 'chat'],
-                  ['Online purchase', 'Payment gateways activate only after provider verification — no payment is ever reported as successful without it.', 'shield'],
-                  ['Both', 'Ask first or buy directly — every offer states its mode clearly, with validity and terms shown upfront.', 'layers'],
+                  [
+                    'Inquiry only',
+                    'Send an inquiry — scope and pricing are confirmed in writing before any work begins.',
+                    'chat',
+                  ],
+                  [
+                    'Online purchase',
+                    'Payment gateways activate only after provider verification — no payment is ever reported as successful without it.',
+                    'shield',
+                  ],
+                  [
+                    'Both',
+                    'Ask first or buy directly — every offer states its mode clearly, with validity and terms shown upfront.',
+                    'layers',
+                  ],
                 ].map(([t, b, icon]) => (
                   <div key={t}>
-                    <span className="w-10 h-10 rounded-xl grid place-items-center mb-3"
-                      style={{ background: 'color-mix(in srgb,var(--gold) 12%,transparent)', color: 'var(--gold)', border: '1px solid color-mix(in srgb,var(--gold) 28%,transparent)' }}>
+                    <span
+                      className="mb-3 grid h-10 w-10 place-items-center rounded-xl"
+                      style={{
+                        background: 'color-mix(in srgb,var(--gold) 12%,transparent)',
+                        color: 'var(--gold)',
+                        border: '1px solid color-mix(in srgb,var(--gold) 28%,transparent)',
+                      }}
+                    >
                       <Icon name={icon} size={18} />
                     </span>
-                    <h3 className="font-display font-semibold text-[14.6px] mb-2">{t}</h3>
+                    <h3 className="font-display mb-2 text-[14.6px] font-semibold">{t}</h3>
                     <p className="mut text-[12.7px] leading-relaxed">{b}</p>
                   </div>
                 ))}
               </div>
-              <div className="flex flex-wrap gap-3 mt-8 pt-6" style={{ borderTop: '1px solid var(--line)' }}>
-                <Link href="/contact" className="btn btn-g btn-sm"><Icon name="mail" size={14} />Ask about a custom scope</Link>
-                <span className="dim mono text-[10.4px] tracking-[.15em] self-center">PRICES ARE CMS-EDITABLE · NEVER HARD-CODED</span>
+              <div className="mt-8 flex flex-wrap gap-3 pt-6" style={{ borderTop: '1px solid var(--line)' }}>
+                <Link href="/contact" className="btn btn-g btn-sm">
+                  <Icon name="mail" size={14} />
+                  Ask about a custom scope
+                </Link>
+                <span className="dim mono self-center text-[10.4px] tracking-[.15em]">
+                  PRICES ARE CMS-EDITABLE · NEVER HARD-CODED
+                </span>
               </div>
             </div>
           </Reveal>

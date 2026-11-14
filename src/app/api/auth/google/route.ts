@@ -18,10 +18,18 @@ export async function GET(req: Request) {
   const res = NextResponse.redirect(googleAuthUrl(state, redirectUri));
   // CSRF: state is bound to this browser via a short-lived httpOnly cookie
   res.cookies.set('atl_oauth_state', state, {
-    httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', path: '/', maxAge: 600,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 600,
   });
   res.cookies.set('atl_return_to', returnTo, {
-    httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', path: '/', maxAge: 600,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 600,
   });
   return res;
 }

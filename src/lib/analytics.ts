@@ -8,9 +8,21 @@
  */
 
 export const GA_EVENTS = [
-  'page_view', 'division_view', 'sign_in', 'search', 'resource_open', 'resource_save',
-  'article_view', 'academy_entry', 'game_launch', 'entertainment_view', 'offer_interaction',
-  'contact_submit', 'newsletter_subscribe', 'download', 'cta_interaction',
+  'page_view',
+  'division_view',
+  'sign_in',
+  'search',
+  'resource_open',
+  'resource_save',
+  'article_view',
+  'academy_entry',
+  'game_launch',
+  'entertainment_view',
+  'offer_interaction',
+  'contact_submit',
+  'newsletter_subscribe',
+  'download',
+  'cta_interaction',
 ] as const;
 export type TrackEvent = (typeof GA_EVENTS)[number];
 
@@ -28,8 +40,13 @@ function sid(): string {
   let s = '';
   try {
     s = sessionStorage.getItem('act_sid') || '';
-    if (!s) { s = 's_' + Math.random().toString(36).slice(2, 9); sessionStorage.setItem('act_sid', s); }
-  } catch { s = 's_' + Math.random().toString(36).slice(2, 9); }
+    if (!s) {
+      s = 's_' + Math.random().toString(36).slice(2, 9);
+      sessionStorage.setItem('act_sid', s);
+    }
+  } catch {
+    s = 's_' + Math.random().toString(36).slice(2, 9);
+  }
   window.__atlSid = s;
   return s;
 }
@@ -44,11 +61,17 @@ export function track(type: TrackEvent | string, extra: Record<string, unknown> 
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ t: type, path: window.location.pathname, sid: sid(), ...extra }),
     keepalive: true,
-  }).catch(() => { /* analytics must never break UX */ });
+  }).catch(() => {
+    /* analytics must never break UX */
+  });
 
   // GA4 (loaded separately after consent)
   if (window.gtag) {
-    try { window.gtag('event', type, extra); } catch { /* ignore */ }
+    try {
+      window.gtag('event', type, extra);
+    } catch {
+      /* ignore */
+    }
   }
 }
 
@@ -60,7 +83,9 @@ export function loadGA(measurementId: string): void {
   s.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(measurementId)}`;
   document.head.appendChild(s);
   window.dataLayer = window.dataLayer || [];
-  window.gtag = function gtag(...args: unknown[]) { window.dataLayer!.push(args); };
+  window.gtag = function gtag(...args: unknown[]) {
+    window.dataLayer!.push(args);
+  };
   window.gtag('js', new Date());
   window.gtag('config', measurementId, { anonymize_ip: true });
 }

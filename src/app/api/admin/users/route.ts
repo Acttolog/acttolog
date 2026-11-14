@@ -11,8 +11,18 @@ export async function GET() {
   const prisma = getPrisma();
   if (!prisma) return NextResponse.json({ error: 'not_configured' }, { status: 503 });
   const users = await prisma.user.findMany({
-    orderBy: { createdAt: 'desc' }, take: 200,
-    select: { id: true, name: true, email: true, role: true, status: true, createdAt: true, lastLoginAt: true, deletionRequestedAt: true },
+    orderBy: { createdAt: 'desc' },
+    take: 200,
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      status: true,
+      createdAt: true,
+      lastLoginAt: true,
+      deletionRequestedAt: true,
+    },
   });
   return NextResponse.json({ users });
 }

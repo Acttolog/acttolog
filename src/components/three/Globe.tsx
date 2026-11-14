@@ -13,11 +13,27 @@ import { KTM, nf } from '@/lib/utils';
 
 const EarthScene = dynamic(() => import('./EarthScene').then((m) => m.EarthScene), { ssr: false });
 
-interface HudState { fps: number; lat: number | null; lon: number | null; zoom: number; alt: string }
+interface HudState {
+  fps: number;
+  lat: number | null;
+  lon: number | null;
+  zoom: number;
+  alt: string;
+}
 
 const fmtCoord = (v: number, pos: string, neg: string) => `${Math.abs(v).toFixed(2)}°${v >= 0 ? pos : neg}`;
 
-function Hud({ tier, hud, visible, layer }: { tier: QualityTier; hud: HudState; visible: boolean; layer: 'blue' | TileLayer }) {
+function Hud({
+  tier,
+  hud,
+  visible,
+  layer,
+}: {
+  tier: QualityTier;
+  hud: HudState;
+  visible: boolean;
+  layer: 'blue' | TileLayer;
+}) {
   const [clocks, setClocks] = useState({ zulu: '—', npt: '—' });
   useEffect(() => {
     const tick = () => {
@@ -25,7 +41,13 @@ function Hud({ tier, hud, visible, layer }: { tier: QualityTier; hud: HudState; 
       const p = (n: number) => String(n).padStart(2, '0');
       setClocks({
         zulu: `${p(now.getUTCHours())}:${p(now.getUTCMinutes())}:${p(now.getUTCSeconds())}Z`,
-        npt: (() => { try { return new Intl.DateTimeFormat('en-GB', { timeStyle: 'medium', timeZone: KTM }).format(now); } catch { return '—'; } })(),
+        npt: (() => {
+          try {
+            return new Intl.DateTimeFormat('en-GB', { timeStyle: 'medium', timeZone: KTM }).format(now);
+          } catch {
+            return '—';
+          }
+        })(),
       });
     };
     tick();
@@ -35,27 +57,43 @@ function Hud({ tier, hud, visible, layer }: { tier: QualityTier; hud: HudState; 
   return (
     <>
       <div className="hud hudtl">
-        <div className="flex items-center gap-2"><span className="dot" /> ACTTOLOG NETWORK · LIVE</div>
+        <div className="flex items-center gap-2">
+          <span className="dot" /> ACTTOLOG NETWORK · LIVE
+        </div>
         <div>NODE: EARTH-01 · ORBIT STABLE · LAYER {layer.toUpperCase()}</div>
-        <div>ZULU {clocks.zulu} · NPT {clocks.npt}</div>
+        <div>
+          ZULU {clocks.zulu} · NPT {clocks.npt}
+        </div>
       </div>
       <div className="hud hudbr">
         <div>QUALITY · {visible ? tier.toUpperCase() : 'PAUSED'}</div>
         <div>RENDER · {visible && hud.fps > 0 ? `${hud.fps} FPS` : '—'}</div>
-        <div>NODES · {nf(DIVISION_NODES.length)} · LINKS · {nf(ARC_PAIRS.length)} · ENTITIES · {nf(ENTITY_COUNT)}</div>
+        <div>
+          NODES · {nf(DIVISION_NODES.length)} · LINKS · {nf(ARC_PAIRS.length)} · ENTITIES · {nf(ENTITY_COUNT)}
+        </div>
         <div>DRAG ROTATE · SCROLL ZOOM TO STREET · CLICK A NODE</div>
       </div>
       <div className="hud hudbl">
-        <div>LOCATION · {hud.lat == null ? 'HOVER MAP' : `${fmtCoord(hud.lat, 'N', 'S')} ${fmtCoord(hud.lon as number, 'E', 'W')}`}</div>
-        <div>ALT · {hud.alt} · ZOOM · {hud.zoom.toFixed(2)}×</div>
+        <div>
+          LOCATION ·{' '}
+          {hud.lat == null
+            ? 'HOVER MAP'
+            : `${fmtCoord(hud.lat, 'N', 'S')} ${fmtCoord(hud.lon as number, 'E', 'W')}`}
+        </div>
+        <div>
+          ALT · {hud.alt} · ZOOM · {hud.zoom.toFixed(2)}×
+        </div>
       </div>
       {/* Compact strip for viewports where the three HUD groups are hidden —
           without it a phone shows no render state at all. */}
       <div className="hud hudm">
         <div>
-          {visible ? tier.toUpperCase() : 'PAUSED'} · {visible && hud.fps > 0 ? `${hud.fps} FPS` : '—'} · NPT {clocks.npt}
+          {visible ? tier.toUpperCase() : 'PAUSED'} · {visible && hud.fps > 0 ? `${hud.fps} FPS` : '—'} · NPT{' '}
+          {clocks.npt}
         </div>
-        <div>{nf(DIVISION_NODES.length)} NODES · {nf(ARC_PAIRS.length)} LINKS · LAYER {layer.toUpperCase()}</div>
+        <div>
+          {nf(DIVISION_NODES.length)} NODES · {nf(ARC_PAIRS.length)} LINKS · LAYER {layer.toUpperCase()}
+        </div>
       </div>
     </>
   );
@@ -63,8 +101,24 @@ function Hud({ tier, hud, visible, layer }: { tier: QualityTier; hud: HudState; 
 
 function Poster() {
   return (
-    <div aria-hidden="true" style={{ position: 'absolute', inset: 0, zIndex: 0, background: 'radial-gradient(circle at 64% 48%, rgba(53,224,255,.16), transparent 42%), radial-gradient(circle at 65% 49%, #0a1120 0 17.5%, transparent 17.6%)' }}>
-      <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(rgba(255,255,255,.5) 1px, transparent 1px)', backgroundSize: '90px 90px', opacity: 0.14 }} />
+    <div
+      aria-hidden="true"
+      style={{
+        position: 'absolute',
+        inset: 0,
+        zIndex: 0,
+        background:
+          'radial-gradient(circle at 64% 48%, rgba(53,224,255,.16), transparent 42%), radial-gradient(circle at 65% 49%, #0a1120 0 17.5%, transparent 17.6%)',
+      }}
+    >
+      <div
+        className="absolute inset-0"
+        style={{
+          backgroundImage: 'radial-gradient(rgba(255,255,255,.5) 1px, transparent 1px)',
+          backgroundSize: '90px 90px',
+          opacity: 0.14,
+        }}
+      />
     </div>
   );
 }
@@ -88,15 +142,23 @@ export function Globe() {
   const [findBusy, setFindBusy] = useState(false);
   const [findErr, setFindErr] = useState('');
   const [pin, setPin] = useState<[number, number] | null>(null);
-  const [pointer, setPointer] = useState<{ x: number; y: number; inside: boolean }>({ x: 0, y: 0, inside: false });
+  const [pointer, setPointer] = useState<{ x: number; y: number; inside: boolean }>({
+    x: 0,
+    y: 0,
+    inside: false,
+  });
   const router = useRouter();
 
-  useEffect(() => { setSupported(webglSupported()); }, []);
+  useEffect(() => {
+    setSupported(webglSupported());
+  }, []);
 
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
-    const io = new IntersectionObserver((entries) => setVisible(entries[0].isIntersecting), { threshold: 0.02 });
+    const io = new IntersectionObserver((entries) => setVisible(entries[0].isIntersecting), {
+      threshold: 0.02,
+    });
     io.observe(el);
     return () => io.disconnect();
   }, []);
@@ -118,21 +180,51 @@ export function Globe() {
     const id = setInterval(() => {
       const dist = distRef.current ?? 3.15;
       const altKm = Math.max(0, (dist - 1.002) * 6371);
-      const alt = altKm >= 1000 ? `${Math.round(altKm).toLocaleString('en-US')} km` : altKm >= 1 ? `${altKm.toFixed(1)} km` : `${Math.round(altKm * 1000)} m`;
-      setHud({ fps: hudFps.current, lat: cursorRef.current.lat, lon: cursorRef.current.lon, zoom: 3.15 / Math.max(0.001, dist), alt });
+      const alt =
+        altKm >= 1000
+          ? `${Math.round(altKm).toLocaleString('en-US')} km`
+          : altKm >= 1
+            ? `${altKm.toFixed(1)} km`
+            : `${Math.round(altKm * 1000)} m`;
+      setHud({
+        fps: hudFps.current,
+        lat: cursorRef.current.lat,
+        lon: cursorRef.current.lon,
+        zoom: 3.15 / Math.max(0.001, dist),
+        alt,
+      });
     }, 200);
     return () => clearInterval(id);
   }, []);
-  const onStats = useMemo(() => (f: number) => { hudFps.current = f; }, []);
-  const onCursor = useMemo(() => (lat: number | null, lon: number | null) => { cursorRef.current = { lat, lon }; }, []);
+  const onStats = useMemo(
+    () => (f: number) => {
+      hudFps.current = f;
+    },
+    [],
+  );
+  const onCursor = useMemo(
+    () => (lat: number | null, lon: number | null) => {
+      cursorRef.current = { lat, lon };
+    },
+    [],
+  );
 
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
     let lastX = 0;
-    const down = (x: number) => { dragRef.current.dragging = true; lastX = x; };
-    const move = (x: number) => { if (!dragRef.current.dragging) return; dragRef.current.dx += x - lastX; lastX = x; };
-    const up = () => { dragRef.current.dragging = false; };
+    const down = (x: number) => {
+      dragRef.current.dragging = true;
+      lastX = x;
+    };
+    const move = (x: number) => {
+      if (!dragRef.current.dragging) return;
+      dragRef.current.dx += x - lastX;
+      lastX = x;
+    };
+    const up = () => {
+      dragRef.current.dragging = false;
+    };
     const onPointerDown = (e: PointerEvent) => down(e.clientX);
     const onPointerMove = (e: PointerEvent) => move(e.clientX);
     el.addEventListener('pointerdown', onPointerDown);
@@ -157,12 +249,19 @@ export function Globe() {
   const findHome = async () => {
     const q = findQ.trim();
     if (!q || findBusy) return;
-    setFindBusy(true); setFindErr('');
+    setFindBusy(true);
+    setFindErr('');
     try {
-      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(q)}`);
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(q)}`,
+      );
       const data = await res.json();
-      if (!Array.isArray(data) || !data.length) { setFindErr('Location not found — try “Kathmandu, Nepal” or your town name.'); return; }
-      const lat = Number(data[0].lat), lon = Number(data[0].lon);
+      if (!Array.isArray(data) || !data.length) {
+        setFindErr('Location not found — try “Kathmandu, Nepal” or your town name.');
+        return;
+      }
+      const lat = Number(data[0].lat),
+        lon = Number(data[0].lon);
       setPin([lat, lon]);
       flyRef.current = { lat, lon, token: (flyRef.current?.token ?? 0) + 1 };
       distTargetRef.current = 1.004; // town approach; wheel continues to street level
@@ -184,8 +283,13 @@ export function Globe() {
   };
 
   return (
-    <div ref={containerRef} className="absolute inset-0" style={{ touchAction: 'pan-y' }}
-      onPointerMove={onMove} onPointerLeave={() => setPointer((p2) => ({ ...p2, inside: false }))}>
+    <div
+      ref={containerRef}
+      className="absolute inset-0"
+      style={{ touchAction: 'pan-y' }}
+      onPointerMove={onMove}
+      onPointerLeave={() => setPointer((p2) => ({ ...p2, inside: false }))}
+    >
       {supported === false && <Poster />}
       {supported !== false && (
         <EarthScene
@@ -212,68 +316,130 @@ export function Globe() {
           <span className="pr-dot" />
           {hud.lat != null && (
             <span className="pr-chip mono">
-              {Math.abs(hud.lat).toFixed(2)}°{hud.lat >= 0 ? 'N' : 'S'} {Math.abs(hud.lon as number).toFixed(2)}°{(hud.lon as number) >= 0 ? 'E' : 'W'}
+              {Math.abs(hud.lat).toFixed(2)}°{hud.lat >= 0 ? 'N' : 'S'}{' '}
+              {Math.abs(hud.lon as number).toFixed(2)}°{(hud.lon as number) >= 0 ? 'E' : 'W'}
             </span>
           )}
         </div>
       )}
 
       {/* Explorer control deck */}
-      <div className="absolute right-4 top-[calc(var(--nav)+16px)] z-[5] flex flex-col gap-2 items-end">
-        <div className="panel p-1.5 flex flex-col gap-1.5">
-          {([['blue', 'EARTH'], ['map', 'MAP'], ['sat', 'SAT']] as ['blue' | TileLayer, string][]).map(([k, label]) => (
-            <button key={k} className="chip !px-3 !py-1.5 !text-[10px]" style={layer === k ? { color: 'var(--txt)', borderColor: 'color-mix(in srgb,var(--cy) 55%,transparent)', background: 'color-mix(in srgb,var(--cy) 14%,transparent)' } : undefined}
-              onClick={() => setLayer(k)} title={`Layer: ${label}`}>
+      <div className="absolute top-[calc(var(--nav)+16px)] right-4 z-[5] flex flex-col items-end gap-2">
+        <div className="panel flex flex-col gap-1.5 p-1.5">
+          {(
+            [
+              ['blue', 'EARTH'],
+              ['map', 'MAP'],
+              ['sat', 'SAT'],
+            ] as ['blue' | TileLayer, string][]
+          ).map(([k, label]) => (
+            <button
+              key={k}
+              className="chip !px-3 !py-1.5 !text-[10px]"
+              style={
+                layer === k
+                  ? {
+                      color: 'var(--txt)',
+                      borderColor: 'color-mix(in srgb,var(--cy) 55%,transparent)',
+                      background: 'color-mix(in srgb,var(--cy) 14%,transparent)',
+                    }
+                  : undefined
+              }
+              onClick={() => setLayer(k)}
+              title={`Layer: ${label}`}
+            >
               {label}
             </button>
           ))}
           <div className="hr w-full" />
-          <div className="grid grid-cols-2 gap-1 w-full" role="group" aria-label="Visual quality level">
+          <div className="grid w-full grid-cols-2 gap-1" role="group" aria-label="Visual quality level">
             {QUALITY_SETTINGS.map((q) => (
-              <button key={q}
-                className={`chip !px-1.5 !py-1 !text-[8.6px] !justify-center${setting === q ? ' on' : ''}`}
+              <button
+                key={q}
+                className={`chip !px-1.5 !py-1 !text-[8.6px] !justify-center${setting === q ? 'on' : ''}`}
                 onClick={() => setSetting(q)}
                 aria-pressed={setting === q}
-                title={q === 'auto'
-                  ? `Auto — currently rendering ${tier.toUpperCase()}`
-                  : `Force ${q.toUpperCase()} (auto-detect picked ${tier.toUpperCase()})`}>
+                title={
+                  q === 'auto'
+                    ? `Auto — currently rendering ${tier.toUpperCase()}`
+                    : `Force ${q.toUpperCase()} (auto-detect picked ${tier.toUpperCase()})`
+                }
+              >
                 {q.toUpperCase()}
               </button>
             ))}
           </div>
           <div className="hr w-full" />
-          <button className="ico !w-9 !h-9" title="Find your home" aria-label="Find your home" onClick={() => setFindOpen((v) => !v)}>
+          <button
+            className="ico !h-9 !w-9"
+            title="Find your home"
+            aria-label="Find your home"
+            onClick={() => setFindOpen((v) => !v)}
+          >
             <Icon name="home" size={16} />
           </button>
-          <button className="ico !w-9 !h-9" title="Live cam networks" aria-label="Live cam networks" onClick={() => setCamsOpen(true)}>
+          <button
+            className="ico !h-9 !w-9"
+            title="Live cam networks"
+            aria-label="Live cam networks"
+            onClick={() => setCamsOpen(true)}
+          >
             <span className="dot" />
           </button>
-          <button className="ico !w-9 !h-9" title="Reset view" aria-label="Reset view"
-            onClick={() => { distTargetRef.current = 3.15; setPin(null); }}>
+          <button
+            className="ico !h-9 !w-9"
+            title="Reset view"
+            aria-label="Reset view"
+            onClick={() => {
+              distTargetRef.current = 3.15;
+              setPin(null);
+            }}
+          >
             <Icon name="refresh" size={15} />
           </button>
           <div className="hr w-full" />
-          <button className="chip !px-3 !py-1.5 !text-[9.4px]" title="Open the Earth command center (EARTH · MAP · SAT · 360)"
+          <button
+            className="chip !px-3 !py-1.5 !text-[9.4px]"
+            title="Open the Earth command center (EARTH · MAP · SAT · 360)"
             onClick={() => {
               const f = flyRef.current;
-              router.push(f ? `/explore?mode=earth&lat=${f.lat.toFixed(5)}&lng=${f.lon.toFixed(5)}` : '/explore?mode=earth');
-            }}>
+              router.push(
+                f
+                  ? `/explore?mode=earth&lat=${f.lat.toFixed(5)}&lng=${f.lon.toFixed(5)}`
+                  : '/explore?mode=earth',
+              );
+            }}
+          >
             COMMAND CENTER
           </button>
         </div>
         {findOpen && (
-          <div className="panel p-4 w-[min(320px,86vw)]">
-            <div className="mono text-[9.6px] tracking-[.2em] dim mb-2.5">FIND YOUR HOME · ROADS · 3D VIEW</div>
-            <form className="flex gap-2" onSubmit={(e) => { e.preventDefault(); findHome(); }}>
-              <input className="inp !py-2 !text-[13px]" value={findQ} onChange={(e) => setFindQ(e.target.value)}
-                placeholder="Kathmandu, Nepal…" aria-label="Search a place" />
+          <div className="panel w-[min(320px,86vw)] p-4">
+            <div className="mono dim mb-2.5 text-[9.6px] tracking-[.2em]">
+              FIND YOUR HOME · ROADS · 3D VIEW
+            </div>
+            <form
+              className="flex gap-2"
+              onSubmit={(e) => {
+                e.preventDefault();
+                findHome();
+              }}
+            >
+              <input
+                className="inp !py-2 !text-[13px]"
+                value={findQ}
+                onChange={(e) => setFindQ(e.target.value)}
+                placeholder="Kathmandu, Nepal…"
+                aria-label="Search a place"
+              />
               <button className="btn btn-p btn-sm" type="submit" disabled={findBusy}>
                 {findBusy ? '…' : <Icon name="arrow" size={14} />}
               </button>
             </form>
-            {findErr && <p className="mut text-[11.6px] mt-2">{findErr}</p>}
-            <p className="dim text-[10.4px] mt-2 leading-relaxed">
-              Geocoding © OpenStreetMap contributors. The globe flies to your place — keep scrolling the wheel to street level.
+            {findErr && <p className="mut mt-2 text-[11.6px]">{findErr}</p>}
+            <p className="dim mt-2 text-[10.4px] leading-relaxed">
+              Geocoding © OpenStreetMap contributors. The globe flies to your place — keep scrolling the wheel
+              to street level.
             </p>
           </div>
         )}
@@ -281,18 +447,32 @@ export function Globe() {
 
       {/* attribution */}
       {layer !== 'blue' && (
-        <div className="absolute left-3 bottom-[40px] z-[5] mono text-[9px] tracking-[.1em] dim" style={{ background: 'color-mix(in srgb,var(--bg) 66%,transparent)', padding: '3px 8px', borderRadius: 8 }}>
+        <div
+          className="mono dim absolute bottom-[40px] left-3 z-[5] text-[9px] tracking-[.1em]"
+          style={{
+            background: 'color-mix(in srgb,var(--bg) 66%,transparent)',
+            padding: '3px 8px',
+            borderRadius: 8,
+          }}
+        >
           {TILE_ATTRIBUTION[tileLayer]}
         </div>
       )}
 
       {camsOpen && (
-        <div className="mbd" onMouseDown={(e) => { if (e.target === e.currentTarget) setCamsOpen(false); }}>
+        <div
+          className="mbd"
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) setCamsOpen(false);
+          }}
+        >
           <div className="mcard" role="dialog" aria-modal="true" aria-label="Live cam networks">
             <div className="p-6">
-              <div className="flex items-start justify-between gap-4 mb-4">
+              <div className="mb-4 flex items-start justify-between gap-4">
                 <div className="eyebrow">FREE LIVE CAM NETWORKS</div>
-                <button className="btn btn-g btn-sm" onClick={() => setCamsOpen(false)}>Close</button>
+                <button className="btn btn-g btn-sm" onClick={() => setCamsOpen(false)}>
+                  Close
+                </button>
               </div>
               <LiveCamsPanel />
             </div>

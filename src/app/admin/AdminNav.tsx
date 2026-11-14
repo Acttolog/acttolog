@@ -53,6 +53,10 @@ const NAV: { group: string; items: [string, string, string][] }[] = [
     items: [
       ['/admin/analytics', 'Analytics', 'chart'],
       ['/admin/intelligence', 'Acttolog Intelligence', 'brain'],
+      ['/admin/metrics', 'Metric Dictionary', 'doc'],
+      ['/admin/queries', 'Query Builder', 'search'],
+      ['/admin/alerts', 'Alerts', 'bell'],
+      ['/admin/reports', 'Reports', 'doc'],
     ],
   },
   {
@@ -73,6 +77,7 @@ const NAV: { group: string; items: [string, string, string][] }[] = [
       ['/admin/backup', 'Backup & Recovery', 'db'],
       ['/admin/integrations', 'Integrations', 'link'],
       ['/admin/security', 'Security', 'lock'],
+      ['/admin/audit', 'Audit Log', 'shield'],
       ['/admin/system', 'System Health', 'refresh'],
     ],
   },
@@ -85,23 +90,32 @@ export function AdminNav({ user }: { user: { name: string; email: string; role: 
   return (
     <>
       <div className="md:hidden">
-        <button className="btn btn-g btn-sm" onClick={() => setOpen((v) => !v)}
-          aria-expanded={open} style={{ position: 'fixed', bottom: 16, left: 16, zIndex: 950 }}>
-          <Icon name="menu" size={15} />Admin menu
+        <button
+          className="btn btn-g btn-sm"
+          onClick={() => setOpen((v) => !v)}
+          aria-expanded={open}
+          style={{ position: 'fixed', bottom: 16, left: 16, zIndex: 950 }}
+        >
+          <Icon name="menu" size={15} />
+          Admin menu
         </button>
       </div>
       <aside className={`aside ${open ? 'open' : ''}`} onClick={() => setOpen(false)}>
-        <Link href="/admin/dashboard" className="flex items-center gap-2.5 px-2.5 pt-1 pb-4" style={{ borderBottom: '1px solid var(--line)' }}>
+        <Link
+          href="/admin/dashboard"
+          className="flex items-center gap-2.5 px-2.5 pt-1 pb-4"
+          style={{ borderBottom: '1px solid var(--line)' }}
+        >
           <Logo variant="icon" width={26} />
           <div>
-            <div className="font-display font-bold text-[13.6px] tracking-[.12em]">ACTTOLOG</div>
-            <div className="mono text-[8.8px] tracking-[.24em] dim">ADMIN CONSOLE</div>
+            <div className="font-display text-[13.6px] font-bold tracking-[.12em]">ACTTOLOG</div>
+            <div className="mono dim text-[8.8px] tracking-[.24em]">ADMIN CONSOLE</div>
           </div>
         </Link>
 
         <div className="px-2.5 py-3.5" style={{ borderBottom: '1px solid var(--line)' }}>
-          <div className="font-display font-semibold text-[12.8px] truncate">{user.name}</div>
-          <div className="dim mono text-[9.6px] truncate mt-0.5">{user.email}</div>
+          <div className="font-display truncate text-[12.8px] font-semibold">{user.name}</div>
+          <div className="dim mono mt-0.5 truncate text-[9.6px]">{user.email}</div>
           <span className="badge b-info mt-2">{user.role}</span>
         </div>
 
@@ -111,7 +125,8 @@ export function AdminNav({ user }: { user: { name: string; email: string; role: 
               <div className="agrp">{g.group}</div>
               {g.items.map(([href, label, icon]) => (
                 <Link key={href} href={href} className={pathname === href ? 'on' : ''}>
-                  <Icon name={icon} size={15} />{label}
+                  <Icon name={icon} size={15} />
+                  {label}
                 </Link>
               ))}
             </div>
@@ -119,7 +134,10 @@ export function AdminNav({ user }: { user: { name: string; email: string; role: 
         </nav>
 
         <div className="anav mt-4 pt-4" style={{ borderTop: '1px solid var(--line)' }}>
-          <Link href="/"><Icon name="globe" size={15} />View site</Link>
+          <Link href="/">
+            <Icon name="globe" size={15} />
+            View site
+          </Link>
         </div>
       </aside>
     </>

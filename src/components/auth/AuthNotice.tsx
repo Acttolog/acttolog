@@ -31,8 +31,12 @@ export function AuthNotice() {
   const reason = params.get('reason');
   const isError = params.get('auth') === 'error';
   const kind: Kind | null =
-    oauth === 'not_configured' || (isError && reason === 'oauth_not_configured') ? 'not_configured'
-      : isError ? (reason === 'state_mismatch' ? 'expired' : 'failed')
+    oauth === 'not_configured' || (isError && reason === 'oauth_not_configured')
+      ? 'not_configured'
+      : isError
+        ? reason === 'state_mismatch'
+          ? 'expired'
+          : 'failed'
         : null;
 
   useEffect(() => {
@@ -42,7 +46,9 @@ export function AuthNotice() {
   useEffect(() => {
     if (!open) return;
     primary.current?.focus();
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') close(); };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') close();
+    };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -101,12 +107,19 @@ export function AuthNotice() {
   }[kind];
 
   return (
-    <div className="mbd" onMouseDown={(e) => { if (e.target === e.currentTarget) close(); }}>
+    <div
+      className="mbd"
+      onMouseDown={(e) => {
+        if (e.target === e.currentTarget) close();
+      }}
+    >
       <div className="mcard" role="alertdialog" aria-modal="true" aria-labelledby="auth-notice-title">
         <div className="p-7">
           <div className="eyebrow mb-4">{ne ? 'खाता पहुँच' : 'ACCOUNT ACCESS'}</div>
-          <h3 className="h3" id="auth-notice-title">{copy.title}</h3>
-          <p className="prose !text-[14px] mt-3">{copy.body}</p>
+          <h3 className="h3" id="auth-notice-title">
+            {copy.title}
+          </h3>
+          <p className="prose mt-3 !text-[14px]">{copy.body}</p>
           <div className="mt-7 flex flex-wrap justify-end gap-2">
             {kind !== 'not_configured' && (
               <button ref={primary} className="btn btn-p btn-sm" onClick={retry}>
@@ -116,7 +129,11 @@ export function AuthNotice() {
             <Link href="/contact" className="btn btn-g btn-sm" onClick={close}>
               {ne ? 'सम्पर्क' : 'CONTACT'}
             </Link>
-            <button ref={kind === 'not_configured' ? primary : undefined} className="btn btn-g btn-sm" onClick={close}>
+            <button
+              ref={kind === 'not_configured' ? primary : undefined}
+              className="btn btn-g btn-sm"
+              onClick={close}
+            >
               {ne ? 'बन्द' : 'CLOSE'}
             </button>
           </div>

@@ -19,7 +19,12 @@ export interface PaymentIntent {
 export interface PaymentProvider {
   id: string;
   configured: () => boolean;
-  createIntent: (opts: { amount: number; currency: 'NPR' | 'USD'; offerSlug: string; email: string }) => Promise<PaymentIntent>;
+  createIntent: (opts: {
+    amount: number;
+    currency: 'NPR' | 'USD';
+    offerSlug: string;
+    email: string;
+  }) => Promise<PaymentIntent>;
   /** Verify with the provider — the only source of truth for success. */
   verify: (providerRef: string) => Promise<'verified' | 'failed' | 'pending'>;
 }

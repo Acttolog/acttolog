@@ -33,6 +33,10 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       { source: '/(.*)', headers: securityHeaders },
+      // The /games/* stage embeds these same-origin apps in an iframe; DENY
+      // would block them on any Next host. SAMEORIGIN still blocks cross-origin framing.
+      { source: '/arcade/:path*', headers: [{ key: 'X-Frame-Options', value: 'SAMEORIGIN' }] },
+      { source: '/cube26/:path*', headers: [{ key: 'X-Frame-Options', value: 'SAMEORIGIN' }] },
       { source: '/admin/:path*', headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }] },
       { source: '/my/:path*', headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }] },
     ];

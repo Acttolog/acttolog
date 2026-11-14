@@ -1,0 +1,30 @@
+# Build output and stale export artifacts — never format these.
+# Prettier rewriting hashed chunks under _next/ changes bytes whose hash is in
+# the filename, and churning 300 generated files buries real diffs.
+.next/
+_next/
+.static-build/
+.pages-site/
+out/
+node_modules/
+coverage/
+
+# Legacy GitHub Pages export left at the repo root by an older tool. The current
+# exporter (tools/build-pages-site.js) writes to .pages-site/ instead.
+/admin/
+/darkroom/
+/my/
+/offers/
+/blog/
+/entertainment/
+/academy/
+/games/
+/*.html
+/*.rsc
+/*.meta
+/*.segments
+.shots/
+
+# Vendored third-party bundles (Leaflet). Reformatting a minified file inflates
+# it and diverges from upstream for no benefit.
+**/vendor/

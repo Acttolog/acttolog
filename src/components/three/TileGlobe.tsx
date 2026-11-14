@@ -18,7 +18,8 @@ export type TileLayer = 'map' | 'sat';
 
 const TILE_SOURCES: Record<TileLayer, (z: number, x: number, y: number) => string> = {
   map: (z, x, y) => `https://${'abc'[(x + y) % 3]}.tile.openstreetmap.org/${z}/${x}/${y}.png`,
-  sat: (z, x, y) => `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}`,
+  sat: (z, x, y) =>
+    `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}`,
 };
 
 export const TILE_ATTRIBUTION: Record<TileLayer, string> = {
@@ -77,11 +78,20 @@ function sectorGeometry(key: string, b: { lat0: number; lat1: number; lon0: numb
 }
 
 interface Patch {
-  key: string; z: number; x: number; y: number;
-  mesh: THREE.Mesh; tex: THREE.Texture | null; loaded: boolean;
+  key: string;
+  z: number;
+  x: number;
+  y: number;
+  mesh: THREE.Mesh;
+  tex: THREE.Texture | null;
+  loaded: boolean;
 }
 
-export function TileSphere({ layer, distRef, active }: {
+export function TileSphere({
+  layer,
+  distRef,
+  active,
+}: {
   layer: TileLayer;
   distRef: React.RefObject<number>;
   active: boolean;
@@ -115,13 +125,16 @@ export function TileSphere({ layer, distRef, active }: {
     }
   }, [layer]);
 
-  useEffect(() => () => {
-    for (const [, p] of patches.current) {
-      p.tex?.dispose();
-      (p.mesh.material as THREE.Material).dispose();
-    }
-    patches.current.clear();
-  }, []);
+  useEffect(
+    () => () => {
+      for (const [, p] of patches.current) {
+        p.tex?.dispose();
+        (p.mesh.material as THREE.Material).dispose();
+      }
+      patches.current.clear();
+    },
+    [],
+  );
 
   useFrame(({ camera }) => {
     if (!active || !group.current) return;
@@ -134,14 +147,18 @@ export function TileSphere({ layer, distRef, active }: {
     const st = stateRef.current;
 
     if (z !== st.z || camLocal.angleTo(st.camDir) >= 0.02) {
-      st.z = z; st.camDir.copy(camLocal);
+      st.z = z;
+      st.camDir.copy(camLocal);
       const thetaRad = Math.atan(Math.max(0.00004, d - R) * 0.384);
       const cosLimit = Math.cos(Math.min(Math.PI * 0.98, thetaRad * 6));
       const n = 2 ** z;
       const lat = 90 - (Math.acos(THREE.MathUtils.clamp(camLocal.y, -1, 1)) * 180) / Math.PI;
       let lon = (Math.atan2(camLocal.z, -camLocal.x) * 180) / Math.PI - 180;
       if (lon < -180) lon += 360;
-      const yF = ((1 - Math.log(Math.tan((lat * Math.PI) / 180) + 1 / Math.cos((lat * Math.PI) / 180)) / Math.PI) / 2) * n;
+      const yF =
+        ((1 - Math.log(Math.tan((lat * Math.PI) / 180) + 1 / Math.cos((lat * Math.PI) / 180)) / Math.PI) /
+          2) *
+        n;
       const xF = ((lon + 180) / 360) * n;
       const span = Math.max(2, Math.min(24, Math.ceil((n * thetaRad * 3) / Math.PI) + 3));
       const wanted = new Set<string>();
@@ -157,20 +174,33 @@ export function TileSphere({ layer, distRef, active }: {
           wanted.add(key);
           if (patches.current.has(key)) continue;
           const geo = sectorGeometry(`g:${z}/${x}/${y}`, b);
-          const mat = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, toneMapped: false, depthWrite: true, side: THREE.DoubleSide });
+          const mat = new THREE.MeshBasicMaterial({
+            transparent: true,
+            opacity: 0,
+            toneMapped: false,
+            depthWrite: true,
+            side: THREE.DoubleSide,
+          });
           const mesh = new THREE.Mesh(geo, mat);
           mesh.renderOrder = 5;
           group.current.add(mesh);
           const patch: Patch = { key, z, x, y, mesh, tex: null, loaded: false };
           patches.current.set(key, patch);
-          loader.load(TILE_SOURCES[layer](z, x, y), (tex) => {
-            tex.colorSpace = THREE.SRGBColorSpace;
-            tex.anisotropy = 2;
-            patch.tex = tex;
-            patch.loaded = true;
-            mat.map = tex;
-            mat.needsUpdate = true;
-          }, undefined, () => { patch.loaded = true; });
+          loader.load(
+            TILE_SOURCES[layer](z, x, y),
+            (tex) => {
+              tex.colorSpace = THREE.SRGBColorSpace;
+              tex.anisotropy = 2;
+              patch.tex = tex;
+              patch.loaded = true;
+              mat.map = tex;
+              mat.needsUpdate = true;
+            },
+            undefined,
+            () => {
+              patch.loaded = true;
+            },
+          );
         }
       }
       wantedRef.current = wanted;
@@ -183,7 +213,8 @@ export function TileSphere({ layer, distRef, active }: {
       if (!wantedNow.has(k)) {
         mat.opacity -= 0.15;
         if (mat.opacity <= 0) {
-          p.tex?.dispose(); mat.dispose();
+          p.tex?.dispose();
+          mat.dispose();
           group.current.remove(p.mesh);
           patches.current.delete(k);
         }
@@ -197,7 +228,8 @@ export function TileSphere({ layer, distRef, active }: {
         const k = it.next().value as string;
         const p = patches.current.get(k);
         if (p && !wantedNow.has(k)) {
-          p.tex?.dispose(); (p.mesh.material as THREE.Material).dispose();
+          p.tex?.dispose();
+          (p.mesh.material as THREE.Material).dispose();
           group.current.remove(p.mesh);
           patches.current.delete(k);
         }
@@ -205,8 +237,14 @@ export function TileSphere({ layer, distRef, active }: {
     }
     if (typeof window !== 'undefined') {
       (window as unknown as Record<string, unknown>).__atlTiles = {
-        count: patches.current.size, wanted: wantedRef.current.size, z: stateRef.current.z, d,
-        sampleOp: (() => { const first = patches.current.values().next().value as Patch | undefined; return first ? +((first.mesh.material as THREE.MeshBasicMaterial).opacity.toFixed(2)) : -1; })(),
+        count: patches.current.size,
+        wanted: wantedRef.current.size,
+        z: stateRef.current.z,
+        d,
+        sampleOp: (() => {
+          const first = patches.current.values().next().value as Patch | undefined;
+          return first ? +(first.mesh.material as THREE.MeshBasicMaterial).opacity.toFixed(2) : -1;
+        })(),
       };
     }
     void gl;

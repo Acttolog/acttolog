@@ -28,15 +28,28 @@ interface I18nCtx {
 
 const Ctx = createContext<I18nCtx | null>(null);
 
-export function LocaleProvider({ children }: { children: ReactNode }) {
-  const [locale, setLoc] = useState<Locale>('en');
+export function LocaleProvider({
+  children,
+  initial = 'en',
+  lock = false,
+}: {
+  children: ReactNode;
+  /** Server-known starting locale (the /ne route seeds "ne") so SSR text matches the URL. */
+  initial?: Locale;
+  /** True on routes whose URL declares the language — stored preference must not flip it. */
+  lock?: boolean;
+}) {
+  const [locale, setLoc] = useState<Locale>(initial);
 
   useEffect(() => {
+    if (lock) return;
     try {
       const stored = localStorage.getItem('act_loc');
       if (stored === 'ne' || stored === 'en') setLoc(stored);
-    } catch { /* private mode */ }
-  }, []);
+    } catch {
+      /* private mode */
+    }
+  }, [lock]);
 
   useEffect(() => {
     document.documentElement.lang = locale;
@@ -47,7 +60,9 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
     try {
       localStorage.setItem('act_loc', l);
       document.cookie = `atl_locale=${l};path=/;max-age=31536000;samesite=lax`;
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }, []);
 
   const value = useMemo<I18nCtx>(() => {

@@ -19,9 +19,15 @@ const NEPAL_ZOOM = 7;
 
 /** Leaflet exposes no HTML escaper and these strings go into innerHTML. */
 const esc = (s: string) =>
-  s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c] as string);
+  s.replace(
+    /[&<>"']/g,
+    (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c] as string,
+  );
 
-export function NepalMap({ regions, placesByRegion }: {
+export function NepalMap({
+  regions,
+  placesByRegion,
+}: {
   regions: NepalRegion[];
   placesByRegion: Record<string, NepalPlace[]>;
 }) {
@@ -38,31 +44,54 @@ export function NepalMap({ regions, placesByRegion }: {
 
   useEffect(() => {
     let cancelled = false;
-    loadLeaflet().then((L) => {
-      if (cancelled || !divRef.current || mapRef.current) return;
-      try {
-        const map = L.map(divRef.current, {
-          center: NEPAL_CENTER, zoom: NEPAL_ZOOM, zoomControl: true,
-          attributionControl: true, worldCopyJump: false, preferCanvas: true,
-          minZoom: 6, maxZoom: 17, scrollWheelZoom: false,
-        });
-        mapRef.current = map;
-        map.on('zoomend', () => { map.scrollWheelZoom.disable(); });
-        map.on('mouseover', () => { map.scrollWheelZoom.enable(); });
-        map.on('mouseout', () => { map.scrollWheelZoom.disable(); });
-        tileRef.current = L.tileLayer(TILE_URLS.map, {
-          attribution: TILE_ATTR.map, maxZoom: 19, crossOrigin: true,
-        }).addTo(map);
-        setReady(true);
-      } catch {
+    loadLeaflet()
+      .then((L) => {
+        if (cancelled || !divRef.current || mapRef.current) return;
+        try {
+          const map = L.map(divRef.current, {
+            center: NEPAL_CENTER,
+            zoom: NEPAL_ZOOM,
+            zoomControl: true,
+            attributionControl: true,
+            worldCopyJump: false,
+            preferCanvas: true,
+            minZoom: 6,
+            maxZoom: 17,
+            scrollWheelZoom: false,
+          });
+          mapRef.current = map;
+          map.on('zoomend', () => {
+            map.scrollWheelZoom.disable();
+          });
+          map.on('mouseover', () => {
+            map.scrollWheelZoom.enable();
+          });
+          map.on('mouseout', () => {
+            map.scrollWheelZoom.disable();
+          });
+          tileRef.current = L.tileLayer(TILE_URLS.map, {
+            attribution: TILE_ATTR.map,
+            maxZoom: 19,
+            crossOrigin: true,
+          }).addTo(map);
+          setReady(true);
+        } catch {
+          if (!cancelled) setFailed(true);
+        }
+      })
+      .catch(() => {
         if (!cancelled) setFailed(true);
-      }
-    }).catch(() => { if (!cancelled) setFailed(true); });
+      });
     return () => {
       cancelled = true;
       if (mapRef.current) {
-        try { mapRef.current.remove(); } catch { /* ignore */ }
-        mapRef.current = null; tileRef.current = null;
+        try {
+          mapRef.current.remove();
+        } catch {
+          /* ignore */
+        }
+        mapRef.current = null;
+        tileRef.current = null;
       }
     };
   }, []);
@@ -74,7 +103,9 @@ export function NepalMap({ regions, placesByRegion }: {
     const L = (window as any).L;
     if (tileRef.current) map.removeLayer(tileRef.current);
     tileRef.current = L.tileLayer(TILE_URLS[layer], {
-      attribution: TILE_ATTR[layer], maxZoom: 19, crossOrigin: true,
+      attribution: TILE_ATTR[layer],
+      maxZoom: 19,
+      crossOrigin: true,
     }).addTo(map);
   }, [layer, ready]);
 
@@ -107,23 +138,41 @@ export function NepalMap({ regions, placesByRegion }: {
         const on = r.id === active;
         // Resolve the label BEFORE touching Leaflet: the local `L` below is
         // the Leaflet namespace, which shadows the i18n `L` inside this scope.
-        const nm = (locale === 'ne' && r.name.ne) ? r.name.ne : r.name.en;
+        const nm = locale === 'ne' && r.name.ne ? r.name.ne : r.name.en;
         const icon = L.divIcon({
           className: 'np-zone',
           html: `<i style="--a:${r.accent}" class="np-zone-in${on ? ' on' : ''}">
                  <b>${String(regions.indexOf(r) + 1).padStart(2, '0')}</b>
                </i><s>${esc(nm)}</s>`,
-          iconSize: [34, 34], iconAnchor: [17, 17],
+          iconSize: [34, 34],
+          iconAnchor: [17, 17],
         });
         const m = L.marker(r.center, { icon, title: r.name.en });
-        m.on('click', () => { setActive(r.id); track('nepal_zone', { zone: r.id }); });
+        m.on('click', () => {
+          setActive(r.id);
+          track('nepal_zone', { zone: r.id });
+        });
         group.addLayer(m);
       }
     } catch {
-      if (group) { try { map.removeLayer(group); } catch { /* ignore */ } }
+      if (group) {
+        try {
+          map.removeLayer(group);
+        } catch {
+          /* ignore */
+        }
+      }
       setHotspotsFailed(true);
     }
-    return () => { if (group) { try { map.removeLayer(group); } catch { /* ignore */ } } };
+    return () => {
+      if (group) {
+        try {
+          map.removeLayer(group);
+        } catch {
+          /* ignore */
+        }
+      }
+    };
   }, [ready, active, regions, locale]);
 
   // place pins for the active region
@@ -135,17 +184,38 @@ export function NepalMap({ regions, placesByRegion }: {
     try {
       group = L.layerGroup().addTo(map);
       for (const p of placesByRegion[active] || []) {
-        const icon = L.divIcon({ className: 'np-place', html: '<i></i>', iconSize: [12, 12], iconAnchor: [6, 6] });
+        const icon = L.divIcon({
+          className: 'np-place',
+          html: '<i></i>',
+          iconSize: [12, 12],
+          iconAnchor: [6, 6],
+        });
         const mk = L.marker(p.coords, { icon });
         mk.bindTooltip(`<b>${esc(p.name.en)}</b>${p.unesco ? ' · UNESCO' : ''}`, {
-          direction: 'top', offset: [0, -6], className: 'np-tip',
+          direction: 'top',
+          offset: [0, -6],
+          className: 'np-tip',
         });
         group.addLayer(mk);
       }
     } catch {
-      if (group) { try { map.removeLayer(group); } catch { /* ignore */ } }
+      if (group) {
+        try {
+          map.removeLayer(group);
+        } catch {
+          /* ignore */
+        }
+      }
     }
-    return () => { if (group) { try { map.removeLayer(group); } catch { /* ignore */ } } };
+    return () => {
+      if (group) {
+        try {
+          map.removeLayer(group);
+        } catch {
+          /* ignore */
+        }
+      }
+    };
   }, [ready, active, placesByRegion]);
 
   // glide to the active region (skipped for reduced motion)
@@ -168,20 +238,30 @@ export function NepalMap({ regions, placesByRegion }: {
           <div className="np-map-fail panel">
             <div className="eyebrow">MAP OFFLINE</div>
             <p className="mut">
-              The map library could not be loaded from its CDN — you are likely offline, or the request was blocked.
-              Every region, place and guideline on this page is still readable below.
+              The map library could not be loaded from its CDN — you are likely offline, or the request was
+              blocked. Every region, place and guideline on this page is still readable below.
             </p>
-            <button className="btn btn-g btn-sm" onClick={() => location.reload()}>Retry</button>
+            <button className="btn btn-g btn-sm" onClick={() => location.reload()}>
+              Retry
+            </button>
           </div>
         ) : (
           <>
             <div ref={divRef} className="np-map" aria-label="Interactive map of Nepal tourism regions" />
             {!ready && <div className="np-map-loading mono">BOOTING MAP…</div>}
             <div className="np-map-tools">
-              <button className={`chip${layer === 'map' ? ' on' : ''}`} onClick={() => setLayer('map')} aria-pressed={layer === 'map'}>
+              <button
+                className={`chip${layer === 'map' ? 'on' : ''}`}
+                onClick={() => setLayer('map')}
+                aria-pressed={layer === 'map'}
+              >
                 {locale === 'ne' ? 'नक्सा' : 'MAP'}
               </button>
-              <button className={`chip${layer === 'sat' ? ' on' : ''}`} onClick={() => setLayer('sat')} aria-pressed={layer === 'sat'}>
+              <button
+                className={`chip${layer === 'sat' ? 'on' : ''}`}
+                onClick={() => setLayer('sat')}
+                aria-pressed={layer === 'sat'}
+              >
                 {locale === 'ne' ? 'स्याटेलाइट' : 'SAT'}
               </button>
             </div>
@@ -195,8 +275,11 @@ export function NepalMap({ regions, placesByRegion }: {
             <button
               key={r.id}
               aria-pressed={r.id === active}
-              className={`np-zone-btn${r.id === active ? ' on' : ''}`}
-              onClick={() => { setActive(r.id); track('nepal_zone_pick', { zone: r.id }); }}
+              className={`np-zone-btn${r.id === active ? 'on' : ''}`}
+              onClick={() => {
+                setActive(r.id);
+                track('nepal_zone_pick', { zone: r.id });
+              }}
               style={{ '--a': r.accent } as React.CSSProperties}
             >
               <span className="mono np-num">{String(i + 1).padStart(2, '0')}</span>
@@ -208,13 +291,17 @@ export function NepalMap({ regions, placesByRegion }: {
 
         {hotspotsFailed && (
           <p className="mono np-map-degraded">
-            {ne ? 'हटस्पट लोड भएन — नक्सा र सूची काम गरिरहेका छन्।' : 'HOTSPOTS UNAVAILABLE — map and list still work'}
+            {ne
+              ? 'हटस्पट लोड भएन — नक्सा र सूची काम गरिरहेका छन्।'
+              : 'HOTSPOTS UNAVAILABLE — map and list still work'}
           </p>
         )}
 
         {activeRegion && (
           <div className="np-zone-detail">
-            <div className="eyebrow" style={{ color: activeRegion.accent }}>{L(activeRegion.name)}</div>
+            <div className="eyebrow" style={{ color: activeRegion.accent }}>
+              {L(activeRegion.name)}
+            </div>
             <p className="mut np-blurb">{L(activeRegion.blurb)}</p>
             <hr className="hr" />
             <div className="np-place-chips">
@@ -225,7 +312,8 @@ export function NepalMap({ regions, placesByRegion }: {
                   href={`#place-${p.id}`}
                   title={`${p.type}${p.unesco ? ' · UNESCO World Heritage' : ''}`}
                 >
-                  {L(p.name)}{p.unesco ? ' ★' : ''}
+                  {L(p.name)}
+                  {p.unesco ? ' ★' : ''}
                 </a>
               ))}
               {!activePlaces.length && <span className="dim">No catalogued sites in this region yet.</span>}
@@ -233,7 +321,10 @@ export function NepalMap({ regions, placesByRegion }: {
             <div className="np-coord mono dim">
               {activeRegion.center[0].toFixed(4)}, {activeRegion.center[1].toFixed(4)} · z{activeRegion.zoom}
             </div>
-            <a className="btn btn-g btn-sm" href={`/explore?mode=earth&lat=${activeRegion.center[0]}&lng=${activeRegion.center[1]}`}>
+            <a
+              className="btn btn-g btn-sm"
+              href={`/explore?mode=earth&lat=${activeRegion.center[0]}&lng=${activeRegion.center[1]}`}
+            >
               {locale === 'ne' ? 'पृथ्वीमा हेर्नुहोस्' : 'VIEW ON EARTH'}
             </a>
           </div>

@@ -12,6 +12,7 @@
     "db:push": "prisma db push",
     "db:seed": "node prisma/seed.mjs",
     "test": "npm run typecheck && npm run lint && npm run build",
+    "test:unit": "node --test src/lib/*.test.mts src/lib/intelligence/*.test.mts",
     "build:lowmem": "ACTTOLOG_LOWMEM=1 next build --webpack",
     "postinstall": "prisma generate",
     "db:migrate": "prisma migrate deploy"
@@ -19,10 +20,16 @@
   "dependencies": {
     "@prisma/client": "^6.19.3",
     "@react-three/fiber": "^9.7.0",
+    "@tanstack/react-table": "^8.21.3",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "gsap": "^3.15.1",
     "jose": "^6.2.12",
     "next": "16.3.5",
     "react": "19.2.8",
     "react-dom": "19.2.8",
+    "recharts": "^3.10.1",
+    "tailwind-merge": "^3.7.0",
     "three": "^0.186.0",
     "zod": "^4.6.5"
   },
@@ -35,6 +42,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.3.5",
     "prettier": "^3.9.8",
+    "prettier-plugin-tailwindcss": "^0.8.1",
     "prisma": "^6.19.3",
     "puppeteer": "^24.43.1",
     "sharp": "^0.35.4",

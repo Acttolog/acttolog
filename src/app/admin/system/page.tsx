@@ -11,17 +11,28 @@ export default function Page() {
   const overall = overallHealth(rows);
   return (
     <div>
-      <AHead title="System Health" desc="Live checks against the actual environment. Statuses are honest: Healthy · Warning · Error · Not Configured."
-        actions={<span className="badge b-info self-center">overall: {overall.replace('_', ' ')}</span>} />
+      <AHead
+        title="System Health"
+        desc="Live checks against the actual environment. Statuses are honest: Healthy · Warning · Error · Not Configured."
+        actions={<span className="badge b-info self-center">overall: {overall.replace('_', ' ')}</span>}
+      />
       <SystemChecks />
-      <div className="panel overflow-hidden mt-5">
+      <div className="panel mt-5 overflow-hidden">
         <table className="tbl">
-          <thead><tr><th>Component</th><th>Status</th><th>Detail</th></tr></thead>
+          <thead>
+            <tr>
+              <th>Component</th>
+              <th>Status</th>
+              <th>Detail</th>
+            </tr>
+          </thead>
           <tbody>
             {rows.map((r) => (
               <tr key={r.key}>
                 <td style={{ color: 'var(--txt)' }}>{r.label}</td>
-                <td><HealthBadge status={r.status} /></td>
+                <td>
+                  <HealthBadge status={r.status} />
+                </td>
                 <td className="max-w-[70ch]">{r.note}</td>
               </tr>
             ))}

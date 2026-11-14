@@ -23,15 +23,19 @@ export function integrationStatus(): IntegrationRow[] {
     label: 'PostgreSQL / Supabase',
     status: has(process.env.DATABASE_URL) ? 'healthy' : 'not_configured',
     note: has(process.env.DATABASE_URL)
-      ? 'DATABASE_URL is set — CMS, analytics and auth records persist.'
+      ? 'DATABASE_URL is set (configuration present). Reachability is proven by the live connection check below, not assumed.'
       : 'Requires DATABASE_URL. Until connected the site serves bundled seed content and write-paths report honest "not configured" states.',
   };
 
   const oauth: IntegrationRow = {
     key: 'googleOAuth',
     label: 'Google OAuth',
-    status: has(process.env.GOOGLE_CLIENT_ID) && has(process.env.GOOGLE_CLIENT_SECRET) ? 'healthy'
-      : has(process.env.GOOGLE_CLIENT_ID) ? 'warning' : 'not_configured',
+    status:
+      has(process.env.GOOGLE_CLIENT_ID) && has(process.env.GOOGLE_CLIENT_SECRET)
+        ? 'healthy'
+        : has(process.env.GOOGLE_CLIENT_ID)
+          ? 'warning'
+          : 'not_configured',
     note: 'Requires GOOGLE_CLIENT_ID + GOOGLE_CLIENT_SECRET; ID tokens are verified server-side via Google JWKS.',
   };
 
@@ -40,7 +44,7 @@ export function integrationStatus(): IntegrationRow[] {
     label: 'OpenAI (Acttolog AI)',
     status: has(process.env.OPENAI_API_KEY) ? 'healthy' : 'not_configured',
     note: has(process.env.OPENAI_API_KEY)
-      ? 'AI answers are composed server-side with Acttolog-first grounding.'
+      ? 'OPENAI_API_KEY is set (configuration present). The live connection check below verifies the provider actually accepts it.'
       : 'Requires OPENAI_API_KEY (server-side only). Without it the assistant answers from the Acttolog content index and says so.',
   };
 
@@ -54,7 +58,10 @@ export function integrationStatus(): IntegrationRow[] {
   const drive: IntegrationRow = {
     key: 'drive',
     label: 'Google Drive Backups',
-    status: has(process.env.GOOGLE_DRIVE_CLIENT_EMAIL) && has(process.env.GOOGLE_DRIVE_PRIVATE_KEY) ? 'healthy' : 'not_configured',
+    status:
+      has(process.env.GOOGLE_DRIVE_CLIENT_EMAIL) && has(process.env.GOOGLE_DRIVE_PRIVATE_KEY)
+        ? 'healthy'
+        : 'not_configured',
     note: 'Weekly backups, indefinite retention, never auto-deleted. Requires a private service account scoped to the ACTTOLOG Drive folder.',
   };
 
@@ -82,10 +89,15 @@ export function integrationStatus(): IntegrationRow[] {
   const authSecret: IntegrationRow = {
     key: 'authSecret',
     label: 'Session Signing (AUTH_SECRET)',
-    status: has(process.env.AUTH_SECRET) ? 'healthy' : process.env.NODE_ENV === 'production' ? 'error' : 'warning',
-    note: process.env.NODE_ENV === 'production' && !has(process.env.AUTH_SECRET)
-      ? 'AUTH_SECRET must be set in production — sessions cannot be trusted without it.'
-      : 'Signs httpOnly session cookies (HS256).',
+    status: has(process.env.AUTH_SECRET)
+      ? 'healthy'
+      : process.env.NODE_ENV === 'production'
+        ? 'error'
+        : 'warning',
+    note:
+      process.env.NODE_ENV === 'production' && !has(process.env.AUTH_SECRET)
+        ? 'AUTH_SECRET must be set in production — sessions cannot be trusted without it.'
+        : 'Signs httpOnly session cookies (HS256).',
   };
 
   const owner: IntegrationRow = {
@@ -120,7 +132,21 @@ export function integrationStatus(): IntegrationRow[] {
     note: 'Key-free satellite imagery for SAT mode and the Earth tile layer; attribution shown on every surface.',
   };
 
-  return [database, oauth, googleMaps, osm, esri, openai, ga4, drive, storage, email, payments, authSecret, owner];
+  return [
+    database,
+    oauth,
+    googleMaps,
+    osm,
+    esri,
+    openai,
+    ga4,
+    drive,
+    storage,
+    email,
+    payments,
+    authSecret,
+    owner,
+  ];
 }
 
 /** Aggregate health for the dashboard header. */

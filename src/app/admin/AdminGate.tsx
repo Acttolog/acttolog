@@ -31,7 +31,7 @@ export function AdminGate({ children }: { children: React.ReactNode }) {
   if (loading) {
     return (
       <section className="pt-[calc(var(--nav)+88px)] pb-24">
-        <div className="wrap text-center dim mono text-[11px] tracking-[.24em]">VERIFYING SESSION…</div>
+        <div className="wrap dim mono text-center text-[11px] tracking-[.24em]">VERIFYING SESSION…</div>
       </section>
     );
   }
@@ -49,6 +49,8 @@ export function AdminGate({ children }: { children: React.ReactNode }) {
 
 function ForbiddenRedirect() {
   const router = useRouter();
-  useEffect(() => { router.replace('/forbidden'); }, [router]);
+  useEffect(() => {
+    router.replace('/forbidden');
+  }, [router]);
   return null;
 }

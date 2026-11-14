@@ -3,9 +3,24 @@ import typescript from 'eslint-config-next/typescript';
 
 /** @type {import('eslint').Linter.Config[]} */
 const lintConfig = [
-  { ignores: ['node_modules/**', '.next/**', 'out/**', 'build/**', 'next-env.d.ts', 'tools/**',
-    // generated artifacts (harvested mirror + ephemeral static workspace) — never lint copies
-    '.pages-site/**', '.static-build/**', '_next/**'] },
+  {
+    ignores: [
+      'node_modules/**',
+      '.next/**',
+      'out/**',
+      'build/**',
+      'next-env.d.ts',
+      'tools/**',
+      // generated artifacts (harvested mirror + ephemeral static workspace) — never lint copies
+      '.pages-site/**',
+      '.static-build/**',
+      '_next/**',
+      // Third-party bundles vendored into public/ (Leaflet). 362 of the repo's
+      // 472 reported problems were unused-expression noise from minified vendor
+      // code we do not own and cannot fix.
+      '**/vendor/**',
+    ],
+  },
   ...coreWebVitals,
   ...typescript,
   {
@@ -27,6 +42,17 @@ const lintConfig = [
       // design; the React Compiler heuristics below conflict with that pattern.
       'react-hooks/refs': 'warn',
       'react-hooks/immutability': 'warn',
+    },
+  },
+  {
+    // public/ is served verbatim: the arcade and CUBE/26 canvases are vanilla
+    // scripts with no React runtime, so hook rules only generate false
+    // positives here (e.g. `const useEase = easeOutCubic` read as a hook call).
+    files: ['public/**/*.js'],
+    rules: {
+      'react-hooks/rules-of-hooks': 'off',
+      'react-hooks/exhaustive-deps': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
     },
   },
 ];

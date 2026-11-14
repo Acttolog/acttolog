@@ -40,7 +40,10 @@ export function loadLeaflet(): Promise<any> {
     s.src = JS_SRC;
     s.async = true;
     s.onload = () => resolve((window as any).L);
-    s.onerror = () => { leafletPromise = null; reject(new Error('leaflet-cdn')); };
+    s.onerror = () => {
+      leafletPromise = null;
+      reject(new Error('leaflet-cdn'));
+    };
     document.head.appendChild(s);
   });
   return leafletPromise;

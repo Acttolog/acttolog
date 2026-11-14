@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { Reveal } from '@/components/ui/Reveal';
 import { Icon } from '@/components/ui/Icon';
 import { AccessBadge } from '@/components/ui/Badges';
+import { SpatialFrame } from '@/components/spatial/SpatialFrame';
 import { CourseBody } from './CourseBody';
 import { getDB, pub } from '@/lib/content';
 import { resolveImage } from '@/lib/utils';
@@ -36,28 +37,58 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
   return (
     <section className="pt-[calc(var(--nav)+48px)] pb-16">
       <div className="wrap">
-        <nav className="flex items-center gap-2 text-[12.3px] dim mb-7 flex-wrap" aria-label="Breadcrumb">
-          <Link href="/" className="hover:text-[var(--cy)]">Home</Link><span>/</span>
-          <Link href="/academy" className="hover:text-[var(--cy)]">Academy</Link><span>/</span>
+        <nav className="dim mb-7 flex flex-wrap items-center gap-2 text-[12.3px]" aria-label="Breadcrumb">
+          <Link href="/" className="hover:text-[var(--cy)]">
+            Home
+          </Link>
+          <span>/</span>
+          <Link href="/academy" className="hover:text-[var(--cy)]">
+            Academy
+          </Link>
+          <span>/</span>
           <span style={{ color: 'var(--txt)' }}>{course.title.en}</span>
         </nav>
 
         <Reveal>
-          <div className="panel overflow-hidden mb-8">
-            <div className="relative h-[220px] sm:h-[300px]">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={resolveImage(course.image, 'academy')} alt="" className="w-full h-full object-cover" />
-              <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg,transparent 40%,color-mix(in srgb,var(--bg) 92%,transparent))' }} />
-              <div className="absolute top-4 left-4"><AccessBadge access={course.access} /></div>
-            </div>
+          <div className="panel mb-8 overflow-hidden">
+            <SpatialFrame
+              className="relative h-[220px] sm:h-[300px]"
+              hud={
+                <>
+                  <Icon name="layers" size={10} />
+                  3D
+                </>
+              }
+            >
+              {}
+              <img
+                src={resolveImage(course.image, 'academy')}
+                alt=""
+                className="h-full w-full object-cover"
+              />
+              <div
+                className="absolute inset-0"
+                style={{
+                  background:
+                    'linear-gradient(180deg,transparent 40%,color-mix(in srgb,var(--bg) 92%,transparent))',
+                }}
+              />
+              <div className="absolute top-4 left-4">
+                <AccessBadge access={course.access} />
+              </div>
+            </SpatialFrame>
             <div className="p-6 sm:p-9">
-              <div className="mono text-[10.3px] tracking-[.2em] mb-3" style={{ color: 'var(--vi)' }}>
+              <div className="mono mb-3 text-[10.3px] tracking-[.2em]" style={{ color: 'var(--vi)' }}>
                 {course.level.toUpperCase()} · {mods.length} MODULES · {lessonCount} LESSONS
               </div>
-              <h1 className="h1 !text-[clamp(1.8rem,4.4vw,2.9rem)] mb-4">{course.title.en}</h1>
-              {course.title.ne && <p className="font-display font-semibold text-[16.5px] mut mb-4">{course.title.ne}</p>}
+              <h1 className="h1 mb-4 !text-[clamp(1.8rem,4.4vw,2.9rem)]">{course.title.en}</h1>
+              {course.title.ne && (
+                <p className="font-display mut mb-4 text-[16.5px] font-semibold">{course.title.ne}</p>
+              )}
               <p className="lead">{course.summary.en}</p>
-              {course.summary.ne && <p className="mut text-[13.4px] leading-relaxed mt-3">{course.summary.ne}</p>}
+              {course.summary.ne && (
+                <p className="mut mt-3 text-[13.4px] leading-relaxed">{course.summary.ne}</p>
+              )}
             </div>
           </div>
         </Reveal>
@@ -65,9 +96,14 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
         <CourseBody course={course} />
 
         <Reveal>
-          <div className="flex flex-wrap gap-3 mt-10">
-            <Link href="/academy" className="btn btn-g btn-sm"><Icon name="arrow" size={14} style={{ transform: 'rotate(180deg)' }} />All courses</Link>
-            <Link href="/offers/academy-access" className="btn btn-g btn-sm">Academy Access offer</Link>
+          <div className="mt-10 flex flex-wrap gap-3">
+            <Link href="/academy" className="btn btn-g btn-sm">
+              <Icon name="arrow" size={14} style={{ transform: 'rotate(180deg)' }} />
+              All courses
+            </Link>
+            <Link href="/offers/academy-access" className="btn btn-g btn-sm">
+              Academy Access offer
+            </Link>
           </div>
         </Reveal>
       </div>

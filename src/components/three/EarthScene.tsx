@@ -25,13 +25,41 @@ import { useScenePreview } from '@/lib/world/useScenePreview';
 
 /* ── live entity beacons (OSINT-style pulses over world cities) ─── */
 export const ENTITY_POINTS: [number, number][] = [
-  [27.71, 85.32], [34.05, -118.24], [42.36, -71.06], [35.68, 139.69], [52.52, 13.4],
-  [51.5, -0.12], [48.85, 2.35], [55.75, 37.62], [39.9, 116.4], [28.61, 77.2],
-  [19.07, 72.87], [13.08, 80.27], [23.81, 90.41], [24.86, 67.0], [31.55, 74.34],
-  [19.43, -99.13], [-23.55, -46.63], [40.71, -74.0], [43.65, -79.38], [49.28, -123.12],
-  [-33.87, 151.21], [-36.85, 174.76], [1.35, 103.82], [22.32, 114.17], [37.57, 126.98],
-  [30.04, 31.24], [6.52, 3.37], [-1.29, 36.82], [25.2, 55.27], [41.01, 28.98],
-  [59.33, 18.06], [45.46, 9.19], [40.42, -3.7], [38.72, -9.14], [60.17, 24.94],
+  [27.71, 85.32],
+  [34.05, -118.24],
+  [42.36, -71.06],
+  [35.68, 139.69],
+  [52.52, 13.4],
+  [51.5, -0.12],
+  [48.85, 2.35],
+  [55.75, 37.62],
+  [39.9, 116.4],
+  [28.61, 77.2],
+  [19.07, 72.87],
+  [13.08, 80.27],
+  [23.81, 90.41],
+  [24.86, 67.0],
+  [31.55, 74.34],
+  [19.43, -99.13],
+  [-23.55, -46.63],
+  [40.71, -74.0],
+  [43.65, -79.38],
+  [49.28, -123.12],
+  [-33.87, 151.21],
+  [-36.85, 174.76],
+  [1.35, 103.82],
+  [22.32, 114.17],
+  [37.57, 126.98],
+  [30.04, 31.24],
+  [6.52, 3.37],
+  [-1.29, 36.82],
+  [25.2, 55.27],
+  [41.01, 28.98],
+  [59.33, 18.06],
+  [45.46, 9.19],
+  [40.42, -3.7],
+  [38.72, -9.14],
+  [60.17, 24.94],
   [64.13, -21.9],
 ];
 
@@ -42,9 +70,20 @@ function Graticule() {
   const geo = useMemo(() => {
     const pts: number[] = [];
     const R = 1.005;
-    const push = (lat: number, lon: number) => { const v = latLonToVec3(lat, lon, R); pts.push(v.x, v.y, v.z); };
-    for (let lat = -75; lat <= 75; lat += 15) for (let lon = -180; lon < 180; lon += 4) { push(lat, lon); push(lat, lon + 4); }
-    for (let lon = -180; lon < 180; lon += 15) for (let lat = -88; lat < 88; lat += 4) { push(lat, lon); push(lat + 4, lon); }
+    const push = (lat: number, lon: number) => {
+      const v = latLonToVec3(lat, lon, R);
+      pts.push(v.x, v.y, v.z);
+    };
+    for (let lat = -75; lat <= 75; lat += 15)
+      for (let lon = -180; lon < 180; lon += 4) {
+        push(lat, lon);
+        push(lat, lon + 4);
+      }
+    for (let lon = -180; lon < 180; lon += 15)
+      for (let lat = -88; lat < 88; lat += 4) {
+        push(lat, lon);
+        push(lat + 4, lon);
+      }
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
     return g;
@@ -79,11 +118,22 @@ function EntityBeacons({ reduced }: { reduced: boolean }) {
               <sphereGeometry args={[0.006, 8, 8]} />
               <meshBasicMaterial color={i % 5 === 0 ? '#ff4ecd' : '#9be8ff'} toneMapped={false} />
             </mesh>
-            <mesh ref={(el) => { refs.current[i] = el; }}
-              quaternion={new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, 1), out)}>
+            <mesh
+              ref={(el) => {
+                refs.current[i] = el;
+              }}
+              quaternion={new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, 1), out)}
+            >
               <ringGeometry args={[0.012, 0.016, 24]} />
-              <meshBasicMaterial color="#35e0ff" transparent opacity={0.4} side={THREE.DoubleSide}
-                blending={THREE.AdditiveBlending} depthWrite={false} toneMapped={false} />
+              <meshBasicMaterial
+                color="#35e0ff"
+                transparent
+                opacity={0.4}
+                side={THREE.DoubleSide}
+                blending={THREE.AdditiveBlending}
+                depthWrite={false}
+                toneMapped={false}
+              />
             </mesh>
           </group>
         );
@@ -91,7 +141,6 @@ function EntityBeacons({ reduced }: { reduced: boolean }) {
     </group>
   );
 }
-
 
 /** Realistic 3D division landmarks — composite primitives with idle motion:
  *  beam column, base pulse, and a unique structure per division. */
@@ -111,8 +160,15 @@ function DivisionStructures({ reduced }: { reduced: boolean }) {
   const beam = (color: string) => (
     <mesh position={[0, 0.05, 0]}>
       <cylinderGeometry args={[0.0035, 0.008, 0.11, 10, 1, true]} />
-      <meshBasicMaterial color={color} transparent opacity={0.5} blending={THREE.AdditiveBlending}
-        depthWrite={false} side={THREE.DoubleSide} toneMapped={false} />
+      <meshBasicMaterial
+        color={color}
+        transparent
+        opacity={0.5}
+        blending={THREE.AdditiveBlending}
+        depthWrite={false}
+        side={THREE.DoubleSide}
+        toneMapped={false}
+      />
     </mesh>
   );
 
@@ -121,30 +177,62 @@ function DivisionStructures({ reduced }: { reduced: boolean }) {
     <group ref={group}>
       {DIVISION_NODES.map((n) => {
         const pos = latLonToVec3(n.lat, n.lon, 1.002);
-        const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), pos.clone().normalize());
+        const q = new THREE.Quaternion().setFromUnitVectors(
+          new THREE.Vector3(0, 1, 0),
+          pos.clone().normalize(),
+        );
         const idx = si++;
         return (
           <group key={n.id} position={pos} quaternion={q}>
             {beam(n.color)}
-            <group ref={(el) => { spin.current[idx] = el; }} position={[0, 0.055, 0]}>
+            <group
+              ref={(el) => {
+                spin.current[idx] = el;
+              }}
+              position={[0, 0.055, 0]}
+            >
               {n.id === 'research' && (
                 /* Thesyn Research — thesis stack + analysis orb */
                 <group>
                   <mesh position={[0, -0.012, 0]} rotation={[0, 0.3, 0]}>
                     <boxGeometry args={[0.032, 0.006, 0.024]} />
-                    <meshStandardMaterial color="#0e2c3d" roughness={0.35} metalness={0.55} emissive="#35e0ff" emissiveIntensity={0.22} />
+                    <meshStandardMaterial
+                      color="#0e2c3d"
+                      roughness={0.35}
+                      metalness={0.55}
+                      emissive="#35e0ff"
+                      emissiveIntensity={0.22}
+                    />
                   </mesh>
                   <mesh position={[0, -0.004, 0]} rotation={[0, -0.2, 0]}>
                     <boxGeometry args={[0.028, 0.006, 0.021]} />
-                    <meshStandardMaterial color="#123a4f" roughness={0.35} metalness={0.55} emissive="#35e0ff" emissiveIntensity={0.3} />
+                    <meshStandardMaterial
+                      color="#123a4f"
+                      roughness={0.35}
+                      metalness={0.55}
+                      emissive="#35e0ff"
+                      emissiveIntensity={0.3}
+                    />
                   </mesh>
                   <mesh position={[0, 0.004, 0]}>
                     <boxGeometry args={[0.024, 0.006, 0.018]} />
-                    <meshStandardMaterial color="#16455c" roughness={0.3} metalness={0.6} emissive="#7c5cff" emissiveIntensity={0.35} />
+                    <meshStandardMaterial
+                      color="#16455c"
+                      roughness={0.3}
+                      metalness={0.6}
+                      emissive="#7c5cff"
+                      emissiveIntensity={0.35}
+                    />
                   </mesh>
                   <mesh position={[0, 0.016, 0]}>
                     <sphereGeometry args={[0.007, 18, 18]} />
-                    <meshStandardMaterial color="#35e0ff" roughness={0.15} metalness={0.3} emissive="#35e0ff" emissiveIntensity={1.1} />
+                    <meshStandardMaterial
+                      color="#35e0ff"
+                      roughness={0.15}
+                      metalness={0.3}
+                      emissive="#35e0ff"
+                      emissiveIntensity={1.1}
+                    />
                   </mesh>
                 </group>
               )}
@@ -153,7 +241,13 @@ function DivisionStructures({ reduced }: { reduced: boolean }) {
                 <group>
                   <mesh>
                     <boxGeometry args={[0.026, 0.02, 0.026]} />
-                    <meshStandardMaterial color="#101418" roughness={0.5} metalness={0.75} emissive="#f5c26b" emissiveIntensity={0.08} />
+                    <meshStandardMaterial
+                      color="#101418"
+                      roughness={0.5}
+                      metalness={0.75}
+                      emissive="#f5c26b"
+                      emissiveIntensity={0.08}
+                    />
                   </mesh>
                   <mesh position={[0, 0, 0.0135]}>
                     <planeGeometry args={[0.016, 0.0035]} />
@@ -161,7 +255,13 @@ function DivisionStructures({ reduced }: { reduced: boolean }) {
                   </mesh>
                   <mesh rotation={[Math.PI / 2, 0, 0]}>
                     <torusGeometry args={[0.019, 0.0016, 8, 28]} />
-                    <meshStandardMaterial color="#f5c26b" roughness={0.25} metalness={0.8} emissive="#f5c26b" emissiveIntensity={0.55} />
+                    <meshStandardMaterial
+                      color="#f5c26b"
+                      roughness={0.25}
+                      metalness={0.8}
+                      emissive="#f5c26b"
+                      emissiveIntensity={0.55}
+                    />
                   </mesh>
                 </group>
               )}
@@ -170,15 +270,32 @@ function DivisionStructures({ reduced }: { reduced: boolean }) {
                 <group>
                   <mesh position={[0, -0.008, 0]}>
                     <cylinderGeometry args={[0.011, 0.015, 0.012, 6]} />
-                    <meshStandardMaterial color="#1b1440" roughness={0.4} metalness={0.6} emissive="#7c5cff" emissiveIntensity={0.3} />
+                    <meshStandardMaterial
+                      color="#1b1440"
+                      roughness={0.4}
+                      metalness={0.6}
+                      emissive="#7c5cff"
+                      emissiveIntensity={0.3}
+                    />
                   </mesh>
                   <mesh position={[0, 0.006, 0]} rotation={[Math.PI, 0, 0]}>
                     <coneGeometry args={[0.019, 0.008, 4]} />
-                    <meshStandardMaterial color="#241a55" roughness={0.35} metalness={0.65} emissive="#7c5cff" emissiveIntensity={0.5} />
+                    <meshStandardMaterial
+                      color="#241a55"
+                      roughness={0.35}
+                      metalness={0.65}
+                      emissive="#7c5cff"
+                      emissiveIntensity={0.5}
+                    />
                   </mesh>
                   <mesh position={[0, 0.016, 0]}>
                     <sphereGeometry args={[0.004, 14, 14]} />
-                    <meshStandardMaterial color="#c9b6ff" emissive="#c9b6ff" emissiveIntensity={1.2} roughness={0.2} />
+                    <meshStandardMaterial
+                      color="#c9b6ff"
+                      emissive="#c9b6ff"
+                      emissiveIntensity={1.2}
+                      roughness={0.2}
+                    />
                   </mesh>
                 </group>
               )}
@@ -187,11 +304,22 @@ function DivisionStructures({ reduced }: { reduced: boolean }) {
                 <group>
                   <mesh rotation={[Math.PI / 2.3, 0, 0]}>
                     <torusGeometry args={[0.017, 0.004, 10, 30]} />
-                    <meshStandardMaterial color="#3d0f2c" roughness={0.35} metalness={0.6} emissive="#ff4ecd" emissiveIntensity={0.5} />
+                    <meshStandardMaterial
+                      color="#3d0f2c"
+                      roughness={0.35}
+                      metalness={0.6}
+                      emissive="#ff4ecd"
+                      emissiveIntensity={0.5}
+                    />
                   </mesh>
                   <mesh rotation={[0, 0, -Math.PI / 2]} position={[0, 0, 0]}>
                     <coneGeometry args={[0.008, 0.012, 3]} />
-                    <meshStandardMaterial color="#ff4ecd" emissive="#ff4ecd" emissiveIntensity={1.0} roughness={0.3} />
+                    <meshStandardMaterial
+                      color="#ff4ecd"
+                      emissive="#ff4ecd"
+                      emissiveIntensity={1.0}
+                      roughness={0.3}
+                    />
                   </mesh>
                 </group>
               )}
@@ -200,15 +328,36 @@ function DivisionStructures({ reduced }: { reduced: boolean }) {
                 <group>
                   <mesh position={[0, 0, 0]}>
                     <icosahedronGeometry args={[0.012, 0]} />
-                    <meshStandardMaterial color="#0c2c1d" roughness={0.25} metalness={0.7} emissive="#3ddc97" emissiveIntensity={0.55} flatShading />
+                    <meshStandardMaterial
+                      color="#0c2c1d"
+                      roughness={0.25}
+                      metalness={0.7}
+                      emissive="#3ddc97"
+                      emissiveIntensity={0.55}
+                      flatShading
+                    />
                   </mesh>
                   <mesh position={[0.013, -0.004, 0.004]} rotation={[0.4, 0.7, 0]}>
                     <icosahedronGeometry args={[0.006, 0]} />
-                    <meshStandardMaterial color="#3ddc97" roughness={0.2} metalness={0.5} emissive="#3ddc97" emissiveIntensity={0.9} flatShading />
+                    <meshStandardMaterial
+                      color="#3ddc97"
+                      roughness={0.2}
+                      metalness={0.5}
+                      emissive="#3ddc97"
+                      emissiveIntensity={0.9}
+                      flatShading
+                    />
                   </mesh>
                   <mesh position={[-0.012, -0.003, -0.005]} rotation={[0.2, 0.4, 0.5]}>
                     <icosahedronGeometry args={[0.005, 0]} />
-                    <meshStandardMaterial color="#9be8c9" roughness={0.2} metalness={0.5} emissive="#3ddc97" emissiveIntensity={0.8} flatShading />
+                    <meshStandardMaterial
+                      color="#9be8c9"
+                      roughness={0.2}
+                      metalness={0.5}
+                      emissive="#3ddc97"
+                      emissiveIntensity={0.8}
+                      flatShading
+                    />
                   </mesh>
                 </group>
               )}
@@ -226,15 +375,32 @@ function ActtologCore({ reduced }: { reduced: boolean }) {
   const tex = useMemo(() => {
     if (typeof document === 'undefined') return null;
     const c = document.createElement('canvas');
-    c.width = 256; c.height = 256;
+    c.width = 256;
+    c.height = 256;
     const x = c.getContext('2d')!;
     const g = x.createLinearGradient(0, 0, 256, 256);
-    g.addColorStop(0, '#35e0ff'); g.addColorStop(1, '#7c5cff');
-    x.strokeStyle = g; x.lineWidth = 14; x.globalAlpha = 0.9;
-    x.beginPath(); x.arc(128, 128, 96, 0, Math.PI * 2); x.stroke();
-    x.lineWidth = 22; x.lineCap = 'round'; x.lineJoin = 'round';
-    x.beginPath(); x.moveTo(82, 172); x.lineTo(128, 62); x.lineTo(174, 172); x.moveTo(100, 140); x.lineTo(156, 140); x.stroke();
-    x.fillStyle = '#ff4ecd'; x.beginPath(); x.arc(200, 76, 13, 0, Math.PI * 2); x.fill();
+    g.addColorStop(0, '#35e0ff');
+    g.addColorStop(1, '#7c5cff');
+    x.strokeStyle = g;
+    x.lineWidth = 14;
+    x.globalAlpha = 0.9;
+    x.beginPath();
+    x.arc(128, 128, 96, 0, Math.PI * 2);
+    x.stroke();
+    x.lineWidth = 22;
+    x.lineCap = 'round';
+    x.lineJoin = 'round';
+    x.beginPath();
+    x.moveTo(82, 172);
+    x.lineTo(128, 62);
+    x.lineTo(174, 172);
+    x.moveTo(100, 140);
+    x.lineTo(156, 140);
+    x.stroke();
+    x.fillStyle = '#ff4ecd';
+    x.beginPath();
+    x.arc(200, 76, 13, 0, Math.PI * 2);
+    x.fill();
     const t = new THREE.CanvasTexture(c);
     t.colorSpace = THREE.SRGBColorSpace;
     return t;
@@ -253,7 +419,14 @@ function ActtologCore({ reduced }: { reduced: boolean }) {
       </sprite>
       <mesh rotation={[Math.PI / 2.35, 0, 0]}>
         <torusGeometry args={[1.42, 0.0012, 6, 160]} />
-        <meshBasicMaterial color="#7c5cff" transparent opacity={0.35} blending={THREE.AdditiveBlending} depthWrite={false} toneMapped={false} />
+        <meshBasicMaterial
+          color="#7c5cff"
+          transparent
+          opacity={0.35}
+          blending={THREE.AdditiveBlending}
+          depthWrite={false}
+          toneMapped={false}
+        />
       </mesh>
     </group>
   );
@@ -262,21 +435,96 @@ function ActtologCore({ reduced }: { reduced: boolean }) {
 /* ── division nodes — real places, real routes ─────────────────── */
 
 export interface GlobeNode {
-  id: string; name: string; sub: string; route: string; color: string;
-  lat: number; lon: number; enabled?: boolean;
+  id: string;
+  name: string;
+  sub: string;
+  route: string;
+  color: string;
+  lat: number;
+  lon: number;
+  enabled?: boolean;
 }
 
 export const DIVISION_NODES: GlobeNode[] = [
-  { id: 'research', name: 'Thesyn Research', sub: 'RESEARCH & ACADEMIC SUPPORT', route: '/research', color: '#35e0ff', lat: 27.717, lon: 85.324 },   // Kathmandu — home base
-  { id: 'entertainment', name: 'Entertainment', sub: 'STORIES & DIGITAL MEDIA', route: '/entertainment', color: '#ff4ecd', lat: 34.052, lon: -118.244 },
-  { id: 'academy', name: 'Academy', sub: 'LEARNING & KNOWLEDGE', route: '/academy', color: '#7c5cff', lat: 42.361, lon: -71.058 },
-  { id: 'games', name: 'Games', sub: 'INTERACTIVE EXPERIENCES', route: '/games', color: '#3ddc97', lat: 35.681, lon: 139.767 },
-  { id: 'darkroom', name: 'Darkroom', sub: 'DIGITAL DISCOVERY & RESOURCES', route: '/darkroom', color: '#f5c26b', lat: 52.52, lon: 13.405 },
-  { id: 'blog', name: 'Blog', sub: 'DIGITAL EDITORIAL', route: '/blog', color: '#9be8ff', lat: 48.856, lon: 2.352 },
-  { id: 'ai', name: 'Acttolog AI', sub: 'INTELLIGENCE DOCK', route: '/ai', color: '#3ddc97', lat: 37.774, lon: -122.419 },
+  {
+    id: 'research',
+    name: 'Thesyn Research',
+    sub: 'RESEARCH & ACADEMIC SUPPORT',
+    route: '/research',
+    color: '#35e0ff',
+    lat: 27.717,
+    lon: 85.324,
+  }, // Kathmandu — home base
+  {
+    id: 'entertainment',
+    name: 'Entertainment',
+    sub: 'STORIES & DIGITAL MEDIA',
+    route: '/entertainment',
+    color: '#ff4ecd',
+    lat: 34.052,
+    lon: -118.244,
+  },
+  {
+    id: 'academy',
+    name: 'Academy',
+    sub: 'LEARNING & KNOWLEDGE',
+    route: '/academy',
+    color: '#7c5cff',
+    lat: 42.361,
+    lon: -71.058,
+  },
+  {
+    id: 'games',
+    name: 'Games',
+    sub: 'INTERACTIVE EXPERIENCES',
+    route: '/games',
+    color: '#3ddc97',
+    lat: 35.681,
+    lon: 139.767,
+  },
+  {
+    id: 'darkroom',
+    name: 'Darkroom',
+    sub: 'DIGITAL DISCOVERY & RESOURCES',
+    route: '/darkroom',
+    color: '#f5c26b',
+    lat: 52.52,
+    lon: 13.405,
+  },
+  {
+    id: 'blog',
+    name: 'Blog',
+    sub: 'DIGITAL EDITORIAL',
+    route: '/blog',
+    color: '#9be8ff',
+    lat: 48.856,
+    lon: 2.352,
+  },
+  {
+    id: 'ai',
+    name: 'Acttolog AI',
+    sub: 'INTELLIGENCE DOCK',
+    route: '/ai',
+    color: '#3ddc97',
+    lat: 37.774,
+    lon: -122.419,
+  },
 ];
 
-export const ARC_PAIRS: [number, number][] = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 0], [0, 2], [1, 3], [2, 4], [0, 5], [2, 5], [3, 6], [5, 6]];
+export const ARC_PAIRS: [number, number][] = [
+  [0, 1],
+  [1, 2],
+  [2, 3],
+  [3, 4],
+  [4, 0],
+  [0, 2],
+  [1, 3],
+  [2, 4],
+  [0, 5],
+  [2, 5],
+  [3, 6],
+  [5, 6],
+];
 
 export function latLonToVec3(lat: number, lon: number, r: number): THREE.Vector3 {
   const phi = ((90 - lat) * Math.PI) / 180;
@@ -360,14 +608,25 @@ void main() {
 
 /* ── sub-components ─────────────────────────────────────────────── */
 
-function Earth({ segments, sunDir, onCursor }: { segments: number; sunDir: THREE.Vector3; onCursor?: (lat: number | null, lon: number | null) => void }) {
+function Earth({
+  segments,
+  sunDir,
+  onCursor,
+}: {
+  segments: number;
+  sunDir: THREE.Vector3;
+  onCursor?: (lat: number | null, lon: number | null) => void;
+}) {
   const matRef = useRef<THREE.ShaderMaterial>(null);
-  const uniforms = useMemo(() => ({
-    dayMap: { value: null as THREE.Texture | null },
-    nightMap: { value: null as THREE.Texture | null },
-    sunDir: { value: sunDir },
-    loaded: { value: 0 },
-  }), [sunDir]);
+  const uniforms = useMemo(
+    () => ({
+      dayMap: { value: null as THREE.Texture | null },
+      nightMap: { value: null as THREE.Texture | null },
+      sunDir: { value: sunDir },
+      loaded: { value: 0 },
+    }),
+    [sunDir],
+  );
 
   // R3F copies the uniforms prop into the material at mount; texture updates
   // must therefore mutate material.uniforms directly (not the source object).
@@ -379,7 +638,9 @@ function Earth({ segments, sunDir, onCursor }: { segments: number; sunDir: THREE
     u.loaded.value = both ? 1 : 0;
     if (typeof window !== 'undefined') {
       (window as unknown as { __atlEarth?: Record<string, unknown> }).__atlEarth = {
-        loaded: u.loaded.value, day: Boolean(u.dayMap.value), night: Boolean(u.nightMap.value),
+        loaded: u.loaded.value,
+        day: Boolean(u.dayMap.value),
+        night: Boolean(u.nightMap.value),
       };
     }
   }, []);
@@ -390,7 +651,10 @@ function Earth({ segments, sunDir, onCursor }: { segments: number; sunDir: THREE
     const pending: Partial<Record<'dayMap' | 'nightMap', THREE.Texture>> = {};
     const load = (url: string, key: 'dayMap' | 'nightMap') => {
       loader.load(url, (tex) => {
-        if (cancelled) { tex.dispose(); return; }
+        if (cancelled) {
+          tex.dispose();
+          return;
+        }
         // Raw sRGB bytes (RGBA8) for maximum driver compatibility;
         // the shader linearises manually with pow(c, 2.2).
         tex.colorSpace = THREE.NoColorSpace;
@@ -404,7 +668,10 @@ function Earth({ segments, sunDir, onCursor }: { segments: number; sunDir: THREE
     const t = setTimeout(() => {
       (Object.keys(pending) as ('dayMap' | 'nightMap')[]).forEach((k) => applyTex(k, pending[k]!));
     }, 250);
-    return () => { cancelled = true; clearTimeout(t); };
+    return () => {
+      cancelled = true;
+      clearTimeout(t);
+    };
   }, [applyTex]);
 
   return (
@@ -415,13 +682,19 @@ function Earth({ segments, sunDir, onCursor }: { segments: number; sunDir: THREE
         const r = local.length() || 1;
         const lat = 90 - (Math.acos(local.y / r) * 180) / Math.PI;
         let lon = (Math.atan2(local.z, -local.x) * 180) / Math.PI - 180;
-        if (lon < -180) lon += 360; if (lon > 180) lon -= 360;
+        if (lon < -180) lon += 360;
+        if (lon > 180) lon -= 360;
         onCursor(lat, lon);
       }}
       onPointerOut={() => onCursor && onCursor(null, null)}
     >
       <sphereGeometry args={[1, segments, segments]} />
-      <shaderMaterial ref={matRef} vertexShader={EARTH_VERT} fragmentShader={EARTH_FRAG} uniforms={uniforms} />
+      <shaderMaterial
+        ref={matRef}
+        vertexShader={EARTH_VERT}
+        fragmentShader={EARTH_FRAG}
+        uniforms={uniforms}
+      />
     </mesh>
   );
 }
@@ -431,19 +704,30 @@ function Atmosphere() {
   return (
     <mesh scale={1.135}>
       <sphereGeometry args={[1, 48, 48]} />
-      <shaderMaterial vertexShader={ATMO_VERT} fragmentShader={ATMO_FRAG} uniforms={uniforms}
-        transparent side={THREE.FrontSide} blending={THREE.AdditiveBlending} depthWrite={false} />
+      <shaderMaterial
+        vertexShader={ATMO_VERT}
+        fragmentShader={ATMO_FRAG}
+        uniforms={uniforms}
+        transparent
+        side={THREE.FrontSide}
+        blending={THREE.AdditiveBlending}
+        depthWrite={false}
+      />
     </mesh>
   );
 }
 
 function OrbitalRings({ count, reduced }: { count: number; reduced: boolean }) {
   const group = useRef<THREE.Group>(null);
-  const tilts = useMemo(() => [
-    { rx: 1.32, ry: 0.22, r: 1.42, color: '#35e0ff', op: 0.34 },
-    { rx: 1.05, ry: -0.42, r: 1.62, color: '#7c5cff', op: 0.26 },
-    { rx: 1.48, ry: 0.66, r: 1.84, color: '#ff4ecd', op: 0.16 },
-  ].slice(0, count), [count]);
+  const tilts = useMemo(
+    () =>
+      [
+        { rx: 1.32, ry: 0.22, r: 1.42, color: '#35e0ff', op: 0.34 },
+        { rx: 1.05, ry: -0.42, r: 1.62, color: '#7c5cff', op: 0.26 },
+        { rx: 1.48, ry: 0.66, r: 1.84, color: '#ff4ecd', op: 0.16 },
+      ].slice(0, count),
+    [count],
+  );
   useFrame((_, dt) => {
     if (reduced || !group.current) return;
     group.current.rotation.y += dt * 0.012;
@@ -453,7 +737,13 @@ function OrbitalRings({ count, reduced }: { count: number; reduced: boolean }) {
       {tilts.map((t, i) => (
         <mesh key={i} rotation={[t.rx, t.ry, 0]}>
           <torusGeometry args={[t.r, 0.0018, 6, 220]} />
-          <meshBasicMaterial color={t.color} transparent opacity={t.op} blending={THREE.AdditiveBlending} depthWrite={false} />
+          <meshBasicMaterial
+            color={t.color}
+            transparent
+            opacity={t.op}
+            blending={THREE.AdditiveBlending}
+            depthWrite={false}
+          />
         </mesh>
       ))}
     </group>
@@ -462,7 +752,8 @@ function OrbitalRings({ count, reduced }: { count: number; reduced: boolean }) {
 
 function makeLabelTexture(name: string, color: string): THREE.Texture {
   const c = document.createElement('canvas');
-  c.width = 512; c.height = 96;
+  c.width = 512;
+  c.height = 96;
   const x = c.getContext('2d')!;
   x.clearRect(0, 0, 512, 96);
   x.font = '600 34px "Space Grotesk", sans-serif';
@@ -477,8 +768,15 @@ function makeLabelTexture(name: string, color: string): THREE.Texture {
   return tex;
 }
 
-function DivisionNodes({ nodes, labels, reduced, onSelect }: {
-  nodes: GlobeNode[]; labels: boolean; reduced: boolean;
+function DivisionNodes({
+  nodes,
+  labels,
+  reduced,
+  onSelect,
+}: {
+  nodes: GlobeNode[];
+  labels: boolean;
+  reduced: boolean;
   onSelect: (route: string) => void;
 }) {
   const visible = useMemo(() => nodes.filter((n) => n.enabled !== false), [nodes]);
@@ -505,19 +803,39 @@ function DivisionNodes({ nodes, labels, reduced, onSelect }: {
         return (
           <group key={n.id} position={pos}>
             <mesh
-              onClick={(e) => { if (e.delta > 5) return; e.stopPropagation(); onSelect(n.route); }}
-              onPointerOver={(e) => { e.stopPropagation(); document.body.style.cursor = 'pointer'; }}
-              onPointerOut={() => { document.body.style.cursor = ''; }}
+              onClick={(e) => {
+                if (e.delta > 5) return;
+                e.stopPropagation();
+                onSelect(n.route);
+              }}
+              onPointerOver={(e) => {
+                e.stopPropagation();
+                document.body.style.cursor = 'pointer';
+              }}
+              onPointerOut={() => {
+                document.body.style.cursor = '';
+              }}
             >
               <sphereGeometry args={[0.022, 16, 16]} />
               <meshBasicMaterial color={n.color} toneMapped={false} />
             </mesh>
             {/* pulse ring oriented along the surface normal */}
-            <mesh ref={(el) => { pulseRefs.current[i] = el; }}
-              quaternion={new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, 1), out)}>
+            <mesh
+              ref={(el) => {
+                pulseRefs.current[i] = el;
+              }}
+              quaternion={new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, 1), out)}
+            >
               <ringGeometry args={[0.03, 0.036, 40]} />
-              <meshBasicMaterial color={n.color} transparent opacity={0.5} side={THREE.DoubleSide}
-                blending={THREE.AdditiveBlending} depthWrite={false} toneMapped={false} />
+              <meshBasicMaterial
+                color={n.color}
+                transparent
+                opacity={0.5}
+                side={THREE.DoubleSide}
+                blending={THREE.AdditiveBlending}
+                depthWrite={false}
+                toneMapped={false}
+              />
             </mesh>
             {labels && textures[i] && (
               <sprite position={out.clone().multiplyScalar(0.14)} scale={[0.62, 0.116, 1]}>
@@ -532,17 +850,24 @@ function DivisionNodes({ nodes, labels, reduced, onSelect }: {
 }
 
 function Arcs({ nodes, pulses, reduced }: { nodes: GlobeNode[]; pulses: boolean; reduced: boolean }) {
-  const curves = useMemo(() => ARC_PAIRS.flatMap(([a, b]) => {
-    if (nodes[a].enabled === false || nodes[b].enabled === false) return [];
-    const va = latLonToVec3(nodes[a].lat, nodes[a].lon, 1.005);
-    const vb = latLonToVec3(nodes[b].lat, nodes[b].lon, 1.005);
-    const mid = va.clone().add(vb).multiplyScalar(0.5);
-    const lift = 1.12 + va.distanceTo(vb) * 0.22;
-    mid.normalize().multiplyScalar(lift);
-    return [new THREE.QuadraticBezierCurve3(va, mid, vb)];
-  }), [nodes]);
+  const curves = useMemo(
+    () =>
+      ARC_PAIRS.flatMap(([a, b]) => {
+        if (nodes[a].enabled === false || nodes[b].enabled === false) return [];
+        const va = latLonToVec3(nodes[a].lat, nodes[a].lon, 1.005);
+        const vb = latLonToVec3(nodes[b].lat, nodes[b].lon, 1.005);
+        const mid = va.clone().add(vb).multiplyScalar(0.5);
+        const lift = 1.12 + va.distanceTo(vb) * 0.22;
+        mid.normalize().multiplyScalar(lift);
+        return [new THREE.QuadraticBezierCurve3(va, mid, vb)];
+      }),
+    [nodes],
+  );
 
-  const geometries = useMemo(() => curves.map((c) => new THREE.TubeGeometry(c, 64, 0.0028, 6, false)), [curves]);
+  const geometries = useMemo(
+    () => curves.map((c) => new THREE.TubeGeometry(c, 64, 0.0028, 6, false)),
+    [curves],
+  );
   const pulseRefs = useRef<(THREE.Mesh | null)[]>([]);
   useFrame((state) => {
     if (reduced || !pulses || curves.length === 0) return;
@@ -559,17 +884,37 @@ function Arcs({ nodes, pulses, reduced }: { nodes: GlobeNode[]; pulses: boolean;
     <group>
       {geometries.map((g, i) => (
         <mesh key={i} geometry={g}>
-          <meshBasicMaterial color={i % 2 ? '#5f8dff' : '#35e0ff'} transparent opacity={0.3}
-            blending={THREE.AdditiveBlending} depthWrite={false} toneMapped={false} />
+          <meshBasicMaterial
+            color={i % 2 ? '#5f8dff' : '#35e0ff'}
+            transparent
+            opacity={0.3}
+            blending={THREE.AdditiveBlending}
+            depthWrite={false}
+            toneMapped={false}
+          />
         </mesh>
       ))}
-      {pulses && !reduced && curves.length > 0 && Array.from({ length: 4 }).map((_, i) => (
-        <mesh key={`p${i}`} ref={(el) => { pulseRefs.current[i] = el; }}>
-          <sphereGeometry args={[0.012, 10, 10]} />
-          <meshBasicMaterial color="#9be8ff" transparent opacity={0.95}
-            blending={THREE.AdditiveBlending} depthWrite={false} toneMapped={false} />
-        </mesh>
-      ))}
+      {pulses &&
+        !reduced &&
+        curves.length > 0 &&
+        Array.from({ length: 4 }).map((_, i) => (
+          <mesh
+            key={`p${i}`}
+            ref={(el) => {
+              pulseRefs.current[i] = el;
+            }}
+          >
+            <sphereGeometry args={[0.012, 10, 10]} />
+            <meshBasicMaterial
+              color="#9be8ff"
+              transparent
+              opacity={0.95}
+              blending={THREE.AdditiveBlending}
+              depthWrite={false}
+              toneMapped={false}
+            />
+          </mesh>
+        ))}
     </group>
   );
 }
@@ -579,7 +924,10 @@ function Dust({ count, reduced }: { count: number; reduced: boolean }) {
   const positions = useMemo(() => {
     const arr = new Float32Array(count * 3);
     let s = 987654321;
-    const rn = () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; };
+    const rn = () => {
+      s = (s * 1664525 + 1013904223) >>> 0;
+      return s / 4294967296;
+    };
     for (let i = 0; i < count; i++) {
       const r = 1.6 + rn() * 1.9;
       const th = rn() * Math.PI * 2;
@@ -599,12 +947,19 @@ function Dust({ count, reduced }: { count: number; reduced: boolean }) {
       <bufferGeometry>
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
       </bufferGeometry>
-      <pointsMaterial size={0.011} color="#8fd8ff" transparent opacity={0.42} sizeAttenuation
-        blending={THREE.AdditiveBlending} depthWrite={false} toneMapped={false} />
+      <pointsMaterial
+        size={0.011}
+        color="#8fd8ff"
+        transparent
+        opacity={0.42}
+        sizeAttenuation
+        blending={THREE.AdditiveBlending}
+        depthWrite={false}
+        toneMapped={false}
+      />
     </points>
   );
 }
-
 
 /** Hand-rolled starfield (replaces drei Stars — smaller graph, same look). */
 function Starfield({ count }: { count: number }) {
@@ -613,7 +968,10 @@ function Starfield({ count }: { count: number }) {
     const positions = new Float32Array(count * 3);
     const sizes = new Float32Array(count);
     let s = 246813579;
-    const rn = () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; };
+    const rn = () => {
+      s = (s * 1664525 + 1013904223) >>> 0;
+      return s / 4294967296;
+    };
     for (let i = 0; i < count; i++) {
       const r = 40 + rn() * 70;
       const th = rn() * Math.PI * 2;
@@ -634,14 +992,26 @@ function Starfield({ count }: { count: number }) {
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
         <bufferAttribute attach="attributes-size" args={[sizes, 1]} />
       </bufferGeometry>
-      <pointsMaterial size={0.42} sizeAttenuation color="#cfe4ff" transparent opacity={0.85}
-        depthWrite={false} blending={THREE.AdditiveBlending} toneMapped={false} />
+      <pointsMaterial
+        size={0.42}
+        sizeAttenuation
+        color="#cfe4ff"
+        transparent
+        opacity={0.85}
+        depthWrite={false}
+        blending={THREE.AdditiveBlending}
+        toneMapped={false}
+      />
     </points>
   );
 }
 
 /** Camera rig: pointer parallax + scroll-linked dolly (spec §23). */
-function Rig({ scrollRef, distTargetRef, distRef }: {
+function Rig({
+  scrollRef,
+  distTargetRef,
+  distRef,
+}: {
   scrollRef: React.RefObject<number>;
   distTargetRef: React.RefObject<number>;
   distRef: React.RefObject<number>;
@@ -669,14 +1039,15 @@ function Rig({ scrollRef, distTargetRef, distRef }: {
   return null;
 }
 
-
 /**
  * UnrealBloom via three's own addons, lazily imported so the post-processing
  * module graph is only fetched on high-tier devices (spec §24).
  */
 function BloomPass() {
   const { gl, scene, camera, size } = useThree();
-  const composerRef = useRef<import('three/examples/jsm/postprocessing/EffectComposer.js').EffectComposer | null>(null);
+  const composerRef = useRef<
+    import('three/examples/jsm/postprocessing/EffectComposer.js').EffectComposer | null
+  >(null);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -696,19 +1067,38 @@ function BloomPass() {
       composerRef.current = composer;
       setReady(true);
     })();
-    return () => { disposed = true; composerRef.current?.dispose(); composerRef.current = null; };
+    return () => {
+      disposed = true;
+      composerRef.current?.dispose();
+      composerRef.current = null;
+    };
   }, [gl, scene, camera, size.width, size.height]);
 
   // priority >= 1 takes over rendering from R3F's default loop — only when ready
-  useFrame((_, dt) => {
-    if (composerRef.current) composerRef.current.render(dt);
-  }, ready ? 1 : 0);
+  useFrame(
+    (_, dt) => {
+      if (composerRef.current) composerRef.current.render(dt);
+    },
+    ready ? 1 : 0,
+  );
 
   return null;
 }
 
-function WorldGroup({ children, reduced, dragRef, tier, scrollRef, flyRef, distRef, spin, wobble, dragEnabled }: {
-  children: React.ReactNode; reduced: boolean;
+function WorldGroup({
+  children,
+  reduced,
+  dragRef,
+  tier,
+  scrollRef,
+  flyRef,
+  distRef,
+  spin,
+  wobble,
+  dragEnabled,
+}: {
+  children: React.ReactNode;
+  reduced: boolean;
   dragRef: React.RefObject<{ dx: number; vel: number; dragging: boolean }>;
   tier: QualityTier;
   scrollRef: React.RefObject<number>;
@@ -744,17 +1134,28 @@ function WorldGroup({ children, reduced, dragRef, tier, scrollRef, flyRef, distR
     if (!reduced) {
       const drag = dragRef.current;
       if (drag && dragEnabled) {
-        if (drag.dragging) { drag.vel = drag.dx * 0.006; drag.dx = 0; flyState.current.active = false; }
-        else drag.vel *= 0.94;
+        if (drag.dragging) {
+          drag.vel = drag.dx * 0.006;
+          drag.dx = 0;
+          flyState.current.active = false;
+        } else drag.vel *= 0.94;
         group.current.rotation.y += drag.vel;
       }
       // orbit-mode motion yields to the surface/fly mode so geocoding lands exact
       if (!surface && !flyState.current.active) {
         group.current.rotation.y += dt * cfg.autoRotate * spin; // horizontal spin
         const p = scrollRef.current ?? 0;
-        const breathe = wobble ? Math.sin(state.clock.elapsedTime * 0.11) * 0.10 : 0; // vertical breathing
-        group.current.rotation.x = THREE.MathUtils.lerp(group.current.rotation.x, 0.16 + p * -0.22 + breathe, Math.min(1, dt * 2));
-        group.current.rotation.z = THREE.MathUtils.lerp(group.current.rotation.z, wobble ? Math.sin(state.clock.elapsedTime * 0.07) * 0.05 : 0, Math.min(1, dt * 2));
+        const breathe = wobble ? Math.sin(state.clock.elapsedTime * 0.11) * 0.1 : 0; // vertical breathing
+        group.current.rotation.x = THREE.MathUtils.lerp(
+          group.current.rotation.x,
+          0.16 + p * -0.22 + breathe,
+          Math.min(1, dt * 2),
+        );
+        group.current.rotation.z = THREE.MathUtils.lerp(
+          group.current.rotation.z,
+          wobble ? Math.sin(state.clock.elapsedTime * 0.07) * 0.05 : 0,
+          Math.min(1, dt * 2),
+        );
       }
     }
   });
@@ -800,8 +1201,15 @@ function PinMarker({ lat, lon }: { lat: number; lon: number }) {
       </mesh>
       <mesh ref={ref} quaternion={new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, 1), out)}>
         <ringGeometry args={[0.02, 0.026, 32]} />
-        <meshBasicMaterial color="#ff4ecd" transparent opacity={0.7} side={THREE.DoubleSide}
-          blending={THREE.AdditiveBlending} depthWrite={false} toneMapped={false} />
+        <meshBasicMaterial
+          color="#ff4ecd"
+          transparent
+          opacity={0.7}
+          side={THREE.DoubleSide}
+          blending={THREE.AdditiveBlending}
+          depthWrite={false}
+          toneMapped={false}
+        />
       </mesh>
     </group>
   );
@@ -821,7 +1229,21 @@ function CameraFov({ fov }: { fov: number }) {
   return null;
 }
 
-function Scene({ tier, scrollRef, distTargetRef, distRef, flyRef, dragRef, onSelect, onStats, onCursor, layer, tilesEnabled, pin, preview }: {
+function Scene({
+  tier,
+  scrollRef,
+  distTargetRef,
+  distRef,
+  flyRef,
+  dragRef,
+  onSelect,
+  onStats,
+  onCursor,
+  layer,
+  tilesEnabled,
+  pin,
+  preview,
+}: {
   tier: QualityTier;
   scrollRef: React.RefObject<number>;
   distTargetRef: React.RefObject<number>;
@@ -870,13 +1292,21 @@ function Scene({ tier, scrollRef, distTargetRef, distRef, flyRef, dragRef, onSel
   useEffect(() => {
     if (typeof window === 'undefined') return;
     (window as unknown as Record<string, unknown>).__atlNodes = nodes.map((n) => ({
-      id: n.id, enabled: n.enabled !== false, lat: n.lat, lon: n.lon,
+      id: n.id,
+      enabled: n.enabled !== false,
+      lat: n.lat,
+      lon: n.lon,
     }));
   }, [nodes]);
 
   useFrame((_, dt) => {
-    frames.current++; acc.current += dt;
-    if (onStats && acc.current >= 0.5) { onStats(Math.round(frames.current / acc.current)); frames.current = 0; acc.current = 0; }
+    frames.current++;
+    acc.current += dt;
+    if (onStats && acc.current >= 0.5) {
+      onStats(Math.round(frames.current / acc.current));
+      frames.current = 0;
+      acc.current = 0;
+    }
   });
 
   return (
@@ -884,8 +1314,17 @@ function Scene({ tier, scrollRef, distTargetRef, distRef, flyRef, dragRef, onSel
       <CameraFov fov={preview?.camera.fov ?? DEFAULT_SCENE.camera.fov} />
       <Rig scrollRef={scrollRef} distTargetRef={distTargetRef} distRef={distRef} />
       {showStars && <Starfield count={cfg.stars} />}
-      <WorldGroup reduced={reduced} dragRef={dragRef} tier={tier} scrollRef={scrollRef} flyRef={flyRef} distRef={distRef}
-        spin={spin} wobble={anim ? anim.wobble : true} dragEnabled={dragEnabled}>
+      <WorldGroup
+        reduced={reduced}
+        dragRef={dragRef}
+        tier={tier}
+        scrollRef={scrollRef}
+        flyRef={flyRef}
+        distRef={distRef}
+        spin={spin}
+        wobble={anim ? anim.wobble : true}
+        dragEnabled={dragEnabled}
+      >
         <Earth segments={cfg.sphereSegments} sunDir={sunDir} onCursor={cursor} />
         {tilesEnabled && <TileSphere layer={layer} distRef={distRef} active />}
         {pin && <PinMarker lat={pin[0]} lon={pin[1]} />}
@@ -905,7 +1344,21 @@ function Scene({ tier, scrollRef, distTargetRef, distRef, flyRef, dragRef, onSel
   );
 }
 
-export function EarthScene({ tier, frameloop, scrollRef, distTargetRef, distRef, flyRef, dragRef, onSelect, onStats, onCursor, layer, tilesEnabled, pin }: {
+export function EarthScene({
+  tier,
+  frameloop,
+  scrollRef,
+  distTargetRef,
+  distRef,
+  flyRef,
+  dragRef,
+  onSelect,
+  onStats,
+  onCursor,
+  layer,
+  tilesEnabled,
+  pin,
+}: {
   tier: QualityTier;
   frameloop: 'always' | 'demand' | 'never';
   scrollRef: React.RefObject<number>;
@@ -928,15 +1381,39 @@ export function EarthScene({ tier, frameloop, scrollRef, distTargetRef, distRef,
       className="globe-canvas"
       dpr={cfg.dpr}
       frameloop={reduced ? 'demand' : frameloop}
-      camera={{ position: [0, 0.12, 3.15], fov: preview?.camera.fov ?? DEFAULT_SCENE.camera.fov, near: 0.00002, far: 500 }}
-      gl={{ antialias: tier !== 'low', alpha: true, powerPreference: 'high-performance', logarithmicDepthBuffer: true }}
+      camera={{
+        position: [0, 0.12, 3.15],
+        fov: preview?.camera.fov ?? DEFAULT_SCENE.camera.fov,
+        near: 0.00002,
+        far: 500,
+      }}
+      gl={{
+        antialias: tier !== 'low',
+        alpha: true,
+        powerPreference: 'high-performance',
+        logarithmicDepthBuffer: true,
+      }}
       onWheel={(e) => {
         if (preview && !preview.interaction.wheelZoom) return;
         const next = (distTargetRef.current ?? 3.15) * Math.exp(e.deltaY * 0.0011);
         distTargetRef.current = Math.min(3.6, Math.max(1.0025, next));
       }}
     >
-      <Scene tier={tier} scrollRef={scrollRef} distTargetRef={distTargetRef} distRef={distRef} flyRef={flyRef} dragRef={dragRef} onSelect={onSelect} onStats={onStats} onCursor={onCursor} layer={layer} tilesEnabled={tilesEnabled} pin={pin} preview={preview} />
+      <Scene
+        tier={tier}
+        scrollRef={scrollRef}
+        distTargetRef={distTargetRef}
+        distRef={distRef}
+        flyRef={flyRef}
+        dragRef={dragRef}
+        onSelect={onSelect}
+        onStats={onStats}
+        onCursor={onCursor}
+        layer={layer}
+        tilesEnabled={tilesEnabled}
+        pin={pin}
+        preview={preview}
+      />
     </Canvas>
   );
 }

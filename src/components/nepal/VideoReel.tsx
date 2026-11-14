@@ -1,6 +1,5 @@
 'use client';
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useI18n } from '@/lib/i18n';
 import { Icon } from '@/components/ui/Icon';
@@ -30,18 +29,37 @@ function useInView<T extends Element>(rootMargin = '300px') {
   useEffect(() => {
     const el = ref.current;
     if (!el || seen) return;
-    if (typeof IntersectionObserver === 'undefined') { setSeen(true); return; }
-    const io = new IntersectionObserver((entries) => {
-      if (entries.some((e) => e.isIntersecting)) { setSeen(true); io.disconnect(); }
-    }, { rootMargin });
+    if (typeof IntersectionObserver === 'undefined') {
+      setSeen(true);
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setSeen(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin },
+    );
     io.observe(el);
     return () => io.disconnect();
   }, [seen, rootMargin]);
   return { ref, seen };
 }
 
-function Clip({ v, posterMap, tier, reduced, primary }: {
-  v: NepalVideo; posterMap: Record<string, ShotSource>; tier: string; reduced: boolean; primary: boolean;
+function Clip({
+  v,
+  posterMap,
+  tier,
+  reduced,
+  primary,
+}: {
+  v: NepalVideo;
+  posterMap: Record<string, ShotSource>;
+  tier: string;
+  reduced: boolean;
+  primary: boolean;
 }) {
   const { L, locale } = useI18n();
   const { ref, seen } = useInView<HTMLDivElement>();
@@ -73,7 +91,7 @@ function Clip({ v, posterMap, tier, reduced, primary }: {
   };
 
   return (
-    <div ref={ref} className={`np-clip${primary ? ' np-clip-hero' : ''}`} data-broken={broken || undefined}>
+    <div ref={ref} className={`np-clip${primary ? 'np-clip-hero' : ''}`} data-broken={broken || undefined}>
       {!broken && (
         <video
           ref={videoRef}
@@ -94,7 +112,13 @@ function Clip({ v, posterMap, tier, reduced, primary }: {
         <NepalShot shot={shot} alt="" art="himalaya" variant="wide" className="np-clip-still" />
       )}
       {!playing && reduced && (
-        <NepalShot shot={shot} alt="" art="himalaya" variant="wide" className="np-clip-still np-clip-still-static" />
+        <NepalShot
+          shot={shot}
+          alt=""
+          art="himalaya"
+          variant="wide"
+          className="np-clip-still np-clip-still-static"
+        />
       )}
 
       <div className="np-clip-scrim" />
@@ -109,7 +133,8 @@ function Clip({ v, posterMap, tier, reduced, primary }: {
           <p className="mono np-clip-alt">{ne ? 'स्थिर चित्रबाट जारी' : 'SHOWN AS STILL'}</p>
         ) : (
           <button className="btn btn-sm np-clip-play" onClick={start} aria-label={`Play ${v.title.en}`}>
-            <Icon name="play" size={12} />{ne ? 'चलाउनुहोस्' : 'PLAY'}
+            <Icon name="play" size={12} />
+            {ne ? 'चलाउनुहोस्' : 'PLAY'}
           </button>
         )}
       </div>
@@ -143,7 +168,13 @@ function Clip({ v, posterMap, tier, reduced, primary }: {
   );
 }
 
-export function VideoReel({ videos, posters }: { videos: NepalVideo[]; posters: Record<string, ShotSource> }) {
+export function VideoReel({
+  videos,
+  posters,
+}: {
+  videos: NepalVideo[];
+  posters: Record<string, ShotSource>;
+}) {
   const { locale } = useI18n();
   const { tier } = useQuality();
   const [reduced, setReduced] = useState(false);
@@ -164,7 +195,7 @@ export function VideoReel({ videos, posters }: { videos: NepalVideo[]; posters: 
         <p className="mono np-reel-meta">
           {(locale === 'ne' ? 'गुणस्तर · ' : 'QUALITY · ') + tier.toUpperCase()}
           {reduced ? (locale === 'ne' ? ' · चाल हटाइएको' : ' · MOTION REDUCED') : ''}
-          {(locale === 'ne' ? ' · डेस्कमै उपलब्ध' : ' · LOADED ON DEMAND')}
+          {locale === 'ne' ? ' · डेस्कमै उपलब्ध' : ' · LOADED ON DEMAND'}
         </p>
       </div>
       <div className="np-reel">

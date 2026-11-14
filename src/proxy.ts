@@ -43,7 +43,10 @@ export default async function proxy(req: NextRequest) {
 
   // Owner/Admin role resolution must mirror the server library: env-based, never client claims
   const owner = (process.env.OWNER_EMAIL || '').trim().toLowerCase();
-  const admins = (process.env.ADMIN_EMAILS || '').split(',').map((x) => x.trim().toLowerCase()).filter(Boolean);
+  const admins = (process.env.ADMIN_EMAILS || '')
+    .split(',')
+    .map((x) => x.trim().toLowerCase())
+    .filter(Boolean);
   const email = (user?.email || '').toLowerCase();
   const isStaff = user && (email === owner || admins.includes(email) || (owner && email === owner));
 

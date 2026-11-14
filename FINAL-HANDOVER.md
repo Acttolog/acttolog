@@ -6,27 +6,30 @@
 
 ## 1. Website (live, verified 45/45 smoke checks each)
 
-| Deployment | URL | Nature |
-|---|---|---|
-| **Production (SSR)** | **https://acttolog.vercel.app** | Full app: server sessions, admin console, APIs, analytics ingestion, 3D Earth, bilingual, consent |
-| **Static mirror** | **https://acttolog.github.io** | Same public experience from Next static export; search + AI run from bundled index |
+| Deployment                                        | URL                             | Nature                                                                                                                                                                                                                               |
+| ------------------------------------------------- | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Production (SSR)**                              | **https://acttolog.vercel.app** | Full app: server sessions, admin console, APIs, analytics ingestion, 3D Earth, bilingual, consent                                                                                                                                    |
+| **Static mirror**                                 | **https://acttolog.github.io**  | Same public experience from Next static export; search + AI run from bundled index                                                                                                                                                   |
 | **Canonical (pending free .com.np registration)** | **https://www.acttolog.com.np** | Canonical switched product-wide (metadata, OG, sitemap, robots, JSON-LD, footer, admin SEO). Domains attached on Vercel (apex→www 301, SSL auto). Goes live the moment the free .com.np registration completes + 2 DNS records added |
 
 ## 2. GitHub
 
-| Repository | Purpose |
-|---|---|
-| https://github.com/Acttolog/acttolog | Source of truth — 19 professional commits, secret-scanned, auto-deploys to Vercel |
+| Repository                                     | Purpose                                                                                            |
+| ---------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| https://github.com/Acttolog/acttolog           | Source of truth — 19 professional commits, secret-scanned, auto-deploys to Vercel                  |
 | https://github.com/Acttolog/Acttolog.github.io | Pages mirror (built via `tools/build-static.sh`); legacy files preserved on branch `legacy-backup` |
 
 ## 3. Hosting
+
 **Vercel** (project `acttolog`, account `mrpramodghimire-6077`) — free Hobby tier, Next.js 16 SSR, deployment protection removed, env keys present (`AUTH_SECRET`, `OWNER_EMAIL` encrypted; `NEXT_PUBLIC_SITE_URL` per target). Auto-deploy on push via CLI/Vercel pipeline.
 
 ## 4. Admin (private)
+
 `https://acttolog.vercel.app/admin` → Google sign-in → Owner/Admin gate (three layers: proxy middleware, client gate, server-side re-verification on every `/api/admin/*`).
 Owner role resolves from encrypted `OWNER_EMAIL` env — never rendered publicly (leak-scan verified on all key pages).
 
 ## 5. Completed & verified systems
+
 - **Audit → migration**: prototype read end-to-end; truncation detected; KEEP/REFACTOR/REBUILD executed
 - **Design system**: tokens/components ported 1:1; logo system (SVG icon/horizontal/mono/favicon); dark/light; reduced-motion
 - **Content**: 150 KB bilingual seed mechanically extracted (zero fabrication); CMS-ready Prisma schema (40 tables) + initial migration SQL + idempotent `db:seed`
@@ -42,14 +45,15 @@ Owner role resolves from encrypted `OWNER_EMAIL` env — never rendered publicly
 - **QA**: tsc 0 errors · ESLint 0 errors · builds green · §101 smoke suite **45/45 on both live deployments** · browser QA (desktop+mobile, 0 runtime errors) · security scans clean
 
 ## 6. Remaining (genuine, in order)
+
 1. **Register `acttolog.com.np` — FREE** at the official .np registry: **https://www.register.com.np**
    - .com.np is free for Nepali citizens (citizenship certificate or passport) and Nepal-registered companies/brands (registration certificate) — the registry verifies documents manually (hours to ~2 days)
    - Steps: create account → Check domain → `acttolog.com.np` → Register (upload your document, fill registrant/admin/tech contacts) → wait for approval → DNS management panel
    - In the register.com.np DNS zone add exactly:
-   | Type | Name | Value |
-   |---|---|---|
-   | A | `@` | `76.76.21.21` |
-   | CNAME | `www` | `cname.vercel-dns.com` |
+     | Type | Name | Value |
+     |---|---|---|
+     | A | `@` | `76.76.21.21` |
+     | CNAME | `www` | `cname.vercel-dns.com` |
    - Everything else is pre-wired: Vercel domains attached (apex→www 301), SSL auto-issues, canonical/OG/sitemap/robots/JSON-LD already point at https://www.acttolog.com.np (verified live on the Vercel deployment)
    - Acceptance loop afterwards: `node tools/domain-watch.js` + `node tools/go-live-verify.js https://www.acttolog.com.np`
    - (`acttolog.com` remains attached as well if you ever register it later — no changes needed)
@@ -58,6 +62,7 @@ Owner role resolves from encrypted `OWNER_EMAIL` env — never rendered publicly
 4. **Optional**: `OPENAI_API_KEY` (AI web-mode), `NEXT_PUBLIC_GA_ID` (confirm no existing property first), Drive service account (weekly backups), payment provider when authorized.
 
 ## 7. Security notes
+
 - No secrets in either repository (4-pattern scans + owner-email leak scan clean); `.env` ignored; tokens passed via environment only
 - **Revoke now**: the GitHub fine-grained PAT and the Vercel token used in this campaign
 - Server-side authorization on every sensitive route; CSRF state cookie on OAuth; rate limits; honeypot; security headers on SSR production
@@ -72,6 +77,7 @@ Same codebase, same deployments. The BEAST-MODE "digital world" pass below was i
 directly on top of the verified production app (no rebuild, no parallel demo).
 
 ## Added / upgraded (all browser-verified, see VERIFIED)
+
 - **First-visit experience** (§35): WELCOME TO ACTTOLOG WORLD card with EXPLORE EARTH /
   ENTER ACTTOLOG / SEARCH WORLD + skip; once per browser; never stacks on the consent dialog.
 - **Hero (§3)**: EXPLORE EARTH → `/explore?mode=earth`, ENTER ACTTOLOG, SEARCH WORLD (⌘K).
@@ -103,6 +109,7 @@ directly on top of the verified production app (no rebuild, no parallel demo).
   (OSM directions, external), Google-sourced result labels when Places is active.
 
 ## VERIFIED (this addendum)
+
 - `npm test` (typecheck + eslint + build): green — eslint 0 errors.
 - `tools/go-live-verify.js` vs local production build: **46/46**.
 - `tools/world-qa.js` (new, committed): **42/42** incl. mobile viewport, deep links, portals,
@@ -111,6 +118,7 @@ directly on top of the verified production app (no rebuild, no parallel demo).
   the new surfaces present in the output.
 
 ## CONFIGURATION REQUIRED (unchanged + one new)
+
 1. `acttolog.com.np` free registration (owner) — DNS steps unchanged.
 2. Google OAuth client credentials (owner) — flow already built.
 3. Supabase `DATABASE_URL` — CMS/analytics persistence.
@@ -119,6 +127,7 @@ directly on top of the verified production app (no rebuild, no parallel demo).
    the /explore help dialog.
 
 ## NOT DONE (honest)
+
 - Deployment of this addendum to Vercel/Pages awaits push credentials (see chat report).
 - Google-gated runtime paths are compiled + type-checked but not exercised end-to-end
   (no key exists anywhere); they stay dormant and labelled until configured.
@@ -145,4 +154,3 @@ directly on top of the verified production app (no rebuild, no parallel demo).
 - **Performance**: legacy 4–5 MB division JPGs recompressed to 97–240 KB (same filenames,
   zero code changes); all new media committed web-optimized.
 - VERIFIED: npm test green · world-qa 50/50 · smoke 46/46 (local, pre-push).
-

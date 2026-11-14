@@ -57,8 +57,13 @@ export async function aiReply(opts: {
         temperature: 0.4,
         max_tokens: 700,
         messages: [
-          { role: 'system', content: `${SYSTEM_RULES}\n\nMode: ${mode === 'act' ? 'Acttolog only — do NOT use external knowledge; if Acttolog content is insufficient, say so.' : 'Acttolog + Web — external knowledge allowed, always labelled.'}\n\nRetrieved Acttolog content:\n${context}` },
-          ...history.slice(-8).map((m) => ({ role: m.role === 'assistant' ? 'assistant' : 'user', content: m.text })),
+          {
+            role: 'system',
+            content: `${SYSTEM_RULES}\n\nMode: ${mode === 'act' ? 'Acttolog only — do NOT use external knowledge; if Acttolog content is insufficient, say so.' : 'Acttolog + Web — external knowledge allowed, always labelled.'}\n\nRetrieved Acttolog content:\n${context}`,
+          },
+          ...history
+            .slice(-8)
+            .map((m) => ({ role: m.role === 'assistant' ? 'assistant' : 'user', content: m.text })),
           { role: 'user', content: question },
         ],
       }),
@@ -72,11 +77,14 @@ export async function aiReply(opts: {
   } catch (e) {
     console.error('AI provider failed, falling back to index answer', e);
     return {
-      answer: indexAnswer(question, hits, mode, locale) + (locale === 'ne'
-        ? '\n\n(नोट: AI प्रदायक अस्थायी रूपमा अनुपलब्ध — उत्तर Acttolog सामग्री सूचकांकबाट दिइएको छ।)'
-        : '\n\n(Note: the AI provider was temporarily unavailable — this answer comes from the Acttolog content index.)'),
-      sources, provider: 'acttolog-index', mode,
+      answer:
+        indexAnswer(question, hits, mode, locale) +
+        (locale === 'ne'
+          ? '\n\n(नोट: AI प्रदायक अस्थायी रूपमा अनुपलब्ध — उत्तर Acttolog सामग्री सूचकांकबाट दिइएको छ।)'
+          : '\n\n(Note: the AI provider was temporarily unavailable — this answer comes from the Acttolog content index.)'),
+      sources,
+      provider: 'acttolog-index',
+      mode,
     };
   }
 }
-

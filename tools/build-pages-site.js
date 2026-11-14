@@ -16,8 +16,18 @@ const APP = path.join(ROOT, '.next/server/app');
 const PORT = 3100;
 
 const CRAWL = [
-  '/search', '/contact', '/my', '/my/saved', '/my/recent', '/my/academy', '/my/games',
-  '/my/darkroom', '/my/ai', '/my/notifications', '/my/settings', '/admin/login',
+  '/search',
+  '/contact',
+  '/my',
+  '/my/saved',
+  '/my/recent',
+  '/my/academy',
+  '/my/games',
+  '/my/darkroom',
+  '/my/ai',
+  '/my/notifications',
+  '/my/settings',
+  '/admin/login',
 ];
 
 const copy = (src, dest) => fs.cpSync(src, dest, { recursive: true });
@@ -30,12 +40,24 @@ function walkHtml(dir, base, out) {
   }
 }
 
-const get = (p) => new Promise((r) => {
-  http.get({ host: '127.0.0.1', port: PORT, path: p, headers: { 'User-Agent': 'acttolog-harvest' } }, (res) => {
-    if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) { r({ s: res.statusCode, b: '', redir: res.headers.location }); res.resume(); return; }
-    let b = ''; res.on('data', (d) => (b += d)); res.on('end', () => r({ s: res.statusCode, b }));
-  }).on('error', (e) => r({ s: 0, b: e.message }));
-});
+const get = (p) =>
+  new Promise((r) => {
+    http
+      .get(
+        { host: '127.0.0.1', port: PORT, path: p, headers: { 'User-Agent': 'acttolog-harvest' } },
+        (res) => {
+          if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+            r({ s: res.statusCode, b: '', redir: res.headers.location });
+            res.resume();
+            return;
+          }
+          let b = '';
+          res.on('data', (d) => (b += d));
+          res.on('end', () => r({ s: res.statusCode, b }));
+        },
+      )
+      .on('error', (e) => r({ s: 0, b: e.message }));
+  });
 
 (async () => {
   fs.rmSync(OUT, { recursive: true, force: true });
@@ -56,9 +78,10 @@ const get = (p) => new Promise((r) => {
     const dest = path.join(OUT, rel);
     fs.mkdirSync(path.dirname(dest), { recursive: true });
     const MIRROR0 = process.env.PAGES_SITE_URL || 'https://acttolog.github.io';
-    const rewrite = (buf) => buf
-      .replace(/http:\/\/localhost:3000/g, MIRROR0)
-      .replace(/https:\/\/(www\.)?acttolog\.com(\.np)?/g, MIRROR0);
+    const rewrite = (buf) =>
+      buf
+        .replace(/http:\/\/localhost:3000/g, MIRROR0)
+        .replace(/https:\/\/(www\.)?acttolog\.com(\.np)?/g, MIRROR0);
     if (rel.endsWith('.html')) {
       const html = rewrite(fs.readFileSync(f, 'utf8'));
       fs.writeFileSync(dest, html);
@@ -107,7 +130,9 @@ const get = (p) => new Promise((r) => {
         const rel = path.relative(APP, p).replace(/\.body$/, '');
         if (rel.includes('[')) continue;
         let body = fs.readFileSync(p, 'utf8');
-        body = body.replace(/http:\/\/localhost:3000/g, MIRROR).replace(/https:\/\/(www\.)?acttolog\.com(\.np)?/g, MIRROR);
+        body = body
+          .replace(/http:\/\/localhost:3000/g, MIRROR)
+          .replace(/https:\/\/(www\.)?acttolog\.com(\.np)?/g, MIRROR);
         const dest = path.join(OUT, rel);
         fs.mkdirSync(path.dirname(dest), { recursive: true });
         fs.writeFileSync(dest, body);

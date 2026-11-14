@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Reveal } from '@/components/ui/Reveal';
 import { Icon } from '@/components/ui/Icon';
 import { AccessBadge } from '@/components/ui/Badges';
+import { SpatialFrame } from '@/components/spatial/SpatialFrame';
 import { useI18n } from '@/lib/i18n';
 import { track } from '@/lib/analytics';
 import { resolveImage, fdate } from '@/lib/utils';
@@ -18,38 +19,60 @@ export function EntertainmentGrid({ items, cats }: { items: EntertainmentItem[];
 
   return (
     <>
-      <div className="flex flex-wrap gap-2 mb-8">
+      <div className="mb-8 flex flex-wrap gap-2">
         {['All', ...cats].map((c) => (
-          <button key={c} className={`chip${cat === c ? ' on' : ''}`} onClick={() => setCat(c)}>
+          <button key={c} className={`chip${cat === c ? 'on' : ''}`} onClick={() => setCat(c)}>
             {c === 'All' ? t('all') : c}
           </button>
         ))}
       </div>
       {list.length ? (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {list.map((e, i) => (
             <Reveal key={e.id} delay={(i % 3) * 60}>
-              <Link href={`/entertainment/${e.slug}`} className="card group block h-full"
-                onClick={() => track('entertainment_view', { item: e.slug })}>
-                <div className="relative h-[190px] overflow-hidden">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={resolveImage(e.thumb, 'stage')} alt=""
-                    className="w-full h-full object-cover transition-transform duration-[1.6s] group-hover:scale-105" />
-                  <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg,transparent 40%,color-mix(in srgb,var(--bg) 88%,transparent))' }} />
+              <Link
+                href={`/entertainment/${e.slug}`}
+                className="card group block h-full"
+                onClick={() => track('entertainment_view', { item: e.slug })}
+              >
+                <SpatialFrame
+                  className="relative h-[190px] overflow-hidden"
+                  hud={
+                    <>
+                      <Icon name="layers" size={10} />
+                      3D
+                    </>
+                  }
+                >
+                  {}
+                  <img
+                    src={resolveImage(e.thumb, 'stage')}
+                    alt=""
+                    className="h-full w-full object-cover transition-transform duration-[1.6s] group-hover:scale-105"
+                  />
+                  <div
+                    className="absolute inset-0"
+                    style={{
+                      background:
+                        'linear-gradient(180deg,transparent 40%,color-mix(in srgb,var(--bg) 88%,transparent))',
+                    }}
+                  />
                   <div className="absolute top-3 left-3 flex gap-2">
                     <span className="badge b-vi">{e.category}</span>
                     <AccessBadge access={e.access} membersLabel={t('members')} publicLabel={t('public')} />
                   </div>
-                  {e.featured && (
-                    <span className="badge b-info absolute top-3 right-3">{t('featured')}</span>
-                  )}
-                </div>
+                  {e.featured && <span className="badge b-info absolute top-3 right-3">{t('featured')}</span>}
+                </SpatialFrame>
                 <div className="p-5">
-                  <h3 className="h3 !text-[16.4px] mb-2">{L(e.title)}</h3>
-                  <p className="mut text-[12.9px] leading-relaxed mb-4 line-clamp-2">{L(e.desc)}</p>
+                  <h3 className="h3 mb-2 !text-[16.4px]">{L(e.title)}</h3>
+                  <p className="mut mb-4 line-clamp-2 text-[12.9px] leading-relaxed">{L(e.desc)}</p>
                   <div className="flex items-center justify-between">
-                    <div className="flex gap-1.5 flex-wrap">
-                      {(e.tags || []).slice(0, 2).map((x) => <span key={x} className="tag">{x}</span>)}
+                    <div className="flex flex-wrap gap-1.5">
+                      {(e.tags || []).slice(0, 2).map((x) => (
+                        <span key={x} className="tag">
+                          {x}
+                        </span>
+                      ))}
                     </div>
                     <span className="dim mono text-[10px] tracking-[.14em]">{fdate(e.date)}</span>
                   </div>
@@ -59,9 +82,9 @@ export function EntertainmentGrid({ items, cats }: { items: EntertainmentItem[];
           ))}
         </div>
       ) : (
-        <div className="panel p-12 text-center mut">{t('none')}</div>
+        <div className="panel mut p-12 text-center">{t('none')}</div>
       )}
-      <p className="dim text-[12px] mt-6">
+      <p className="dim mt-6 text-[12px]">
         {locale === 'ne'
           ? 'प्राथमिकता: आधुनिक स्वाभाविक नेपाली शैली।'
           : 'Editorial voice: modern, natural — Nepali copy follows contemporary style.'}

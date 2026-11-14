@@ -45,7 +45,11 @@ export async function POST(req: Request) {
   const dupe = db.dr.some((r) => norm(r.url) === norm(body.url));
   if (dupe) return NextResponse.json({ error: 'duplicate' }, { status: 409 });
 
-  const checks = precheckUrl(body.url, db.dr.map((r) => r.url), db.drSubs.map((s) => s.url));
+  const checks = precheckUrl(
+    body.url,
+    db.dr.map((r) => r.url),
+    db.drSubs.map((s) => s.url),
+  );
   const checksReport = checks.map(([label, ok]) => `${label}: ${ok ? 'pass' : 'fail'}`).join('; ');
 
   const prisma = getPrisma();
@@ -61,7 +65,11 @@ export async function POST(req: Request) {
       category: body.cat || 'Other',
       desc: body.desc.trim(),
       why: body.why.trim(),
-      tags: (body.tags || '').split(',').map((t) => t.trim()).filter(Boolean).slice(0, 10),
+      tags: (body.tags || '')
+        .split(',')
+        .map((t) => t.trim())
+        .filter(Boolean)
+        .slice(0, 10),
       byUserId: user.uid,
       byEmail: user.email, // private — admin queue only, never shown back to the user
       status: 'pending',

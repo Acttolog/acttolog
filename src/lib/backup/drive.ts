@@ -59,7 +59,11 @@ export async function ensureBackupFolder(kind: string): Promise<string> {
     const res = await driveFetch('/files', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, mimeType: 'application/vnd.google-apps.folder', ...(parent ? { parents: [parent] } : {}) }),
+      body: JSON.stringify({
+        name,
+        mimeType: 'application/vnd.google-apps.folder',
+        ...(parent ? { parents: [parent] } : {}),
+      }),
     });
     const j = await res.json();
     return j.id as string;
@@ -74,7 +78,11 @@ export async function ensureBackupFolder(kind: string): Promise<string> {
 }
 
 /** Upload a JSON dump as a Drive file. Returns { id, name }. */
-export async function uploadBackup(kind: string, name: string, payload: unknown): Promise<{ id: string; name: string }> {
+export async function uploadBackup(
+  kind: string,
+  name: string,
+  payload: unknown,
+): Promise<{ id: string; name: string }> {
   const folder = await ensureBackupFolder(kind);
   const body = JSON.stringify(payload);
   const res = await driveFetch(
@@ -85,7 +93,9 @@ export async function uploadBackup(kind: string, name: string, payload: unknown)
       body:
         `--atl\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n` +
         JSON.stringify({ name, parents: [folder] }) +
-        `\r\n--atl\r\nContent-Type: application/json\r\n\r\n` + body + `\r\n--atl--`,
+        `\r\n--atl\r\nContent-Type: application/json\r\n\r\n` +
+        body +
+        `\r\n--atl--`,
     },
     true,
   );
@@ -95,7 +105,9 @@ export async function uploadBackup(kind: string, name: string, payload: unknown)
 }
 
 /** List backups of a kind (newest first). Never deletes — retention indefinite. */
-export async function listBackups(kind: string): Promise<{ id: string; name: string; createdTime: string; size: string }[]> {
+export async function listBackups(
+  kind: string,
+): Promise<{ id: string; name: string; createdTime: string; size: string }[]> {
   const folder = await ensureBackupFolder(kind);
   const res = await driveFetch(
     `/files?q=${encodeURIComponent(`'${folder}' in parents and trashed=false`)}&fields=files(id,name,createdTime,size)&orderBy=createdTime desc`,

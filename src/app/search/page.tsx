@@ -3,7 +3,8 @@ import { SearchClient } from './SearchClient';
 
 export const metadata: Metadata = {
   title: 'Search',
-  description: 'Search across divisions, blog, Darkroom, Academy, Games, Entertainment, Thesyn Research, Offers and the Nepal tourism guide.',
+  description:
+    'Search across divisions, blog, Darkroom, Academy, Games, Entertainment, Thesyn Research, Offers and the Nepal tourism guide.',
   alternates: { canonical: '/search' },
   robots: { index: false, follow: true },
 };
@@ -13,7 +14,7 @@ export default function SearchPage() {
     <section className="pt-[calc(var(--nav)+48px)] pb-16">
       <div className="wrap">
         <div className="eyebrow mb-4">ACTTOLOG SEARCH</div>
-        <h1 className="h1 !text-[clamp(1.85rem,4.6vw,3rem)] max-w-[20ch] mb-7">Search Acttolog</h1>
+        <h1 className="h1 mb-7 max-w-[20ch] !text-[clamp(1.85rem,4.6vw,3rem)]">Search Acttolog</h1>
         <SearchClient />
       </div>
     </section>
