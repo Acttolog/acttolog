@@ -18,10 +18,13 @@ export function Hero({
   settings,
   ticker = [],
   altLang,
+  verified,
 }: {
   settings: SiteSettings;
   ticker?: string[];
   altLang?: { href: string; label: string; lang: string };
+  /** Compiled-on source verification, measured by tools/research-sources.js. */
+  verified?: { count: number; total: number; date: string };
 }) {
   const { L, locale } = useI18n();
   const [mounted, setMounted] = useState(false);
@@ -29,6 +32,52 @@ export function Hero({
   useMotionArm();
   const title = useRef<HTMLHeadingElement | null>(null);
   const heroRef = useRef<HTMLElement | null>(null);
+
+  // Live intelligence line: NPT time-of-day greeting + today's date. Client-only
+  // (set after mount) so SSR markup never mismatches; nothing here is fabricated.
+  const [brief, setBrief] = useState<string | null>(null);
+  useEffect(() => {
+    const now = new Date();
+    const tz = 'Asia/Kathmandu';
+    const date = new Intl.DateTimeFormat('en-GB', { timeZone: tz, weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' }).format(now);
+    const hour = Number(new Intl.DateTimeFormat('en-GB', { timeZone: tz, hour: 'numeric', hour12: false }).format(now));
+    const greet =
+      locale === 'ne'
+        ? hour < 12 ? 'शुभ प्रभात' : hour < 17 ? 'शुभ अपराह्न' : 'शुभ सन्ध्या'
+        : hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+    setBrief(`${greet} · ${date} · NPT`);
+  }, [locale]);
+
+  // Damped pointer parallax: writes --hx/--hy so the HUD shards lean in 3D and
+  // drift at depth. The loop settles and stops (no perpetual rAF); touch and
+  // reduced-motion keep the static composition.
+  useEffect(() => {
+    const hero = heroRef.current;
+    if (!hero) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+    let raf = 0;
+    let tx = 0, ty = 0, cx = 0, cy = 0;
+    const tick = () => {
+      raf = 0;
+      cx += (tx - cx) * 0.12;
+      cy += (ty - cy) * 0.12;
+      hero.style.setProperty('--hx', cx.toFixed(3));
+      hero.style.setProperty('--hy', cy.toFixed(3));
+      if (Math.abs(tx - cx) > 0.001 || Math.abs(ty - cy) > 0.001) raf = requestAnimationFrame(tick);
+    };
+    const onMove = (e: PointerEvent) => {
+      if (e.pointerType === 'touch') return;
+      tx = (e.clientX / window.innerWidth) * 2 - 1;
+      ty = (e.clientY / window.innerHeight) * 2 - 1;
+      if (!raf) raf = requestAnimationFrame(tick);
+    };
+    window.addEventListener('pointermove', onMove, { passive: true });
+    return () => {
+      window.removeEventListener('pointermove', onMove);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
 
   // Kinetic type: the letterforms open up and gain weight as you leave the hero.
   useEffect(() => {
@@ -61,7 +110,8 @@ export function Hero({
       </div>
       <div className="hero-shards" aria-hidden="true">
         <div className="hero-shard">
-          <span>
+          {/* Inline size overrides the 8.6px stylesheet floor: ≥10.5px desktop, ≥11px mobile. */}
+          <span style={{ fontSize: '11px' }}>
             {locale === 'ne' ? 'अवतरण' : 'DESCENT'} · 06 {locale === 'ne' ? 'तह' : 'STRATA'}
           </span>
           <b>{locale === 'ne' ? 'सतहदेखि मुटुसम्म' : 'Surface → core'}</b>
@@ -70,10 +120,36 @@ export function Hero({
           </u>
         </div>
         <div className="hero-shard">
-          <span>{locale === 'ne' ? 'संसार सञ्जाल' : 'WORLD NETWORK'}</span>
-          <b>{locale === 'ne' ? '५ विभाग · अनलाइन' : '5 divisions · online'}</b>
+          <span style={{ fontSize: '11px' }}>
+            {verified
+              ? locale === 'ne'
+                ? 'स्रोत जाँच'
+                : 'SOURCE CHECK'
+              : locale === 'ne'
+                ? 'संसार सञ्जाल'
+                : 'WORLD NETWORK'}
+          </span>
+          <b style={verified ? { fontFamily: 'var(--font-mono)', fontVariantNumeric: 'tabular-nums' } : undefined}>
+            {/* The ratio itself is stated once, in the source ledger card; the
+                shard carries the check date and the gauge, not a second number. */}
+            {verified
+              ? verified.date.slice(0, 10)
+              : locale === 'ne'
+                ? 'नेपाल → संसारभर'
+                : 'Nepal → worldwide'}
+          </b>
           <u>
-            <i />
+            <i
+              style={
+                verified && verified.total > 0
+                  ? {
+                      width: `${Math.min(100, Math.round((verified.count / verified.total) * 100))}%`,
+                      background: 'var(--ok)',
+                      boxShadow: '0 0 10px var(--ok)',
+                    }
+                  : undefined
+              }
+            />
           </u>
         </div>
       </div>
@@ -105,7 +181,7 @@ export function Hero({
             {L(settings.tagline)}
           </p>
           <div
-            className="mt-3.5 flex flex-wrap gap-x-5 gap-y-1"
+            className="hero-lines mt-3.5 flex flex-wrap gap-x-5 gap-y-1"
             style={{ opacity: 0, animation: 'lin .9s .82s forwards' }}
           >
             {(settings.lines || []).map((l: Bi, i: number) => (
@@ -114,6 +190,12 @@ export function Hero({
               </span>
             ))}
           </div>
+          {brief && (
+            <p className="hero-brief mono" role="status">
+              <span className="hero-brief-dot" aria-hidden="true" />
+              {brief}
+            </p>
+          )}
           <p className="lead mt-5" style={{ opacity: 0, animation: 'lin .9s .9s forwards' }}>
             {L(settings.purpose)}
           </p>
@@ -161,7 +243,7 @@ export function Hero({
               {locale === 'ne' ? 'संसार खोज्नुहोस्' : 'Search world'}
             </button>
             {altLang && (
-              <Link className="hero-link" href={altLang.href} lang={altLang.lang}>
+              <Link className="hero-link hero-lang" href={altLang.href} lang={altLang.lang}>
                 <Icon name="globe" size={14} />
                 {altLang.label}
               </Link>

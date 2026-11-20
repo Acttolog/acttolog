@@ -76,3 +76,11 @@ media-source/
 # video frame intermediates and local screenshots
 .frames/
 .shots/
+/.static-build
+.build-*.log
+.server-*.log
+.qa-*.log
+.static-*.log
+.verify-*.log
+docs/HOME_MASTER_PROMPT.md
+src/app/pointer.css

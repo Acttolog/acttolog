@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Space_Grotesk, Inter, JetBrains_Mono, Noto_Sans_Devanagari } from 'next/font/google';
 import './globals.css';
+import './pointer.css';
 import { Providers } from '@/components/providers';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
@@ -10,6 +11,7 @@ import { SearchOverlay } from '@/components/layout/SearchOverlay';
 import { FirstVisit } from '@/components/world/FirstVisit';
 import { MobileNav } from '@/components/layout/MobileNav';
 import { SpatialViewer } from '@/components/spatial/SpatialViewer';
+import { MagneticPointer } from '@/components/fx/MagneticPointer';
 import { spatialGallery } from '@/lib/spatial';
 import { getDB, navItems, divisions } from '@/lib/content';
 
@@ -47,7 +49,14 @@ export const metadata: Metadata = {
     template: '%s | ACTTOLOG',
   },
   description: db.seo.pages['/'].desc,
-  alternates: { canonical: '/' },
+  alternates: {
+    canonical: '/',
+    languages: {
+      en: '/',
+      ne: '/ne',
+      'x-default': '/',
+    },
+  },
   openGraph: {
     type: 'website',
     siteName: 'ACTTOLOG',
@@ -83,7 +92,7 @@ export const viewport: Viewport = {
 };
 
 /** Pre-paint theme restoration — no flash of wrong theme. */
-const themeScript = `(function(){try{var t=localStorage.getItem('act_theme');var ids=['dark','light','midnight','aurora','sunset','paper','cyber','royal','ocean','rose','nebula','titanium','holo'];if(ids.indexOf(t)>-1){document.documentElement.setAttribute('data-theme',t);var m=document.querySelector('meta[name=theme-color]');if(m)m.setAttribute('content',(t==='light'||t==='paper'||t==='titanium')?'#f4f7fc':'#05060c');}}catch(e){}})();`;
+const themeScript = `(function(){try{var t=localStorage.getItem('act_theme');var ids=['dark','light','midnight','aurora','sunset','paper','cyber','royal','ocean','rose','nebula','titanium','holo','crimson','matcha','glacier','glass','crystal','veil'];if(ids.indexOf(t)>-1){document.documentElement.setAttribute('data-theme',t);var m=document.querySelector('meta[name=theme-color]');if(m)m.setAttribute('content',(t==='light'||t==='paper'||t==='titanium'||t==='matcha'||t==='glacier'||t==='crystal')?'#f4f7fc':'#05060c');}}catch(e){}})();`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -111,6 +120,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <SearchOverlay />
           <SpatialViewer items={spatialGallery()} />
           <FirstVisit />
+          <MagneticPointer />
         </Providers>
         <JsonLd />
       </body>

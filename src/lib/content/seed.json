@@ -4,26 +4,26 @@
   "brand": "ACTTOLOG",
   "org": "Acttolog",
   "tagline": {
-   "en": "Welcome to Acttolog World",
-   "ne": "Acttolog संसारमा स्वागत छ"
+   "en": "Nepal's connected platform for learning, research, play and opportunity.",
+   "ne": "सिकाइ, अनुसन्धान, खेल र अवसरको लागि नेपालको जोडिएको प्लेटफर्म।"
   },
   "lines": [
    {
-    "en": "Discover. Learn. Create. Connect.",
-    "ne": "खोज्नुहोस्। सिक्नुहोस्। सिर्जना गर्नुहोस्। जोडिनुहोस्।"
+    "en": "Loksewa prep · Nepal guide · Research ledger",
+    "ne": "लोकसेवा तयारी · नेपाल गाइड · अनुसन्धान लेजर"
    },
    {
-    "en": "One World. Endless Possibilities.",
-    "ne": "एउटै संसार। असीम सम्भावनाहरू।"
+    "en": "Academy · Arcade · Darkroom · Member offers",
+    "ne": "एकेडेमी · आर्केड · डार्करुम · सदस्य अफर"
    },
    {
-    "en": "Explore the Digital World.",
-    "ne": "डिजिटल संसार अन्वेषण गर्नुहोस्।"
+    "en": "Verified sources · Bilingual · Privacy-first",
+    "ne": "प्रमाणित स्रोत · द्विभाषिक · गोपनीयता-प्राथमिक"
    }
   ],
   "purpose": {
-   "en": "Acttolog is a digital ecosystem that connects technology, research, education, entertainment, creativity, useful resources, and emerging digital opportunities in one connected world.",
-   "ne": "Acttolog एउटा डिजिटल इकोसिस्टम हो जसले प्रविधि, अनुसन्धान, शिक्षा, मनोरञ्जन, सिर्जनशीलता, उपयोगी स्रोत र नयाँ डिजिटल अवसरहरूलाई एउटै जोडिएको संसारमा ल्याउँछ।"
+   "en": "Exam prep, a field-verified Nepal guide, an evidence-led research ledger, a playable arcade and member offers — one bilingual platform, without signing in.",
+   "ne": "परीक्षा तयारी, क्षेत्र-प्रमाणित नेपाल गाइड, प्रमाण-आधारित अनुसन्धान लेजर, खेल्न मिल्ने आर्केड र सदस्य अफर — एउटै द्विभाषिक प्लेटफर्म, साइन-इन बिना।"
   },
   "vision": {
    "en": "To become a global digital ecosystem where people can easily discover knowledge, technology, entertainment, useful resources, and new opportunities.",
@@ -4138,8 +4138,8 @@
     "ne": "नेपाल — एक्टोलगको आफ्नै देश"
    },
    "body": {
-    "en": "Eight of the world's fourteen peaks above 8,000 metres, four UNESCO World Heritage properties, and a festival in almost every week of the year. ACTTOLOG maps the regions, places, cultures, treks and travel rules of Nepal in one interactive guide — free, bilingual, and written for people who actually intend to go.",
-    "ne": "संसारका १४ अठ्ठहजारी शिखरमध्ये आठ, चार युनेस्को विश्व सम्पदा, र प्रायः हरेक हप्तामा कुनै न कुनै चाड। एक्टोलगले नेपालका क्षेत्र, स्थान, संस्कृति, ट्रेक र यात्रा नियम एकै अन्तरक्रियात्मक मार्गदर्शनमा झिकेको छ — निःशुल्क, द्विभाषी।"
+    "en": "Eight of the world's fourteen peaks above 8,000 metres, UNESCO World Heritage sites from the valley to the high Himalaya, and a festival in almost every week of the year. ACTTOLOG maps the regions, places, cultures, treks and travel rules of Nepal in one interactive guide — free, bilingual, and written for people who actually intend to go.",
+    "ne": "संसारका १४ अठ्ठहजारी शिखरमध्ये आठ, उपत्यकादेखि उच्च हिमालयसम्मका युनेस्को विश्व सम्पदा स्थल, र प्रायः हरेक हप्तामा कुनै न कुनै चाड। एक्टोलगले नेपालका क्षेत्र, स्थान, संस्कृति, ट्रेक र यात्रा नियम एकै अन्तरक्रियात्मक मार्गदर्शनमा झिकेको छ — निःशुल्क, द्विभाषी।"
    },
    "visible": true
   },
