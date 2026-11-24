@@ -29,7 +29,7 @@ function Tip({ active, payload, label }: { active?: boolean; payload?: Array<{ p
       className="rounded-lg border px-3 py-2 text-[11.5px]"
       style={{ borderColor: 'var(--line)', background: 'var(--panel2)', color: 'var(--txt)' }}
     >
-      <div className="mono dim mb-1 text-[10px] tracking-[.12em]">{label}</div>
+      <div className="mono dim mb-1 text-[10.5px] tracking-[.12em]">{label}</div>
       {d.measured != null && <div>Measured: <span className="mono">{d.measured.toLocaleString('en-US')}</span></div>}
       {d.forecast != null && (
         <div style={{ color: 'var(--vi)' }}>
@@ -39,7 +39,7 @@ function Tip({ active, payload, label }: { active?: boolean; payload?: Array<{ p
           )}
         </div>
       )}
-      {isForecast && <div className="dim mt-1 text-[9.5px] tracking-[.08em]">{FORECAST_LABEL}</div>}
+      {isForecast && <div className="dim mt-1 text-[10.5px] tracking-[.08em]">{FORECAST_LABEL}</div>}
     </div>
   );
 }
@@ -86,8 +86,8 @@ export function AreaTrend({
               </linearGradient>
             </defs>
             <CartesianGrid stroke="var(--line)" vertical={false} />
-            <XAxis dataKey="label" tick={{ fill: 'var(--dim)', fontSize: 10 }} tickLine={false} axisLine={{ stroke: 'var(--line)' }} minTickGap={24} />
-            <YAxis tick={{ fill: 'var(--dim)', fontSize: 10 }} tickLine={false} axisLine={false} allowDecimals={false} width={44} />
+            <XAxis dataKey="label" tick={{ fill: 'var(--dim)', fontSize: 10.5 }} tickLine={false} axisLine={{ stroke: 'var(--line)' }} minTickGap={24} />
+            <YAxis tick={{ fill: 'var(--dim)', fontSize: 10.5 }} tickLine={false} axisLine={false} allowDecimals={false} width={44} />
             <Tooltip content={<Tip />} />
             {boundary && <ReferenceLine x={boundary} stroke="var(--vi)" strokeDasharray="4 4" />}
             <Area type="monotone" dataKey="measured" stroke="var(--cy)" strokeWidth={2} fill="url(#atlMeasured)" connectNulls={false} isAnimationActive={false} />
@@ -98,7 +98,7 @@ export function AreaTrend({
         </ResponsiveContainer>
       </div>
       {forecast && (
-        <div className="mono mt-2 text-[9.5px] tracking-[.14em]" style={{ color: 'var(--vi)' }}>
+        <div className="mono mt-2 text-[10.5px] tracking-[.14em]" style={{ color: 'var(--vi)' }}>
           {FORECAST_LABEL} · {forecast.method} · based on {forecast.basedOn} measured points
         </div>
       )}

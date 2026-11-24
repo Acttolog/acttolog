@@ -7,6 +7,7 @@ import { EntertainmentGrid } from './EntertainmentGrid';
 import { EntertainmentChannels } from '@/components/content/Extensions';
 import { getDB, pub, seoFor } from '@/lib/content';
 import { WorldPortal } from '@/components/world/WorldPortal';
+import { NoticeSection } from '@/components/notices/NoticeSection';
 
 const db = getDB();
 
@@ -64,6 +65,9 @@ export default function EntertainmentPage() {
           </Reveal>
         </div>
       </section>
+
+      {/* Notice board — premieres, screenings and studio events */}
+      <NoticeSection scope="entertainment" variant="section" accent="var(--mg)" id="en-notices" />
     </>
   );
 }

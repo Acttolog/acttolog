@@ -49,7 +49,7 @@ export default function ContactPage() {
               }}
             />
             <div className="min-w-[220px] flex-1">
-              <div className="mono dim mb-1 text-[9.6px] tracking-[.2em]">
+              <div className="mono dim mb-1 text-[10.5px] tracking-[.2em]">
                 YOUR GUIDE REPLIES · PERSONALLY
               </div>
               <div className="text-[13.6px] font-medium">Your guide — the founder of Acttolog World</div>
@@ -92,7 +92,7 @@ export default function ContactPage() {
                       <Icon name="chat" size={19} />
                     </span>
                     <div>
-                      <div className="mono dim mb-0.5 text-[9.6px] tracking-[.2em]">PHONE</div>
+                      <div className="mono dim mb-0.5 text-[10.5px] tracking-[.2em]">PHONE</div>
                       <div className="font-display text-[15px] font-semibold">{s.phone}</div>
                     </div>
                   </a>
@@ -112,7 +112,7 @@ export default function ContactPage() {
                       <Icon name="mail" size={19} />
                     </span>
                     <div className="min-w-0">
-                      <div className="mono dim mb-0.5 text-[9.6px] tracking-[.2em]">EMAIL</div>
+                      <div className="mono dim mb-0.5 text-[10.5px] tracking-[.2em]">EMAIL</div>
                       <div className="font-display truncate text-[14px] font-semibold">{s.email}</div>
                     </div>
                   </a>

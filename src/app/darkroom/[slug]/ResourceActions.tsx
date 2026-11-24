@@ -28,7 +28,7 @@ export function ResourceActions({
         {t('dark.tab')}
       </a>
       <button
-        className={`btn ${saved ? 'btn-p' : 'btn-g'}`}
+        className={`btn ${saved ? ' btn-p' : ' btn-g'}`}
         aria-pressed={saved}
         onClick={() => toggleSave('dr', resource.slug, resource.name, `/darkroom/${resource.slug}`)}
       >

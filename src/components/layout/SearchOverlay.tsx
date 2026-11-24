@@ -244,7 +244,7 @@ export function SearchOverlay() {
         <div className="max-h-[60vh] overflow-auto p-4 sm:p-5">
           {WORLD_COMMANDS.length > 0 && (
             <div className="mb-5">
-              <div className="mono dim mb-2.5 text-[10px] tracking-[.2em]">
+              <div className="mono dim mb-2.5 text-[10.5px] tracking-[.2em]">
                 WORLD COMMANDS · {WORLD_COMMANDS.length}
               </div>
               <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3">
@@ -259,7 +259,7 @@ export function SearchOverlay() {
                     }}
                   >
                     <div className="truncate text-[13px] font-medium">{c.label}</div>
-                    <span className="mono dim text-[9px] tracking-[.16em]">{c.hint}</span>
+                    <span className="mono dim text-[10.5px] tracking-[.16em]">{c.hint}</span>
                   </button>
                 ))}
               </div>
@@ -268,7 +268,7 @@ export function SearchOverlay() {
           {places.length > 0 || results.length > 0 ? (
             Object.keys(groups).map((k) => (
               <div className="mb-5" key={k}>
-                <div className="mono dim mb-2.5 text-[10px] tracking-[.2em]">
+                <div className="mono dim mb-2.5 text-[10.5px] tracking-[.2em]">
                   {(names[k as keyof typeof names] || k).toUpperCase()} · {groups[k].length}
                 </div>
                 {groups[k].slice(0, 8).map((r, i) =>

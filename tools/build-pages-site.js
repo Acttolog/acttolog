@@ -118,6 +118,8 @@ const get = (p) =>
   };
   walkTxt(APP);
   console.log('flight payloads copied:', t);
+  const flat = require('./flatten-rsc-payloads').flattenRscPayloads(OUT);
+  console.log('flight payloads flattened for prefetch:', flat.written);
 
   // prerendered metadata bodies (sitemap.xml / robots.txt / manifest.webmanifest)
   // with origins rewritten to the mirror domain

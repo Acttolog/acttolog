@@ -140,7 +140,7 @@ export function Header({
                 <Link
                   key={n.id}
                   href={n.route || '/'}
-                  className={`nlink${isOn(n.route) ? 'on' : ''}`}
+                  className={`nlink${isOn(n.route) ? ' on' : ''}`}
                   style={
                     n.route === '/ai'
                       ? { color: 'var(--cy)' }
@@ -184,7 +184,7 @@ export function Header({
               aria-label={t('lang')}
               title="English | नेपाली"
             >
-              <span className="mono text-[10.4px] font-bold">{locale === 'en' ? 'EN' : 'ने'}</span>
+              <span className="mono text-[10.5px] font-bold">{locale === 'en' ? 'EN' : 'ने'}</span>
             </button>
             <button
               className="ico"
@@ -237,7 +237,7 @@ export function Header({
                 }}
                 onClick={() => setThemeOpen(false)}
               >
-                <div className="mono dim px-2 pb-2 text-[9.4px] tracking-[.22em]">THEMES</div>
+                <div className="mono dim px-2 pb-2 text-[10.5px] tracking-[.22em]">THEMES</div>
                 {THEMES.map((th) => (
                   <button
                     key={th.id}
@@ -294,7 +294,7 @@ export function Header({
                   }}
                 >
                   <span
-                    className="mono grid h-6 w-6 place-items-center rounded-full text-[10px] font-bold"
+                    className="mono grid h-6 w-6 place-items-center rounded-full text-[10.5px] font-bold"
                     style={{ background: 'var(--grad)', color: '#04060e' }}
                   >
                     {initials}
@@ -359,7 +359,7 @@ export function Header({
             )}
 
             <button
-              className={`burger${drawerOpen ? 'on' : ''}`}
+              className={`burger${drawerOpen ? ' on' : ''}`}
               aria-label="Menu"
               aria-expanded={drawerOpen}
               onClick={() => setDrawerOpen((v) => !v)}
@@ -400,7 +400,7 @@ export function Header({
                   </span>
                   <span className="font-display text-[14px] font-semibold">{L(d.name)}</span>
                 </div>
-                <div className="mono dim mb-1.5 text-[9.4px] tracking-[.16em]">{L(d.sub).toUpperCase()}</div>
+                <div className="mono dim mb-1.5 text-[10.5px] tracking-[.16em]">{L(d.sub).toUpperCase()}</div>
                 <p className="mut line-clamp-2 text-[12.2px] leading-relaxed">{L(d.desc)}</p>
               </Link>
             ))}
@@ -416,7 +416,7 @@ export function Header({
           style={{ color: 'var(--txt)' }}
         >
           <span className="gtext">ACTTOLOG</span>
-          <span className="mono dim text-[10px] tracking-[.26em]">WORLD</span>
+          <span className="mono dim text-[10.5px] tracking-[.26em]">WORLD</span>
         </Link>
         {items
           .filter((n) => !n.mega)
@@ -424,7 +424,7 @@ export function Header({
             <Link
               key={n.id}
               href={n.route || '/'}
-              className={`dlink !text-[clamp(1.3rem,5.6vw,2rem)]${isOn(n.route) ? 'on' : ''}`}
+              className={`dlink !text-[clamp(1.3rem,5.6vw,2rem)]${isOn(n.route) ? ' on' : ''}`}
               style={n.route === '/ai' ? { color: 'var(--cy)' } : undefined}
             >
               <span>{L(n.label)}</span>

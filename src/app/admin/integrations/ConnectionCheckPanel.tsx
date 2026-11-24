@@ -78,7 +78,7 @@ export function ConnectionCheckPanel() {
 
       <div className="panel mt-5 p-6">
         <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-          <div className="mono dim text-[9.7px] tracking-[.2em]">LIVE CONNECTION CHECKS · MEASURED, NOT ASSUMED</div>
+          <div className="mono dim text-[10.5px] tracking-[.2em]">LIVE CONNECTION CHECKS · MEASURED, NOT ASSUMED</div>
           <button className="btn btn-p btn-sm" onClick={() => load('POST')} disabled={busy}>
             {busy ? 'Checking…' : 'Re-run connection checks'}
           </button>
@@ -103,7 +103,7 @@ export function ConnectionCheckPanel() {
                     <span className={`badge ${cls}`}>{label}</span>
                   </div>
                   <p className="mut text-[12.4px] leading-relaxed">{p.detail}</p>
-                  <p className="mono dim mt-1 text-[10px]">
+                  <p className="mono dim mt-1 text-[10.5px]">
                     {p.checkedAt ? `checked ${p.checkedAt}` : 'not checked'}
                     {p.latencyMs !== null ? ` · ${p.latencyMs} ms` : ''}
                   </p>

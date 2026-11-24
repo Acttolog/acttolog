@@ -31,7 +31,7 @@ export default function Page() {
         ]}
       />
       <div className="panel mt-5 p-6">
-        <div className="mono dim mb-3 text-[9.7px] tracking-[.2em]">ROBOTS</div>
+        <div className="mono dim mb-3 text-[10.5px] tracking-[.2em]">ROBOTS</div>
         <pre className="mono mut text-[11.6px] whitespace-pre-wrap">{db.seo.robots}</pre>
       </div>
     </div>

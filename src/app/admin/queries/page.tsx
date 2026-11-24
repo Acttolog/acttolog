@@ -65,14 +65,14 @@ export default function QueriesPage() {
       <div className="panel mb-5 p-5">
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <label className="block">
-            <span className="mono dim mb-1 block text-[9.6px] tracking-[.18em]">METRIC</span>
+            <span className="mono dim mb-1 block text-[10.5px] tracking-[.18em]">METRIC</span>
             <select className="inp w-full" value={spec.metric} onChange={(e) => set({ metric: e.target.value as QuerySpec['metric'] })}>
               <option value="page_views">Page views</option>
               <option value="all_events">All events</option>
             </select>
           </label>
           <label className="block">
-            <span className="mono dim mb-1 block text-[9.6px] tracking-[.18em]">GROUP BY</span>
+            <span className="mono dim mb-1 block text-[10.5px] tracking-[.18em]">GROUP BY</span>
             <select className="inp w-full" value={spec.groupBy} onChange={(e) => set({ groupBy: e.target.value as QuerySpec['groupBy'] })}>
               <option value="day">Day</option>
               <option value="div">Division</option>
@@ -80,11 +80,11 @@ export default function QueriesPage() {
             </select>
           </label>
           <label className="block">
-            <span className="mono dim mb-1 block text-[9.6px] tracking-[.18em]">DIVISION FILTER</span>
+            <span className="mono dim mb-1 block text-[10.5px] tracking-[.18em]">DIVISION FILTER</span>
             <input className="inp w-full" value={spec.div || ''} placeholder="any" onChange={(e) => set({ div: e.target.value || null })} />
           </label>
           <label className="block">
-            <span className="mono dim mb-1 block text-[9.6px] tracking-[.18em]">EVENT TYPE FILTER</span>
+            <span className="mono dim mb-1 block text-[10.5px] tracking-[.18em]">EVENT TYPE FILTER</span>
             <input className="inp w-full" value={spec.type || ''} placeholder="any" onChange={(e) => set({ type: e.target.value || null })} />
           </label>
         </div>
@@ -107,11 +107,11 @@ export default function QueriesPage() {
       ) : (
         <>
           <div className="panel mb-5 p-6">
-            <div className="mono dim mb-4 text-[9.7px] tracking-[.2em]">RESULT · {rows.length} GROUPS</div>
+            <div className="mono dim mb-4 text-[10.5px] tracking-[.2em]">RESULT · {rows.length} GROUPS</div>
             {rows.length ? <DrilldownBar data={rows} /> : <p className="mut text-[12.8px]">No events match this query in the selected period.</p>}
           </div>
           <div className="panel p-6">
-            <div className="mono dim mb-4 text-[9.7px] tracking-[.2em]">RESULT ROWS</div>
+            <div className="mono dim mb-4 text-[10.5px] tracking-[.2em]">RESULT ROWS</div>
             <DataGrid columns={COLS} data={rows.map(([label, count]) => ({ label, count }))} exportName="acttolog-query" emptyText="No events match this query." />
           </div>
         </>

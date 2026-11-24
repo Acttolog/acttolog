@@ -42,7 +42,7 @@ export function ResearchBody({ packages, faq }: { packages: ResearchPackage[]; f
                   }
                 >
                   {i === 1 && <span className="badge b-info absolute top-5 right-5">{t('featured')}</span>}
-                  <div className="mono dim mb-2 text-[10px] tracking-[.24em]">
+                  <div className="mono dim mb-2 text-[10.5px] tracking-[.24em]">
                     THESYN {p.name.toUpperCase()}
                   </div>
                   <h3
@@ -55,7 +55,7 @@ export function ResearchBody({ packages, faq }: { packages: ResearchPackage[]; f
                   <div className="font-display mb-1 text-[30px] font-bold tracking-[-.03em]">
                     <CurrencyPrice npr={p.npr} usd={p.usd} />
                   </div>
-                  <div className="dim mono mb-6 text-[10px] tracking-[.14em]">
+                  <div className="dim mono mb-6 text-[10.5px] tracking-[.14em]">
                     {L(p.interval).toUpperCase()}
                   </div>
                   <p className="mut mb-6 text-[13px] leading-relaxed">{L(p.desc)}</p>

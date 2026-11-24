@@ -38,7 +38,7 @@ export function DrilldownBar({
       <ResponsiveContainer>
         <BarChart data={rows} layout="vertical" margin={{ top: 4, right: 16, bottom: 0, left: 8 }}>
           <CartesianGrid stroke="var(--line)" horizontal={false} />
-          <XAxis type="number" tick={{ fill: 'var(--dim)', fontSize: 10 }} tickLine={false} axisLine={{ stroke: 'var(--line)' }} allowDecimals={false} />
+          <XAxis type="number" tick={{ fill: 'var(--dim)', fontSize: 10.5 }} tickLine={false} axisLine={{ stroke: 'var(--line)' }} allowDecimals={false} />
           <YAxis type="category" dataKey="name" width={104} tick={{ fill: 'var(--mut)', fontSize: 11 }} tickLine={false} axisLine={false} />
           <Tooltip content={<Tip />} cursor={{ fill: 'var(--line)' }} />
           <Bar

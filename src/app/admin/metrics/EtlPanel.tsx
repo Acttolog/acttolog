@@ -48,7 +48,7 @@ export function EtlPanel() {
   return (
     <div className="panel mt-5 p-6">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-        <div className="mono dim text-[9.7px] tracking-[.2em]">ETL · STORED METRIC SNAPSHOTS</div>
+        <div className="mono dim text-[10.5px] tracking-[.2em]">ETL · STORED METRIC SNAPSHOTS</div>
         <button className="btn btn-p btn-sm" onClick={run} disabled={busy || !configured}>
           {busy ? 'Recomputing…' : 'Recompute snapshots (14d)'}
         </button>
@@ -62,7 +62,7 @@ export function EtlPanel() {
         <div className="overflow-x-auto">
           <table className="w-full text-left text-[12.2px]">
             <thead>
-              <tr className="mono dim text-[9.6px] tracking-[.16em]" style={{ borderBottom: '1px solid var(--line)' }}>
+              <tr className="mono dim text-[10.5px] tracking-[.16em]" style={{ borderBottom: '1px solid var(--line)' }}>
                 <th className="px-3 py-2">DAY (UTC)</th>
                 <th className="px-3 py-2">METRIC</th>
                 <th className="px-3 py-2">VALUE</th>

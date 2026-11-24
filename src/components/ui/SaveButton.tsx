@@ -33,7 +33,7 @@ export function SaveButton({
 
   return (
     <button
-      className={`btn btn-sm ${on ? 'btn-p' : 'btn-g'}`}
+      className={`btn btn-sm ${on ? ' btn-p' : ' btn-g'}`}
       onClick={() => toggleSave(kind, id, title, route)}
       aria-pressed={on}
       title={

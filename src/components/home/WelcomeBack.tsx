@@ -16,19 +16,12 @@ interface RecentEntry {
  *
  * This is deliberately rule-based, not "AI personalisation": it reads the
  * recently-viewed list the site already writes in PageViewTracker and says the
- * one true thing it knows. First visits get real counts and real contact facts
- * instead. Nothing is fetched, and the SSR output is the fallback, so there is
- * no hydration text mismatch.
+ * one true thing it knows. First visits get the access promise instead — the
+ * counts live in the deck's stats card and are not restated here. Nothing is
+ * fetched, and the SSR output is the fallback, so there is no hydration text
+ * mismatch.
  */
-export function WelcomeBack({
-  resources,
-  courses,
-  labelEn = true,
-}: {
-  resources: number;
-  courses: number;
-  labelEn?: boolean;
-}) {
+export function WelcomeBack({ labelEn = true }: { labelEn?: boolean }) {
   const [recent, setRecent] = useState<RecentEntry | null>(null);
 
   useEffect(() => {
@@ -60,8 +53,8 @@ export function WelcomeBack({
         <>
           <p className="hbento-note-lead">
             {labelEn
-              ? `${resources} verified resources, ${courses} courses, and a guide to Nepal — open to read, no sign-in required.`
-              : `${resources} प्रमाणित स्रोत, ${courses} पाठ्यक्रम र नेपालको मार्गदर्शन — खाता बिना पढ्न सक्नुहुन्छ।`}
+              ? 'Verified resources, courses and a guide to Nepal — open to read, no sign-in required.'
+              : 'प्रमाणित स्रोत, पाठ्यक्रम र नेपालको मार्गदर्शन — खाता बिना पढ्न सक्नुहुन्छ।'}
           </p>
           <Link className="hbento-note-link" href="/contact">
             {labelEn ? 'Ask a question — a person answers' : 'प्रश्न सोध्नुहोस् — मान्छेले जवाफ दिन्छ'} <Icon name="arrow" size={13} />

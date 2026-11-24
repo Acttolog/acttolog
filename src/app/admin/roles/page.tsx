@@ -21,7 +21,7 @@ export default function Page() {
         ]}
       />
       <div className="panel mt-5 p-6">
-        <div className="mono dim mb-3 text-[9.7px] tracking-[.2em]">WORKFLOW STATUSES</div>
+        <div className="mono dim mb-3 text-[10.5px] tracking-[.2em]">WORKFLOW STATUSES</div>
         <div className="flex flex-wrap gap-2">
           {db.wf.statuses.map((s) => (
             <span key={s} className="badge b-mut">

@@ -81,12 +81,21 @@ export function prefersReducedMotion(): boolean {
   return typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
+let webglProbe: boolean | null = null;
+
 export function webglSupported(): boolean {
+  if (webglProbe !== null) return webglProbe;
   try {
     const canvas = document.createElement('canvas');
-    return Boolean(canvas.getContext('webgl2') || canvas.getContext('webgl'));
+    const gl = (canvas.getContext('webgl2') || canvas.getContext('webgl')) as WebGLRenderingContext | null;
+    if (!gl) return (webglProbe = false);
+    // A probe context still counts against Chrome's live-context budget. Without
+    // releasing it, a page carrying several scenes can fail to create the one it
+    // actually renders with — measured as a lost context on the 1440px hero.
+    gl.getExtension('WEBGL_lose_context')?.loseContext();
+    return (webglProbe = true);
   } catch {
-    return false;
+    return (webglProbe = false);
   }
 }
 

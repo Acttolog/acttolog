@@ -107,7 +107,7 @@ export function AcademyClient({ courses, guestVisible }: { courses: AcademyCours
               <div className="p-5">
                 <h3 className="h3 mb-2 !text-[16.8px]">{L(c.title)}</h3>
                 <p className="mut mb-4 text-[13px] leading-relaxed">{L(c.summary)}</p>
-                <div className="mono dim flex flex-wrap gap-1.5 text-[10.1px]">
+                <div className="mono dim flex flex-wrap gap-1.5 text-[10.5px]">
                   <span className="chip !py-1">{c.level}</span>
                   <span className="chip !py-1">
                     {mods} {t('modules')}

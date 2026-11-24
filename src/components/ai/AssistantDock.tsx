@@ -63,7 +63,7 @@ export function AssistantDock() {
               </span>
               <div className="min-w-0 flex-1">
                 <div className="font-display truncate text-[14.4px] font-semibold">{t('ai.t')}</div>
-                <div className="dim mono truncate text-[9.5px] tracking-[.16em]">
+                <div className="dim mono truncate text-[10.5px] tracking-[.16em]">
                   {locale === 'ne' ? 'ACTTOLOG-पहिलो सहायक' : 'ACTTOLOG-FIRST ASSISTANT'}
                 </div>
               </div>

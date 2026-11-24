@@ -15,7 +15,7 @@ export default function Page() {
       />
       {staticPreview && (
         <div className="panel mb-5 p-5" role="status">
-          <div className="mono text-[9.7px] tracking-[.2em]" style={{ color: 'var(--cy)' }}>
+          <div className="mono text-[10.5px] tracking-[.2em]" style={{ color: 'var(--cy)' }}>
             STATIC PREVIEW · LOCAL ONLY
           </div>
           <p className="mut mt-2 text-[12.8px] leading-relaxed">

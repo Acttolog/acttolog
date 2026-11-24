@@ -12,7 +12,7 @@ export default function Page() {
       className="flex flex-wrap justify-between gap-3 py-3"
       style={{ borderBottom: '1px solid var(--line)' }}
     >
-      <span className="mono dim pt-1 text-[10px] tracking-[.16em]">{k.toUpperCase()}</span>
+      <span className="mono dim pt-1 text-[10.5px] tracking-[.16em]">{k.toUpperCase()}</span>
       <span className="mut max-w-[70ch] text-right text-[13px] leading-relaxed">{v}</span>
     </div>
   );

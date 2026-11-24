@@ -4,6 +4,7 @@ import { DarkroomClient } from './DarkroomClient';
 import { DarkroomAgent } from './DarkroomAgent';
 import { getDB, pub, seoFor, divisions as getDivisions } from '@/lib/content';
 import { WorldPortal } from '@/components/world/WorldPortal';
+import { NoticeSection } from '@/components/notices/NoticeSection';
 
 const db = getDB();
 
@@ -58,6 +59,9 @@ export default function DarkroomPage() {
           />
         </div>
       </section>
+
+      {/* Notice board — verified resource drops and review windows */}
+      <NoticeSection scope="darkroom" variant="section" accent="var(--gold)" id="dr-notices" />
     </>
   );
 }

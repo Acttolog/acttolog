@@ -156,8 +156,12 @@ async function dismissWelcome(page) {
   const page = await browser.newPage();
   await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 1 });
   const errors = [];
+  // Static export ships no RSC payload endpoint, so <Link> prefetch asks for
+  // __next.<route>.__PAGE__.txt?_rsc=… and 404s on live Pages too. The URL lives
+  // in the message location, not its text. Real asset 404s still fail.
+  const isRscPrefetch = (m) => /__next\.[^/]*\.txt/.test((m.location() || {}).url || '');
   page.on('console', (m) => {
-    if (m.type() === 'error') errors.push(m.text());
+    if (m.type() === 'error' && !isRscPrefetch(m)) errors.push(m.text());
   });
   page.on('pageerror', (e) => errors.push(`PAGEERROR ${e.message}`));
   const failedReq = [];
@@ -184,16 +188,34 @@ async function dismissWelcome(page) {
     shardsVisible: [...document.querySelectorAll('.hero-shard')].every(
       (e) => e.getBoundingClientRect().width > 0,
     ),
+    shardTexts: [...document.querySelectorAll('.hero-shard')].map((e) => e.textContent || ''),
+    ticker: [...document.querySelectorAll('.hero-ticker .tk')].map((e) => e.textContent || ''),
     descentCta: Boolean(document.querySelector('a[href="#descent"].btn')),
   }));
   check(heroBits.aura && heroBits.rings === 3, 'hero aura + three orbit rings', JSON.stringify(heroBits));
   check(heroBits.shards === 2 && heroBits.shardsVisible, 'two glass HUD shards visible on desktop');
+  // The second shard now reports source verification — the old "5 divisions
+  // online" claim duplicated the deck and is gone.
+  check(
+    'second shard reports source verification, not divisions online',
+    heroBits.shardTexts.length === 2 &&
+      /verif|source/i.test(heroBits.shardTexts[1]) &&
+      !/online/i.test(heroBits.shardTexts.join(' ')),
+    JSON.stringify(heroBits.shardTexts),
+  );
+  check(
+    'hero ticker carries wire events, not division ONLINE statuses',
+    heroBits.ticker.length > 0 &&
+      heroBits.ticker.every((t) => !/\bONLINE\b/i.test(t)) &&
+      heroBits.ticker.some((t) => /NEW|NOTICE|VERIFIED|CLOSING|LIVE/i.test(t)),
+    heroBits.ticker.slice(0, 4).join(' | '),
+  );
   check(heroBits.descentCta, 'hero “Begin descent” CTA points at #descent');
 
   const base = await readState(page);
   check(
-    Math.abs(base.height - 900 * 5.4) < 900 * 0.1,
-    'descent reserves ~540vh of scroll',
+    Math.abs(base.height - 900 * 3.2) < 900 * 0.1,
+    'descent reserves ~320vh of scroll',
     `${Math.round(base.height)}px`,
   );
   check(base.gap > 400 && base.gap < 700, 'gate spacing measured', `${Math.round(base.gap)}px`);
@@ -223,7 +245,14 @@ async function dismissWelcome(page) {
   check(dismissed, 'consent choices reachable');
   const welcomed = await dismissWelcome(page);
   check(welcomed, 'first-visit welcome is skippable');
-  await sleep(500);
+  await sleep(1200);
+
+  // The consent-overlap pre-scroll leaves the camera mid-descent, and the
+  // welcome overlay's exit can restore scroll. Reset the corridor to its start
+  // and let it settle so the monotonic-travel run begins from rest (every
+  // sample transition is then forward, matching a real top-to-bottom descent).
+  await scrollToP(page, 0);
+  await settle(page);
 
   // gate i passes the camera at p = (i+1) / (N + 0.18)
   const passOf = (i, n) => (i + 1) / (n + 0.18);
@@ -304,6 +333,29 @@ async function dismissWelcome(page) {
   check(/GATE\s*\d+\/06/.test(hud.gates || ''), 'HUD gate counter present', hud.gates);
   check(/^\d{1,2}\.\d m\/s$/.test(hud.rate || ''), 'HUD speed is plausible after cap', hud.rate);
 
+  // The per-gate content-count fact is gone; only GATE nn/06 remains. Counting
+  // containers (not a fixed number) keeps this valid for every rendered copy.
+  const facts = await page.evaluate(() => {
+    const containers = [...document.querySelectorAll('.dsc-facts')];
+    return {
+      containers: containers.length,
+      per: containers.map((c) => c.querySelectorAll('.dsc-fact').length),
+      texts: [...document.querySelectorAll('.dsc-fact')].map((f) =>
+        (f.textContent || '').replace(/\s+/g, ' ').trim(),
+      ),
+    };
+  });
+  check(
+    facts.containers > 0 && facts.per.every((n) => n === 1),
+    'each gate keeps exactly one fact',
+    JSON.stringify(facts.per),
+  );
+  check(
+    facts.texts.length > 0 && facts.texts.every((t) => /GATE\s*\d{2}\s*\/\s*06/.test(t)),
+    'descent facts are GATE nn/06 only — no repeated content counts',
+    facts.texts.slice(0, 4).join(' | '),
+  );
+
   const over = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
   check(over <= 1, 'no horizontal overflow on desktop', `${over}px`);
 
@@ -318,7 +370,30 @@ async function dismissWelcome(page) {
       studio: Boolean(q('#studio')),
       close: Boolean(q('#cta')),
       nepal: Boolean(q('#nepal-promo')),
-      rows: count('.hsignal-row'),
+      signalCard: count('.hsignal-card'),
+      signalRows: count('.hsignal-row'),
+      signalListH: q('.hsignal-list-h')?.textContent || '',
+      signalTags: count('.hsignal-tags'),
+      signalByline: count('.hsignal-byline'),
+      signalText: q('#signal')?.textContent || '',
+      indexEm: [...document.querySelectorAll('.hindex-row .hindex-name em')].map((e) =>
+        (e.textContent || '').trim(),
+      ),
+      studioItems: [...document.querySelectorAll('.hstudio-card')].map(
+        (c) => c.querySelectorAll('.hstudio-items .hstudio-item').length,
+      ),
+      npromoFacts: [...document.querySelectorAll('#nepal-promo .npromo-fact')].map((f) =>
+        (f.textContent || '').replace(/\s+/g, ' ').trim(),
+      ),
+      npromoChips: count('#nepal-promo .npromo-chip'),
+      removedCounts: {
+        hindexCount: count('.hindex-count'),
+        hindexChips: count('.hindex-chips'),
+        hbentoStats: count('.hbento-stats'),
+        hstudioStat: count('.hstudio-stat'),
+        ecoChipN: count('.eco-chip-n'),
+        ecoNodeNum: count('.eco-node-num'),
+      },
       cards: count('.hstudio-card'),
       divisions: count('.hindex-row'),
       removed: [
@@ -350,6 +425,54 @@ async function dismissWelcome(page) {
   check(composition.removed.length === 0, 'repeated homepage layers removed', composition.removed.join(', '));
   check(composition.divisions === 5, 'index lists five divisions once', `${composition.divisions}`);
   check(composition.cards === 3, 'studio presents three working surfaces', `${composition.cards}`);
+  // Signal: one featured story plus its own outline (the article's real ##
+  // headings, 0–5 of them) — never the old fixed six-row LATEST UPDATES list.
+  check(composition.signalCard === 1, 'signal shows exactly one featured story', `${composition.signalCard}`);
+  check(
+    composition.signalRows <= 5 && !/LATEST UPDATES/i.test(composition.signalText),
+    'signal outline is the story’s own headings (≤5), not LATEST UPDATES',
+    `rows=${composition.signalRows}`,
+  );
+  check(
+    composition.signalRows === 0 ||
+      (/IN THIS STORY|यो कथामा/.test(composition.signalListH) &&
+        composition.signalTags >= 1 &&
+        composition.signalByline === 1),
+    'outline panel carries IN THIS STORY header, tags and byline',
+    JSON.stringify({
+      rows: composition.signalRows,
+      h: composition.signalListH.slice(0, 40),
+      tags: composition.signalTags,
+      byline: composition.signalByline,
+    }),
+  );
+  check(
+    composition.indexEm.length === 5 && composition.indexEm.every((t) => t.length > 0),
+    'each index row shows a contents line in .hindex-name em',
+    JSON.stringify(composition.indexEm),
+  );
+  check(
+    composition.studioItems.length === 3 && composition.studioItems.every((n) => n >= 1),
+    'studio cards list real course/resource/offer items',
+    JSON.stringify(composition.studioItems),
+  );
+  const npJoined = composition.npromoFacts.join(' | ');
+  check(
+    composition.npromoFacts.length === 3 &&
+      /unesco/i.test(npJoined) &&
+      /trek/i.test(npJoined) &&
+      /permit/i.test(npJoined) &&
+      !/\bplaces\b|\bregions\b/i.test(npJoined),
+    'nepal promo facts are UNESCO / trek routes / permits (places live only in dk-i)',
+    npJoined,
+  );
+  check(composition.npromoChips >= 3, 'nepal promo lists UNESCO chips', `${composition.npromoChips}`);
+  const rc = composition.removedCounts;
+  check(
+    Object.values(rc).every((n) => n === 0),
+    'repeated count nodes removed (.hindex-count/.hindex-chips/.hbento-stats/.hstudio-stat/.eco-chip-n/.eco-node-num)',
+    JSON.stringify(rc),
+  );
   check(
     composition.heroCta === 1 && composition.heroLinks === 3,
     'hero carries one primary CTA + three quiet links (spatial, search, language)',
@@ -372,7 +495,7 @@ async function dismissWelcome(page) {
   await mob.setViewport({ width: 390, height: 844, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
   const mErrors = [];
   mob.on('console', (m) => {
-    if (m.type() === 'error') mErrors.push(m.text());
+    if (m.type() === 'error' && !isRscPrefetch(m)) mErrors.push(m.text());
   });
   mob.on('pageerror', (e) => mErrors.push(`PAGEERROR ${e.message}`));
   await mob.goto(`${BASE}/`, { waitUntil: 'networkidle0', timeout: 60000 });

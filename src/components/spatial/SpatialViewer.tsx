@@ -211,7 +211,7 @@ export function SpatialViewer({ items }: { items: SpatialItem[] }) {
   return createPortal(
     <div
       ref={panelRef}
-      className={`spv${closing ? 'closing' : ''}`}
+      className={`spv${closing ? ' closing' : ''}`}
       role="dialog"
       aria-modal="true"
       aria-label="ACTTOLOG spatial view"
@@ -261,7 +261,7 @@ export function SpatialViewer({ items }: { items: SpatialItem[] }) {
               return (
                 <div
                   key={item.id}
-                  className={`spv-slot${on ? 'on' : ''}`}
+                  className={`spv-slot${on ? ' on' : ''}`}
                   style={{ '--i': index, '--spv-tone': item.color } as CSSProperties}
                 >
                   <Link

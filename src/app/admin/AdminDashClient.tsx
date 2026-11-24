@@ -74,7 +74,7 @@ export function AdminDashClient({ integ }: { integ: IntegrationRow[] }) {
                 </span>
                 <span className="font-display text-[26px] font-bold tracking-[-.03em]">{n}</span>
               </div>
-              <div className="mono dim text-[9.6px] tracking-[.18em]">{label.toUpperCase()}</div>
+              <div className="mono dim text-[10.5px] tracking-[.18em]">{label.toUpperCase()}</div>
             </Link>
           ))}
         </div>
@@ -83,7 +83,7 @@ export function AdminDashClient({ integ }: { integ: IntegrationRow[] }) {
       <div className="grid gap-5 lg:grid-cols-[1.2fr_.8fr]">
         <Reveal delay={60}>
           <div className="panel p-6">
-            <div className="mono dim mb-4 text-[9.7px] tracking-[.2em]">INTEGRATIONS</div>
+            <div className="mono dim mb-4 text-[10.5px] tracking-[.2em]">INTEGRATIONS</div>
             <div className="space-y-2.5">
               {integ.map((i) => (
                 <div
@@ -103,7 +103,7 @@ export function AdminDashClient({ integ }: { integ: IntegrationRow[] }) {
               <Link href="/admin/integrations" className="btn btn-g btn-sm">
                 Manage integrations
               </Link>
-              <span className="dim mono self-center text-[10.4px] tracking-[.14em]">
+              <span className="dim mono self-center text-[10.5px] tracking-[.14em]">
                 {healthy}/{integ.length} HEALTHY · {notConfigured} PENDING
               </span>
             </div>
@@ -113,7 +113,7 @@ export function AdminDashClient({ integ }: { integ: IntegrationRow[] }) {
         <div className="space-y-5">
           <Reveal delay={120}>
             <div className="panel p-6">
-              <div className="mono dim mb-4 text-[9.7px] tracking-[.2em]">QUICK ACTIONS</div>
+              <div className="mono dim mb-4 text-[10.5px] tracking-[.2em]">QUICK ACTIONS</div>
               <div className="space-y-2">
                 {[
                   ['/admin/messages', 'Contact inbox', 'mail'],
@@ -144,7 +144,7 @@ export function AdminDashClient({ integ }: { integ: IntegrationRow[] }) {
 
           <Reveal delay={180}>
             <div className="panel p-6">
-              <div className="mono dim mb-3 text-[9.7px] tracking-[.2em]">CONTENT SOURCE</div>
+              <div className="mono dim mb-3 text-[10.5px] tracking-[.2em]">CONTENT SOURCE</div>
               <p className="mut text-[12.8px] leading-relaxed">
                 {process.env.NEXT_PUBLIC_SITE_URL ? '' : ''}
                 The CMS currently reads the <b style={{ color: 'var(--txt)' }}>bundled seed content</b>

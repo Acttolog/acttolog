@@ -255,7 +255,7 @@ function DashboardTabs({
                         <>
                           <div className="min-w-0 flex-1">
                             <div className="truncate text-[13.6px] font-medium">{s.title}</div>
-                            <div className="dim mono mt-0.5 text-[9.8px] tracking-[.14em]">
+                            <div className="dim mono mt-0.5 text-[10.5px] tracking-[.14em]">
                               {s.kind.toUpperCase()}
                             </div>
                           </div>
@@ -307,7 +307,7 @@ function DashboardTabs({
                       >
                         <div className="min-w-0">
                           <div className="truncate text-[13.6px]">{r.title}</div>
-                          <div className="dim mono mt-0.5 text-[9.8px] tracking-[.14em]">
+                          <div className="dim mono mt-0.5 text-[10.5px] tracking-[.14em]">
                             {r.kind.toUpperCase()}
                           </div>
                         </div>
@@ -392,7 +392,7 @@ function DashboardTabs({
                       {locale === 'ne' ? 'व्यक्तिगतकरण (ऐच्छिक)' : 'Personalization (optional)'}
                     </span>
                     <button
-                      className={`sw${personalization ? 'on' : ''}`}
+                      className={`sw${personalization ? ' on' : ''}`}
                       aria-pressed={personalization}
                       aria-label="Personalization"
                       onClick={() => {

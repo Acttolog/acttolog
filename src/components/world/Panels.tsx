@@ -121,7 +121,7 @@ export function PlacePanel({
     >
       <div className="mb-3 flex items-start justify-between gap-3">
         <div>
-          <div className="mono dim mb-1.5 text-[9.4px] tracking-[.22em]">PLACE · {place.source}</div>
+          <div className="mono dim mb-1.5 text-[10.5px] tracking-[.22em]">PLACE · {place.source}</div>
           <h2 className="font-display text-[19px] leading-tight font-bold tracking-[-.02em]">{place.name}</h2>
           {place.address && <p className="mut mt-1.5 text-[12.4px] leading-relaxed">{place.address}</p>}
         </div>
@@ -135,14 +135,14 @@ export function PlacePanel({
           className="rounded-lg border px-3 py-2"
           style={{ borderColor: 'var(--line)', background: 'var(--panel2)' }}
         >
-          <div className="dim mb-0.5 text-[8.8px] tracking-[.2em]">LATITUDE</div>
+          <div className="dim mb-0.5 text-[10.5px] tracking-[.2em]">LATITUDE</div>
           {place.lat.toFixed(4)}° {place.lat >= 0 ? 'N' : 'S'}
         </div>
         <div
           className="rounded-lg border px-3 py-2"
           style={{ borderColor: 'var(--line)', background: 'var(--panel2)' }}
         >
-          <div className="dim mb-0.5 text-[8.8px] tracking-[.2em]">LONGITUDE</div>
+          <div className="dim mb-0.5 text-[10.5px] tracking-[.2em]">LONGITUDE</div>
           {place.lon.toFixed(4)}° {place.lon >= 0 ? 'E' : 'W'}
         </div>
         {place.category && (
@@ -150,7 +150,7 @@ export function PlacePanel({
             className="col-span-2 rounded-lg border px-3 py-2"
             style={{ borderColor: 'var(--line)', background: 'var(--panel2)' }}
           >
-            <div className="dim mb-0.5 text-[8.8px] tracking-[.2em]">CATEGORY</div>
+            <div className="dim mb-0.5 text-[10.5px] tracking-[.2em]">CATEGORY</div>
             {place.category}
           </div>
         )}
@@ -173,7 +173,7 @@ export function PlacePanel({
           Directions
         </a>
         <button
-          className={`chip${saved ? 'on' : ''}`}
+          className={`chip${saved ? ' on' : ''}`}
           onClick={() =>
             toggleSave('place', place.id, place.name, `/explore?mode=map&lat=${place.lat}&lng=${place.lon}`)
           }
@@ -200,7 +200,7 @@ export function PlacePanel({
         {NEARBY.map(([name, , icon]) => (
           <button
             key={name}
-            className={`chip !py-1 !text-[10.6px]${nearCat === name ? 'on' : ''}`}
+            className={`chip !py-1 !text-[10.6px]${nearCat === name ? ' on' : ''}`}
             onClick={() => loadNearby(name)}
           >
             <Icon name={icon} size={11} />
@@ -236,12 +236,12 @@ export function PlacePanel({
               style={{ borderColor: 'var(--line)', background: 'var(--panel2)' }}
             >
               <span className="truncate">{n2.name}</span>
-              <span className="dim mono flex-none text-[9.6px] tracking-[.14em]">
+              <span className="dim mono flex-none text-[10.5px] tracking-[.14em]">
                 {(n2.kind || '').toUpperCase()}
               </span>
             </div>
           ))}
-          <div className="dim mt-2 text-[10.4px]">Data © OpenStreetMap contributors · Overpass API</div>
+          <div className="dim mt-2 text-[10.5px]">Data © OpenStreetMap contributors · Overpass API</div>
         </div>
       )}
 
@@ -390,7 +390,7 @@ export function SearchCmd({
                 {p.name}
                 {gPending?.id === String(p.raw?.googlePlaceId || '') ? ' …' : ''}
               </div>
-              <div className="dim mono mt-0.5 truncate text-[9.8px] tracking-[.14em]">
+              <div className="dim mono mt-0.5 truncate text-[10.5px] tracking-[.14em]">
                 {p.source === 'GOOGLE'
                   ? `${(p.address || '').toUpperCase()} · GOOGLE PLACES`
                   : `${p.category?.toUpperCase() ?? ''} · ${p.lat.toFixed(3)}, ${p.lon.toFixed(3)} · NOMINATIM`}

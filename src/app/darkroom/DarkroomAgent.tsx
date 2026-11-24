@@ -105,7 +105,7 @@ export function DarkroomAgent() {
           <div className="font-display text-[17px] font-bold tracking-[-.01em]">
             {locale === 'ne' ? 'डार्करूम एजेन्ट' : 'Darkroom Agent'}
           </div>
-          <div className="dim mono text-[9.6px] tracking-[.18em]">ASK → INTENT → FILTER → RANK → ANSWER</div>
+          <div className="dim mono text-[10.5px] tracking-[.18em]">ASK → INTENT → FILTER → RANK → ANSWER</div>
         </div>
       </div>
       <form
@@ -165,7 +165,7 @@ export function DarkroomAgent() {
           className="mt-4 rounded-xl border p-5"
           style={{ borderColor: 'var(--line)', background: 'var(--panel2)' }}
         >
-          <div className="mono dim mb-3 text-[9.6px] tracking-[.2em]">AGENT TRACE</div>
+          <div className="mono dim mb-3 text-[10.5px] tracking-[.2em]">AGENT TRACE</div>
           <div className="mb-4 space-y-2">
             {res.steps.map((s3, i) => (
               <div key={i} className="flex items-start gap-3 text-[12.4px]">
@@ -196,7 +196,7 @@ export function DarkroomAgent() {
                   <div className="mt-2 flex gap-3">
                     {r2.presentation === 'profile' ? (
                       <Link
-                        className="mono text-[10px] tracking-[.14em]"
+                        className="mono text-[10.5px] tracking-[.14em]"
                         style={{ color: 'var(--cy)' }}
                         href={`/darkroom/${r2.slug}`}
                       >
@@ -204,7 +204,7 @@ export function DarkroomAgent() {
                       </Link>
                     ) : null}
                     <a
-                      className="mono dim text-[10px] tracking-[.14em]"
+                      className="mono dim text-[10.5px] tracking-[.14em]"
                       href={r2.url}
                       target="_blank"
                       rel="noopener noreferrer"

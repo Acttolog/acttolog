@@ -66,7 +66,7 @@ export function SpatialFrame({
   }, [intensity]);
 
   return (
-    <div ref={ref} className={`sp-frame${clean ? 'sp-clean' : ''} ${className}`} style={style}>
+    <div ref={ref} className={`sp-frame${clean ? ' sp-clean' : ''} ${className}`} style={style}>
       <div className="sp-plane">
         {children}
         {!clean && <span className="sp-scan" aria-hidden="true" />}

@@ -27,14 +27,6 @@ const ART: Record<string, string> = {
   games: '/media/descent/games',
 };
 
-const COUNT_LABEL: Record<string, Bi> = {
-  research: { en: 'services', ne: 'सेवाहरू' },
-  darkroom: { en: 'verified resources', ne: 'प्रमाणित स्रोत' },
-  academy: { en: 'courses', ne: 'पाठ्यक्रम' },
-  entertainment: { en: 'stories & media', ne: 'कथा र मिडिया' },
-  games: { en: 'games', ne: 'खेलहरू' },
-};
-
 const CORE_TONE = '#ffe3b0';
 const STRATUM_DEPTH = 240;
 
@@ -49,8 +41,6 @@ interface Gate {
   cta: Bi;
   cta2?: Bi;
   image?: string;
-  count?: number;
-  countLabel?: Bi;
   depth: number;
   core?: boolean;
 }
@@ -100,11 +90,6 @@ function ChapterBody({
       <div className="dsc-sub">{L(gate.sub)}</div>
       <p className="dsc-desc">{L(gate.desc)}</p>
       <div className="dsc-facts">
-        {gate.count != null && gate.countLabel && (
-          <span className="dsc-fact">
-            <b>{nf(gate.count)}</b> {L(gate.countLabel)}
-          </span>
-        )}
         <span className="dsc-fact">
           {locale === 'ne' ? 'तह' : 'GATE'} <b>{String(gate.depth / STRATUM_DEPTH).padStart(2, '0')}</b> / 06
         </span>
@@ -128,7 +113,7 @@ function ChapterBody({
   );
 }
 
-export function Descent({ divisions, counts }: { divisions: Division[]; counts: Record<string, number> }) {
+export function Descent({ divisions }: { divisions: Division[] }) {
   const { L, locale } = useI18n();
   const gates = useMemo<Gate[]>(() => {
     const list = ORDER.map((id) => divisions.find((d) => d.id === id))
@@ -141,8 +126,6 @@ export function Descent({ divisions, counts }: { divisions: Division[]; counts: 
         tone: d.color,
         route: d.route,
         image: ART[d.id],
-        count: counts[d.id],
-        countLabel: COUNT_LABEL[d.id],
         depth: (i + 1) * STRATUM_DEPTH,
         cta: {
           en: `Enter ${d.name.en}`,
@@ -166,7 +149,7 @@ export function Descent({ divisions, counts }: { divisions: Division[]; counts: 
       core: true,
     });
     return list;
-  }, [divisions, counts]);
+  }, [divisions]);
 
   const N = gates.length;
   const [active, setActive] = useState(0);

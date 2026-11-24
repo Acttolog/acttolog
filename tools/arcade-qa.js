@@ -43,7 +43,9 @@ const watch = (page, scope) => {
     if (m.type() !== 'error') return;
     const t = m.text();
     if (/favicon/i.test(t)) return;
-    errors.push(scope + ' CONSOLE ' + t.slice(0, 180));
+    // Resource errors carry the failing URL in the location, not the text.
+    const url = (m.location() && m.location().url) || '';
+    errors.push(scope + ' CONSOLE ' + t.slice(0, 120) + (url ? ' @ ' + url : ''));
   });
 };
 

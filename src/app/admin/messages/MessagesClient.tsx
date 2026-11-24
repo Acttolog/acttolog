@@ -65,15 +65,15 @@ export function MessagesClient() {
           <div className="mb-2 flex flex-wrap items-start justify-between gap-3">
             <div>
               <div className="font-display text-[14.4px] font-semibold">{m.subject}</div>
-              <div className="dim mono mt-1 text-[10.4px]">
+              <div className="dim mono mt-1 text-[10.5px]">
                 {m.name} · {m.email}
                 {m.phone ? ' · ' + m.phone : ''}
                 {m.division ? ' · ' + m.division : ''}
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <span className={`badge ${m.status === 'new' ? 'b-info' : 'b-mut'}`}>{m.status}</span>
-              <span className="dim mono text-[10px]">{fktm(m.createdAt)}</span>
+              <span className={`badge ${m.status === 'new' ? ' b-info' : ' b-mut'}`}>{m.status}</span>
+              <span className="dim mono text-[10.5px]">{fktm(m.createdAt)}</span>
             </div>
           </div>
           <p className="mut text-[13px] leading-relaxed whitespace-pre-line">{m.message}</p>

@@ -11,6 +11,11 @@ const OUT = process.cwd() + '/qa-shots';
 fs.mkdirSync(OUT, { recursive: true });
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+// Static export ships no RSC payload endpoint, so <Link> prefetch asks for
+// __next.<route>.__PAGE__.txt?_rsc=… and 404s on live Pages too. The URL lives in
+// the message location, not its text. Real asset 404s still fail.
+const isRscPrefetch = (m) => /__next\.[^/]*\.txt/.test((m.location() || {}).url || '');
+
 const results = [];
 function check(name, ok, detail = '') {
   results.push({ name, ok, detail });
@@ -24,7 +29,7 @@ async function open(browser, url, width = 1280, height = 900) {
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
   page.on('console', (m) => {
-    if (m.type() === 'error') errors.push(m.text());
+    if (m.type() === 'error' && !isRscPrefetch(m)) errors.push(m.text());
   });
   await page.goto(url, { waitUntil: 'networkidle2', timeout: 90000 });
   return { page, errors };

@@ -69,13 +69,20 @@ const check = (name, ok, extra = '') => {
   // ── 1. Home: first-visit overlay + hero + nav + worlds row ────────
   await step('home', async () => {
     await page.goto(BASE + '/', { waitUntil: 'domcontentloaded' });
-    await sleep(1500);
-    // decide consent first (welcome must never stack on the consent dialog)
-    await page.evaluate(() => {
-      [...document.querySelectorAll('#consent button')]
-        .find((b) => /Necessary only/i.test(b.textContent))
-        ?.click();
-    });
+    // Decide consent first (welcome must never stack on the consent dialog).
+    // The button is prerendered, so it exists before React attaches onClick;
+    // a single early click fires into a non-hydrated button and silently does
+    // nothing. Click until consent actually persists (heavy home hydrates slowly
+    // under SwiftShader), then the welcome overlay can appear.
+    for (let i = 0; i < 60; i++) {
+      await page.evaluate(() => {
+        [...document.querySelectorAll('#consent button')]
+          .find((b) => /Necessary only/i.test(b.textContent))
+          ?.click();
+      });
+      if (await page.evaluate(() => !!localStorage.getItem('act_consent'))) break;
+      await sleep(500);
+    }
     await page.waitForSelector('.fv-card', { timeout: 25000 }).catch(() => {});
     const fv = await page.evaluate(() => {
       const card = document.querySelector('.fv-card');
@@ -120,8 +127,9 @@ const check = (name, ok, extra = '') => {
       JSON.stringify(hero),
     );
     check(
-      'Hero: Search World button',
-      hero.some((x) => /Search World/i.test(x.t)),
+      'Hero: Begin descent → #descent',
+      hero.some((x) => /Begin descent/i.test(x.t) && x.h === '#descent'),
+      JSON.stringify(hero),
     );
     const nav = await page.evaluate(() =>
       [...document.querySelectorAll('.nlink')].map((a) => ({
@@ -140,13 +148,22 @@ const check = (name, ok, extra = '') => {
         [...document.querySelectorAll('.chip')].some((c) => /COMMAND CENTER/i.test(c.textContent)),
       ),
     );
-    const worlds = await page.evaluate(
-      () =>
-        [...document.querySelectorAll('a.chip')].filter((a) =>
-          (a.getAttribute('href') || '').includes('mode=360&world='),
-        ).length,
-    );
-    check('Home lists all 13 ACTTOLOG 360 worlds', worlds === 13, `${worlds} chips`);
+    // The 13 360-worlds left the home hero when the homepage became the glass
+    // deck; they now live in the /explore world selector. Assert them there.
+    await page.goto(BASE + '/explore?mode=360', { waitUntil: 'domcontentloaded', timeout: 60000 });
+    const worldsPanel = () => {
+      const p = [...document.querySelectorAll('div.panel')].find((x) =>
+        x.className.includes('max-h-[38vh]'),
+      );
+      return p ? p.querySelectorAll('button.chip').length : 0;
+    };
+    await page.waitForFunction(worldsPanel, { timeout: 40000 }).catch(() => {});
+    const worlds = await page.evaluate(worldsPanel);
+    check('Explore lists all 13 ACTTOLOG 360 worlds', worlds === 13, `${worlds} chips`);
+    // cmdk below expects a hydrated home, so return there before leaving this step.
+    await page.goto(BASE + '/', { waitUntil: 'domcontentloaded', timeout: 60000 });
+    await page.waitForSelector('.dk-clock', { timeout: 40000 }).catch(() => {});
+    await sleep(800);
   });
 
   // ── 2. ⌘K palette: world commands + places ────────────────────────
@@ -421,7 +438,14 @@ const check = (name, ok, extra = '') => {
     );
     await shot('12-deeplink-pokhara-sat');
     await page.goto(BASE + '/explore?mode=360&world=arena', { waitUntil: 'domcontentloaded' });
-    await sleep(3500);
+    // The 360 pano init can lag after a heavy SAT page; poll for the selected
+    // world chip instead of guessing a fixed wait (feature verified at 500ms).
+    await page
+      .waitForFunction(
+        () => [...document.querySelectorAll('.chip.on')].some((c) => /GAMES ARENA/i.test(c.textContent || '')),
+        { timeout: 15000 },
+      )
+      .catch(() => {});
     const w = await page.evaluate(() =>
       [...document.querySelectorAll('.chip.on')].map((c) => c.textContent.trim()),
     );
@@ -474,7 +498,18 @@ const check = (name, ok, extra = '') => {
   await step('field-worlds', async () => {
     await ensurePage();
     await page.goto(BASE + '/explore?mode=360&world=university', { waitUntil: 'domcontentloaded' });
-    await sleep(4500);
+    // The 360 pano texture fetches/decodes after the canvas paints; under
+    // SwiftShader + live load a fixed sleep can read performance entries before
+    // the texture registers. Poll until chip + canvas + pano resource are all in.
+    await page
+      .waitForFunction(
+        () =>
+          [...document.querySelectorAll('.chip.on')].some((c) => /UNIVERSITY VISIT/.test(c.textContent)) &&
+          !!document.querySelector('canvas') &&
+          performance.getEntriesByType('resource').some((e) => e.name.includes('/media/pano/university.jpg')),
+        { timeout: 25000, polling: 300 },
+      )
+      .catch(() => {});
     const st = await page.evaluate(() => ({
       chipOn: [...document.querySelectorAll('.chip.on')].some((c) => /UNIVERSITY VISIT/.test(c.textContent)),
       guideChip: [...document.querySelectorAll('.chip')].some((c) => /GUIDE/.test(c.textContent)),

@@ -543,7 +543,7 @@ export function Pano360({
     <div className="absolute inset-0">
       <div ref={mountRef} className="absolute inset-0" style={{ cursor: 'grab' }} />
       <button
-        className="chip absolute right-3 bottom-3 z-10 !px-3 !py-1.5 !text-[9.6px]"
+        className="chip absolute right-3 bottom-3 z-10 !px-3 !py-1.5 !text-[10.5px]"
         style={{ background: 'color-mix(in srgb, var(--bg) 72%, transparent)' }}
         onClick={() => {
           setGuideOpen((v) => !v);
@@ -583,7 +583,7 @@ export function Pano360({
               <div>
                 <div className="eyebrow mb-1">YOUR GUIDE · संस्थापक</div>
                 <div className="font-display text-[16px] leading-tight font-bold">The Founder & Guide</div>
-                <div className="dim mono mt-1 text-[9.6px] tracking-[.18em]">FOUNDER · ACTTOLOG WORLD</div>
+                <div className="dim mono mt-1 text-[10.5px] tracking-[.18em]">FOUNDER · ACTTOLOG WORLD</div>
               </div>
               <button
                 className="ico ml-auto !h-8 !w-8 flex-none"

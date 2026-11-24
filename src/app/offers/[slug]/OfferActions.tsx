@@ -23,18 +23,18 @@ export function OfferActions({ offer }: { offer: Offer }) {
       </div>
       <div className="mb-5 flex items-center gap-2">
         <button
-          className={`chip !py-1 !text-[10.6px]${currency === 'NPR' ? 'on' : ''}`}
+          className={`chip !py-1 !text-[10.6px]${currency === 'NPR' ? ' on' : ''}`}
           onClick={() => setCurrency('NPR')}
         >
           NPR
         </button>
         <button
-          className={`chip !py-1 !text-[10.6px]${currency === 'USD' ? 'on' : ''}`}
+          className={`chip !py-1 !text-[10.6px]${currency === 'USD' ? ' on' : ''}`}
           onClick={() => setCurrency('USD')}
         >
           USD
         </button>
-        <span className="dim mono text-[9.8px] tracking-[.14em]">1 USD ≈ रु {usdToNpr}</span>
+        <span className="dim mono text-[10.5px] tracking-[.14em]">1 USD ≈ रु {usdToNpr}</span>
       </div>
 
       <div className="mut mb-6 space-y-2.5 text-[12.8px]">
@@ -77,7 +77,7 @@ export function OfferActions({ offer }: { offer: Offer }) {
               className="rounded-xl border p-4 text-center"
               style={{ borderColor: 'var(--line)', background: 'var(--panel2)' }}
             >
-              <div className="mono dim mb-1.5 text-[9.6px] tracking-[.18em]">ONLINE PURCHASE</div>
+              <div className="mono dim mb-1.5 text-[10.5px] tracking-[.18em]">ONLINE PURCHASE</div>
               <p className="mut text-[12.2px] leading-relaxed">
                 {locale === 'ne'
                   ? 'भुक्तानी प्रदायक प्रमाणीकरण पछि सक्रिय हुनेछ। हाल सोधपुछ मार्फत अघि बढ्नुहोस्।'

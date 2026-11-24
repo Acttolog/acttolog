@@ -67,7 +67,7 @@ export default function AlertsPage() {
       </div>
 
       <div className="panel mb-5 p-6">
-        <div className="mono dim mb-4 text-[9.7px] tracking-[.2em]">TRIGGERED NOW · {triggered.length}</div>
+        <div className="mono dim mb-4 text-[10.5px] tracking-[.2em]">TRIGGERED NOW · {triggered.length}</div>
         {!configured ? (
           <p className="mut text-[12.8px]">Alert evaluation activates when PostgreSQL is connected.</p>
         ) : triggered.length === 0 ? (
@@ -85,11 +85,11 @@ export default function AlertsPage() {
             ))}
           </div>
         )}
-        <p className="dim mt-3 text-[10.4px]">{ALERT_LABEL}</p>
+        <p className="dim mt-3 text-[10.5px]">{ALERT_LABEL}</p>
       </div>
 
       <div className="panel mb-5 p-6">
-        <div className="mono dim mb-4 text-[9.7px] tracking-[.2em]">RULES · LOCAL TO THIS BROWSER</div>
+        <div className="mono dim mb-4 text-[10.5px] tracking-[.2em]">RULES · LOCAL TO THIS BROWSER</div>
         <div className="space-y-2">
           {rules.map((r) => (
             <div key={r.id} className="flex flex-wrap items-center justify-between gap-2 rounded-lg border px-3 py-2" style={{ borderColor: 'var(--line)' }}>

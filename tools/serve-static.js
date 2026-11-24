@@ -37,20 +37,35 @@ const TYPES = {
 http
   .createServer((req, res) => {
     const url = decodeURIComponent(req.url.split('?')[0]);
-    let file = path.join(ROOT, url);
+    // path.join keeps a trailing separator, which would turn the sibling-.html
+    // fallback into "games/.html". Drop it so /games/ resolves like /games.
+    const clean = url.length > 1 ? url.replace(/[\\/]+$/, '') : url;
+    const file = path.join(ROOT, clean);
     if (!file.startsWith(ROOT)) {
       res.writeHead(403).end('no');
       return;
     }
-    if (fs.existsSync(file) && fs.statSync(file).isDirectory()) file = path.join(file, 'index.html');
-    if (!fs.existsSync(file) && fs.existsSync(`${file}.html`)) file = `${file}.html`;
-    if (!fs.existsSync(file)) {
+    // Resolve like GitHub Pages: exact file → dir/index.html → sibling .html.
+    // Next export emits both `route.html` and a `route/` dir of RSC segments,
+    // so a directory without index.html must fall back to its sibling .html.
+    let target = null;
+    if (fs.existsSync(file)) {
+      if (fs.statSync(file).isDirectory()) {
+        const idx = path.join(file, 'index.html');
+        if (fs.existsSync(idx)) target = idx;
+        else if (fs.existsSync(`${file}.html`)) target = `${file}.html`;
+      } else {
+        target = file;
+      }
+    }
+    if (!target && fs.existsSync(`${file}.html`)) target = `${file}.html`;
+    if (!target) {
       res.writeHead(404, { 'content-type': 'text/html; charset=utf-8' });
       res.end('<!doctype html><title>404</title>not found');
       return;
     }
-    const type = TYPES[path.extname(file).toLowerCase()] || 'application/octet-stream';
-    const size = fs.statSync(file).size;
+    const type = TYPES[path.extname(target).toLowerCase()] || 'application/octet-stream';
+    const size = fs.statSync(target).size;
     const range = req.headers.range;
     if (range) {
       const m = /bytes=(\d*)-(\d*)/.exec(range);
@@ -62,10 +77,10 @@ http
         'content-range': `bytes ${start}-${end}/${size}`,
         'accept-ranges': 'bytes',
       });
-      fs.createReadStream(file, { start, end }).pipe(res);
+      fs.createReadStream(target, { start, end }).pipe(res);
       return;
     }
     res.writeHead(200, { 'content-type': type, 'content-length': size, 'accept-ranges': 'bytes' });
-    fs.createReadStream(file).pipe(res);
+    fs.createReadStream(target).pipe(res);
   })
   .listen(PORT, () => console.log(`serving ${ROOT} on http://127.0.0.1:${PORT}`));

@@ -61,8 +61,8 @@ export function Footer() {
   return (
     <footer className="foot">
       <div className="wrap">
-        <div className="grid gap-11 lg:grid-cols-[1.6fr_1fr_1fr_1fr_1.25fr]">
-          <div>
+        <div className="foot-grid grid gap-11 lg:grid-cols-[1.6fr_1fr_1fr_1fr_1.25fr]">
+          <div className="foot-brand">
             <Logo variant="horizontal" width={190} />
             <p className="mut mt-5 max-w-[38ch] text-[13.6px] leading-relaxed">{L(s.purpose)}</p>
             <div className="mt-5 flex flex-wrap gap-2">
@@ -79,11 +79,11 @@ export function Footer() {
               )}
             </div>
             <div className="mut mt-6 space-y-1.5 text-[13.4px]">
-              <a href={`tel:${s.phone}`} className="flex items-center gap-2.5 hover:text-[var(--cy)]">
+              <a href={`tel:${s.phone}`} className="foot-contact flex items-center gap-2.5 hover:text-[var(--cy)]">
                 <Icon name="chat" size={15} />
                 {s.phone}
               </a>
-              <a href={`mailto:${s.email}`} className="flex items-center gap-2.5 hover:text-[var(--cy)]">
+              <a href={`mailto:${s.email}`} className="foot-contact flex items-center gap-2.5 hover:text-[var(--cy)]">
                 <Icon name="mail" size={15} />
                 {s.email}
               </a>
@@ -91,7 +91,7 @@ export function Footer() {
           </div>
 
           <div className="fcol">
-            <h4>{t('nav.div')}</h4>
+            <h3>{t('nav.div')}</h3>
             {divs.map((d) => (
               <Link key={d.id} href={d.route}>
                 {L(d.name)}
@@ -100,7 +100,7 @@ export function Footer() {
           </div>
 
           <div className="fcol">
-            <h4>{locale === 'ne' ? 'सामग्री' : 'Content'}</h4>
+            <h3>{locale === 'ne' ? 'सामग्री' : 'Content'}</h3>
             <Link href="/blog">{t('nav.blog')}</Link>
             <a href="https://acttolog.blogspot.com" target="_blank" rel="noopener noreferrer">
               {locale === 'ne' ? 'ब्लगर च्यानल ↗' : 'Blogger channel ↗'}
@@ -111,7 +111,7 @@ export function Footer() {
           </div>
 
           <div className="fcol">
-            <h4>{locale === 'ne' ? 'खाता' : 'Account'}</h4>
+            <h3>{locale === 'ne' ? 'खाता' : 'Account'}</h3>
             {user ? (
               <Link href="/my">{t('my')}</Link>
             ) : (
@@ -134,11 +134,11 @@ export function Footer() {
           </div>
 
           <div className="fcol">
-            <h4>{locale === 'ne' ? 'सूचना सूची' : 'Dispatch'}</h4>
+            <h3>{locale === 'ne' ? 'सूचना सूची' : 'Dispatch'}</h3>
             <p className="mut mb-4 text-[13.1px] leading-relaxed">{L(s.nlNote)}</p>
             <form onSubmit={subscribe} noValidate className="flex flex-wrap gap-2">
               <input
-                className={`inp flex-1 min-w-[150px]${emailErr ? 'err' : ''}`}
+                className={`inp flex-1 min-w-[150px]${emailErr ? ' err' : ''}`}
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -176,7 +176,7 @@ export function Footer() {
 
 function PrivacyModal({ onClose }: { onClose: () => void }) {
   const { t, locale } = useI18n();
-  const { consent, reset: resetConsent } = useConsent();
+  const { consent } = useConsent();
   return (
     <div
       className="mbd"

@@ -34,7 +34,7 @@ export function DrCard({ r, score }: { r: DarkroomResource; score?: number }) {
         </div>
       </div>
       <h3 className="font-display mb-1.5 text-[15.8px] font-semibold">{r.name}</h3>
-      <div className="mono dim mb-2.5 text-[9.6px] tracking-[.15em]">
+      <div className="mono dim mb-2.5 text-[10.5px] tracking-[.15em]">
         {r.category.toUpperCase()} · {r.subcategory || ''} · {r.pricing} · {r.region || 'Global'}
       </div>
       <p className="mut mb-4 text-[12.9px] leading-relaxed">{L(r.short)}</p>

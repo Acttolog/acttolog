@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { Icon } from '@/components/ui/Icon';
 import { useI18n } from '@/lib/i18n';
@@ -18,10 +19,14 @@ import type { Division } from '@/lib/content/types';
 export function RadialMenu({ divisions }: { divisions: Division[] }) {
   const [open, setOpen] = useState(false);
   const [hi, setHi] = useState(0);
+  const [mounted, setMounted] = useState(false);
   const root = useRef<HTMLDivElement | null>(null);
   const btn = useRef<HTMLButtonElement | null>(null);
+  const hiRef = useRef(0);
   const { setLocale, locale } = useI18n();
   const reduced = useRef(false);
+
+  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     reduced.current = prefersReduced();
@@ -29,6 +34,15 @@ export function RadialMenu({ divisions }: { divisions: Division[] }) {
 
   useEffect(() => {
     if (!open) return;
+    const count = divisions.length + 2;
+    // Focus follows the highlight: on a short viewport the pad scrolls, and a
+    // highlight that moved without focus would leave the active row off-screen.
+    const move = (d: number) => {
+      const n = (hiRef.current + d + count) % count;
+      hiRef.current = n;
+      setHi(n);
+      root.current?.querySelectorAll<HTMLElement>('.radial-link')[n]?.focus();
+    };
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         e.preventDefault();
@@ -36,10 +50,10 @@ export function RadialMenu({ divisions }: { divisions: Division[] }) {
         btn.current?.focus();
       } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
         e.preventDefault();
-        setHi((h) => (h + 1) % (divisions.length + 2));
+        move(1);
       } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
         e.preventDefault();
-        setHi((h) => (h - 1 + divisions.length + 2) % (divisions.length + 2));
+        move(-1);
       }
     };
     const onAway = (e: MouseEvent) => {
@@ -71,7 +85,7 @@ export function RadialMenu({ divisions }: { divisions: Division[] }) {
     }
   };
 
-  return (
+  const tree = (
     <div className={`radial${open ? ' open' : ''}${reduced.current ? ' rm' : ''}`} ref={root}>
       <button
         ref={btn}
@@ -82,6 +96,7 @@ export function RadialMenu({ divisions }: { divisions: Division[] }) {
         aria-label={open ? 'Close the division menu' : 'Open the division menu'}
         onClick={() => {
           setOpen((o) => !o);
+          hiRef.current = 0;
           setHi(0);
         }}
       >
@@ -100,11 +115,16 @@ export function RadialMenu({ divisions }: { divisions: Division[] }) {
               className={`radial-item${hi === i ? ' hi' : ''}`}
               style={
                 {
-                  '--a': `${-160 + (i * 160) / Math.max(items.length - 1, 1)}deg`,
+                  // A sine bulge gives the cascade its fan silhouette without
+                  // letting any row share another row's vertical band.
+                  '--dx': `${Math.round(-56 * Math.sin((Math.PI * i) / Math.max(items.length - 1, 1)))}px`,
                   '--c': it.color,
                 } as CSSProperties
               }
-              onMouseEnter={() => setHi(i)}
+              onMouseEnter={() => {
+                hiRef.current = i;
+                setHi(i);
+              }}
             >
               {it.href ? (
                 <Link role="menuitem" href={it.href} className="radial-link" tabIndex={hi === i ? 0 : -1} onClick={() => setOpen(false)}>
@@ -129,4 +149,8 @@ export function RadialMenu({ divisions }: { divisions: Division[] }) {
       )}
     </div>
   );
+
+  // Body-level portal: the route template animates a translate, and any element
+  // inside it would resolve `position: fixed` against the page, not the viewport.
+  return mounted ? createPortal(tree, document.body) : null;
 }

@@ -11,6 +11,7 @@
     "format": "prettier --write .",
     "db:push": "prisma db push",
     "db:seed": "node prisma/seed.mjs",
+    "research:sources": "node tools/research-sources.js",
     "test": "npm run typecheck && npm run lint && npm run build",
     "test:unit": "node --test src/lib/*.test.mts src/lib/intelligence/*.test.mts",
     "build:lowmem": "ACTTOLOG_LOWMEM=1 next build --webpack",

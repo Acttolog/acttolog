@@ -12,6 +12,7 @@ import { NepalMap } from '@/components/nepal/NepalMap';
 import { PlaceExplorer } from '@/components/nepal/PlaceExplorer';
 import { GuidelinesTabs } from '@/components/nepal/GuidelinesTabs';
 import { VideoReel } from '@/components/nepal/VideoReel';
+import { NoticeSection } from '@/components/notices/NoticeSection';
 
 const seo = seoFor('/nepal');
 
@@ -429,6 +430,9 @@ export default function NepalPage() {
           <VideoReel videos={g.videos} posters={videoPosters} />
         </div>
       </section>
+
+      {/* Notice board — travel updates, permit changes and seasonal windows */}
+      <NoticeSection scope="nepal" variant="section" accent="var(--cy)" id="np-notices" />
 
       {/* ── 11 · PORTAL OUT ──────────────────────────────────────── */}
       <section className="sec" id="continue">

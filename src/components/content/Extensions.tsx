@@ -41,7 +41,7 @@ function ExtCard({ it, accent }: { it: Item; accent: string }) {
         >
           <Icon name={external ? 'link' : 'doc'} size={16} />
         </span>
-        {external && <span className="dim mono mt-1 text-[9px] tracking-[.16em]">OFFICIAL ↗</span>}
+        {external && <span className="dim mono mt-1 text-[10.5px] tracking-[.16em]">OFFICIAL ↗</span>}
       </div>
       <h3 className="font-display mb-1.5 text-[14.6px] font-semibold transition-colors group-hover:text-[var(--cy)]">
         {it.name}
@@ -99,7 +99,7 @@ function Group({
           <span className="chip">{items.length} sources</span>
         </div>
       </Reveal>
-      <div className={`grid sm:grid-cols-2 ${cols === 3 ? 'lg:grid-cols-3' : 'lg:grid-cols-2'} gap-4`}>
+      <div className={`grid sm:grid-cols-2 ${cols === 3 ? ' lg:grid-cols-3' : ' lg:grid-cols-2'} gap-4`}>
         {items.map((it, i) => (
           <Reveal key={it.name + i} delay={(i % 3) * 50}>
             <ExtCard it={it} accent={accent} />
@@ -184,7 +184,7 @@ export function EntertainmentChannels() {
                   </span>
                   <div>
                     <div className="font-display text-[14.2px] font-semibold">{s.name}</div>
-                    <div className="dim mono mt-1 text-[9.6px] tracking-[.16em]">
+                    <div className="dim mono mt-1 text-[10.5px] tracking-[.16em]">
                       {s.kind.toUpperCase()} · FOLLOW ↗
                     </div>
                   </div>
@@ -279,7 +279,7 @@ export function GamesExtraGrid() {
                         >
                           <Icon name="game" size={16} />
                         </span>
-                        <span className="dim mono text-[9px] tracking-[.16em]">FREE ↗</span>
+                        <span className="dim mono text-[10.5px] tracking-[.16em]">FREE ↗</span>
                       </div>
                       <div className="font-display mb-1.5 text-[14px] font-semibold transition-colors group-hover:text-[var(--cy)]">
                         {g.name}

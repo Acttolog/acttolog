@@ -18,6 +18,7 @@ import {
 } from '@/lib/content/loksewa';
 import { MediumProvider, MediumSwitch, Lk, ProgressTracker, PracticeTest } from '@/components/loksewa/Interactive';
 import { Stage3D } from '@/components/loksewa/Stage3D';
+import { NoticeSection } from '@/components/notices/NoticeSection';
 
 const meta = loksewaMeta();
 const totals = loksewaTotals();
@@ -126,6 +127,20 @@ export default function LoksewaPage() {
         </div>
         <MediumSwitch />
       </section>
+
+      {/* ── LIVE VACANCY & NOTICE BOARD ──────────────────────────── */}
+      <NoticeSection
+        scope="loksewa"
+        locale="ne"
+        variant="full"
+        id="lk-notices"
+        accent="var(--gold)"
+        title={{ en: 'Vacancy & Notice Board', ne: 'पदपूर्ति तथा सूचना पाटी' }}
+        subtitle={{
+          en: 'Government, sansthan and bank recruitment portals — each linked to the issuing body. Filter, search and save; ACTTOLOG notices carry a live closing countdown.',
+          ne: 'सरकारी, संस्थान र बैंकका पदपूर्ति पोर्टल — हरेक जारी गर्ने निकायमै लिङ्क। फिल्टर, खोज र सुरक्षित गर्नुहोस्; ACTTOLOG का सूचनामा बन्द हुने समयको प्रत्यक्ष काउन्टडाउन देखिन्छ।',
+        }}
+      />
 
       {/* ── WHAT THE EXAM ACTUALLY IS ────────────────────────────── */}
       <section className="sec lksec" id="lk-stages">

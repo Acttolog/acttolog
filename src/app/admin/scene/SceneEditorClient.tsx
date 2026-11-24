@@ -128,12 +128,12 @@ export function SceneEditorClient() {
     <div className="grid items-start gap-5 lg:grid-cols-[1fr_360px]">
       <div className="space-y-5">
         <div className="panel p-6">
-          <div className="mono dim mb-4 text-[9.7px] tracking-[.2em]">SCENE</div>
+          <div className="mono dim mb-4 text-[10.5px] tracking-[.2em]">SCENE</div>
           <div className="grid gap-x-6 sm:grid-cols-2">
             <label className="mb-3 flex items-center justify-between gap-3 text-[13.2px]">
               <span className="mut">Enabled</span>
               <button
-                className={`sw${cfg.enabled ? 'on' : ''}`}
+                className={`sw${cfg.enabled ? ' on' : ''}`}
                 aria-label="Scene enabled"
                 onClick={() => set('enabled', !cfg.enabled)}
               />
@@ -178,12 +178,12 @@ export function SceneEditorClient() {
         </div>
 
         <div className="panel p-6">
-          <div className="mono dim mb-4 text-[9.7px] tracking-[.2em]">ANIMATION · CAMERA · LIGHTING</div>
+          <div className="mono dim mb-4 text-[10.5px] tracking-[.2em]">ANIMATION · CAMERA · LIGHTING</div>
           <div className="grid gap-x-6 sm:grid-cols-2">
             <label className="mb-3 flex items-center justify-between gap-3 text-[13.2px]">
               <span className="mut">Auto-rotate</span>
               <button
-                className={`sw${cfg.animation.autoRotate ? 'on' : ''}`}
+                className={`sw${cfg.animation.autoRotate ? ' on' : ''}`}
                 aria-label="Auto rotate"
                 onClick={() => set('animation', { ...cfg.animation, autoRotate: !cfg.animation.autoRotate })}
               />
@@ -191,7 +191,7 @@ export function SceneEditorClient() {
             <label className="mb-3 flex items-center justify-between gap-3 text-[13.2px]">
               <span className="mut">Vertical wobble</span>
               <button
-                className={`sw${cfg.animation.wobble ? 'on' : ''}`}
+                className={`sw${cfg.animation.wobble ? ' on' : ''}`}
                 aria-label="Wobble"
                 onClick={() => set('animation', { ...cfg.animation, wobble: !cfg.animation.wobble })}
               />
@@ -246,7 +246,7 @@ export function SceneEditorClient() {
         </div>
 
         <div className="panel p-6">
-          <div className="mono dim mb-4 text-[9.7px] tracking-[.2em]">
+          <div className="mono dim mb-4 text-[10.5px] tracking-[.2em]">
             ENVIRONMENT · INTERACTION · VISIBILITY
           </div>
           <div className="mb-4 grid gap-3 sm:grid-cols-3">
@@ -254,7 +254,7 @@ export function SceneEditorClient() {
               <label key={k} className="flex items-center justify-between gap-3 text-[13.2px]">
                 <span className="mut capitalize">{k}</span>
                 <button
-                  className={`sw${cfg.environment[k] ? 'on' : ''}`}
+                  className={`sw${cfg.environment[k] ? ' on' : ''}`}
                   aria-label={k}
                   onClick={() => set('environment', { ...cfg.environment, [k]: !cfg.environment[k] })}
                 />
@@ -264,7 +264,7 @@ export function SceneEditorClient() {
               <label key={k} className="flex items-center justify-between gap-3 text-[13.2px]">
                 <span className="mut">{k}</span>
                 <button
-                  className={`sw${cfg.interaction[k] ? 'on' : ''}`}
+                  className={`sw${cfg.interaction[k] ? ' on' : ''}`}
                   aria-label={k}
                   onClick={() => set('interaction', { ...cfg.interaction, [k]: !cfg.interaction[k] })}
                 />
@@ -274,7 +274,7 @@ export function SceneEditorClient() {
               <label key={k} className="flex items-center justify-between gap-3 text-[13.2px]">
                 <span className="mut capitalize">{k}</span>
                 <button
-                  className={`sw${cfg.breakpointVisibility[k] ? 'on' : ''}`}
+                  className={`sw${cfg.breakpointVisibility[k] ? ' on' : ''}`}
                   aria-label={k}
                   onClick={() =>
                     set('breakpointVisibility', {
@@ -319,7 +319,7 @@ export function SceneEditorClient() {
 
       <div className="space-y-5">
         <div className="panel p-6">
-          <div className="mono dim mb-4 text-[9.7px] tracking-[.2em]">WORLD NODES</div>
+          <div className="mono dim mb-4 text-[10.5px] tracking-[.2em]">WORLD NODES</div>
           <div className="space-y-2">
             {WORLD_NODES.map((n) => {
               const o = (cfg.nodes ?? {})[n.id];
@@ -335,7 +335,7 @@ export function SceneEditorClient() {
                   <div className="flex items-center justify-between gap-2">
                     <span className="font-display text-[13px] font-semibold">{n.title}</span>
                     <button
-                      className={`sw${on ? 'on' : ''}`}
+                      className={`sw${on ? ' on' : ''}`}
                       aria-label={`${n.title} visible`}
                       onClick={() => setNode(n.id, { enabled: !on })}
                     />
@@ -356,7 +356,7 @@ export function SceneEditorClient() {
                       onCommit={(v) => setNode(n.id, { lon: v })}
                     />
                   </div>
-                  <div className="dim mono mt-1.5 text-[9.6px] tracking-[.14em]">
+                  <div className="dim mono mt-1.5 text-[10.5px] tracking-[.14em]">
                     {n.cameraPreset}
                     {o ? ' · preview override' : ''}
                   </div>
@@ -378,7 +378,7 @@ export function SceneEditorClient() {
           </button>
         </div>
         <div className="panel p-6">
-          <div className="mono dim mb-4 text-[9.7px] tracking-[.2em]">PREVIEW STATE</div>
+          <div className="mono dim mb-4 text-[10.5px] tracking-[.2em]">PREVIEW STATE</div>
           <p className="mut text-[12.6px] leading-relaxed">
             Saved in this browser only (localStorage) — no database or API persistence in this build. Export
             JSON to carry the values into the CMS.

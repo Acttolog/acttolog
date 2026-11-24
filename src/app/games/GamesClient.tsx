@@ -71,7 +71,7 @@ export function GamesClient({ games }: { games: Game[] }) {
                   {g.launch === 'soon' ? t('dev') : g.access === 'public' && g.url ? t('playNow') : t('play')}{' '}
                   <Icon name="arrow" size={13} />
                 </span>
-                <span className="dim mono text-[10px] tracking-[.14em]">{fdate(g.release)}</span>
+                <span className="dim mono text-[10.5px] tracking-[.14em]">{fdate(g.release)}</span>
               </div>
             </div>
           </Link>

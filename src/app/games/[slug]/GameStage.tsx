@@ -72,7 +72,7 @@ export function GameStage({ game }: { game: Game }) {
                     backdropFilter: 'blur(12px)',
                   }}
                 >
-                  <div className="mono mb-3 text-[10px] tracking-[.24em]" style={{ color: 'var(--ok)' }}>
+                  <div className="mono mb-3 text-[10.5px] tracking-[.24em]" style={{ color: 'var(--ok)' }}>
                     {game.category} · {locale === 'ne' ? 'निःशुल्क खेल' : 'FREE PLAY'}
                   </div>
                   <button type="button" className="btn btn-g" onClick={start}>
@@ -125,13 +125,13 @@ export function GameStage({ game }: { game: Game }) {
           <img
             src={resolveImage(game.thumb, 'games')}
             alt=""
-            className={`absolute inset-0 h-full w-full object-cover ${gated && !user ? 'lockblur' : 'opacity-40'}`}
+            className={`absolute inset-0 h-full w-full object-cover ${gated && !user ? ' lockblur' : ' opacity-40'}`}
           />
         </SpatialFrame>
         <div className="relative p-8 text-center">
           {game.launch === 'soon' ? (
             <>
-              <div className="mono mb-3 text-[10px] tracking-[.24em]" style={{ color: 'var(--warn)' }}>
+              <div className="mono mb-3 text-[10.5px] tracking-[.24em]" style={{ color: 'var(--warn)' }}>
                 IN DEVELOPMENT
               </div>
               <p className="mut max-w-[52ch] text-[13.4px]">
@@ -151,7 +151,7 @@ export function GameStage({ game }: { game: Game }) {
             />
           ) : (
             <>
-              <div className="mono dim mb-3 text-[10px] tracking-[.24em]">GAME STAGE</div>
+              <div className="mono dim mb-3 text-[10.5px] tracking-[.24em]">GAME STAGE</div>
               <p className="mut max-w-[52ch] text-[13.4px]">
                 {locale === 'ne'
                   ? 'खेल मञ्च तयार छ — खेल्न Google बाट जारी राख्नुहोस्।'

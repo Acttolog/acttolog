@@ -8,12 +8,11 @@ import { SectionHead } from '@/components/ui/Heads';
 import { MediaCover } from '@/components/ui/MediaCover';
 import { AccessBadge } from '@/components/ui/Badges';
 import { useI18n } from '@/lib/i18n';
-import { usePrefs } from '@/lib/prefs';
 import { useFxScene } from '@/components/fx/Motion';
 import { WelcomeBack } from '@/components/home/WelcomeBack';
 import { useRef } from 'react';
 import { track } from '@/lib/analytics';
-import { resolveImage, money, fdate, nf, rt } from '@/lib/utils';
+import { resolveImage, fdate, rt } from '@/lib/utils';
 
 import type {
   AcademyCourse,
@@ -27,17 +26,6 @@ import type {
   Offer,
   SiteSettings,
 } from '@/lib/content/types';
-
-export interface LatestItem {
-  title: Bi;
-  kind: string;
-  date: string;
-  route: string;
-  ext?: boolean;
-  color: string;
-  icon: string;
-  mem: boolean;
-}
 
 export interface HomeData {
   shots: string[];
@@ -54,14 +42,24 @@ export interface HomeData {
     resources: number;
   };
   featured: { post?: BlogPost; offer?: Offer; ent?: EntertainmentItem; dr?: DarkroomResource };
-  latest: LatestItem[];
   courses: AcademyCourse[];
   drCats: DarkroomCategory[];
   drFeatured: DarkroomResource[];
   offers: Offer[];
 }
 
-/* ── 01 · signal — one featured story, one live stream ─────────── */
+/* ── 01 · signal — one featured story and its own outline ───────── */
+
+/** Real section headings pulled from the article's markdown, not invented. */
+function storyOutline(markdown: string, limit = 5): string[] {
+  const out: string[] = [];
+  for (const line of String(markdown || '').split('\n')) {
+    const m = /^##\s+(.+?)\s*$/.exec(line);
+    if (m && !/^#/.test(m[1])) out.push(m[1].replace(/[*_`]/g, ''));
+    if (out.length >= limit) break;
+  }
+  return out;
+}
 
 export function HomeSignal({ data }: { data: HomeData }) {
   const { sections: sec } = data;
@@ -70,12 +68,9 @@ export function HomeSignal({ data }: { data: HomeData }) {
   useFxScene(root);
   const post = data.featured.post;
   const showLead = sec.featured.visible !== false && Boolean(post);
-  const showList = sec.latest.visible !== false;
+  const outline = post ? storyOutline(L(post.content)) : [];
+  const showList = sec.latest.visible !== false && outline.length > 0;
   if (!showLead && !showList) return null;
-
-  const items = data.latest
-    .filter((x) => !post || x.route !== `/blog/${post.slug}`)
-    .slice(0, showLead ? 6 : 8);
 
   const categoryId = post
     ? ['research', 'entertainment', 'academy', 'games', 'darkroom'].find((k) =>
@@ -103,8 +98,8 @@ export function HomeSignal({ data }: { data: HomeData }) {
             ne: 'एक्टोलग ब्लग — अनुसन्धान मार्गदर्शन, नेपालका विद्यार्थी अपडेट र नयाँ प्रकाशन',
           })}
           body={L({
-            en: 'One featured story, and what just landed across the world.',
-            ne: 'एक मुख्य कथा, र संसारभर भर्खरै प्रकाशित नयाँ सामग्री।',
+            en: 'One featured story, opened up so you can see what is inside before you read.',
+            ne: 'एक मुख्य कथा — पढ्नुअघि भित्र के छ भनेर हेर्न सकिने गरी खोलिएको।',
           })}
           extra={
             <Link className="btn btn-g btn-sm" href="/blog">
@@ -112,7 +107,7 @@ export function HomeSignal({ data }: { data: HomeData }) {
             </Link>
           }
         />
-        <div className={`hsignal${showLead && showList ? '' : 'solo'}`}>
+        <div className={`hsignal${showLead && showList ? '' : ' solo'}`}>
           {showLead && post && (
             <Reveal>
               <Link href={`/blog/${post.slug}`} className="hsignal-card group fx-holo" data-fx="tilt scan">
@@ -132,7 +127,7 @@ export function HomeSignal({ data }: { data: HomeData }) {
                 </span>
                 <span className="hsignal-body">
                   <span className="hsignal-kicker">
-                    {post.category.toUpperCase()} · {fdate(post.publishedAt)} · {rt(L(post.content))} MIN
+                    {post.category.toUpperCase()} · <time dateTime={post.publishedAt}>{fdate(post.publishedAt)}</time> · {rt(L(post.content))} MIN
                   </span>
                   <span className="hsignal-title">{L(post.title)}</span>
                   <span className="hsignal-ex">{L(post.excerpt)}</span>
@@ -143,20 +138,53 @@ export function HomeSignal({ data }: { data: HomeData }) {
               </Link>
             </Reveal>
           )}
-          {showList && items.length > 0 && (
+          {showList && post && (
             <Reveal delay={80}>
               <div className="hsignal-list">
                 <div className="hsignal-list-h">
-                  <span>{L({ en: 'LATEST', ne: 'ताजा' })}</span>
+                  <span>{L({ en: 'IN THIS STORY', ne: 'यो कथामा' })}</span>
                   <span>
-                    {nf(items.length)} {L({ en: 'UPDATES', ne: 'अपडेट' })}
+                    {outline.length} {L({ en: 'SECTIONS', ne: 'खण्ड' })}
                   </span>
                 </div>
-                {items.map((x, i) => (
-                  <SignalRow key={`${x.route}-${i}`} item={x} index={i} />
+                {outline.map((h, i) => (
+                  <Link
+                    key={h + i}
+                    className="hsignal-row"
+                    href={`/blog/${post.slug}`}
+                    onClick={() => track('article_view', { from: 'home_outline' })}
+                  >
+                    <span className="hsignal-num">{String(i + 1).padStart(2, '0')}</span>
+                    <span className="hsignal-rowbody">
+                      <span className="hsignal-rowtitle">{h}</span>
+                      <span className="hsignal-rowmeta">
+                        {L({ en: 'JUMP INTO THE STORY', ne: 'कथामा जानुहोस्' })}
+                      </span>
+                    </span>
+                    <span className="hsignal-arrow" style={{ color: 'var(--vi)' }}>
+                      <Icon name="arrow" size={15} />
+                    </span>
+                  </Link>
                 ))}
+                <div className="hsignal-tags">
+                  {(post.tags || []).slice(0, 4).map((tag) => (
+                    <span key={tag} className="chip">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                <p className="hsignal-byline mono">
+                  {post.author}
+                  {post.updatedAt ? (
+                    <>
+                      {' '}
+                      · {L({ en: 'updated', ne: 'अद्यावधिक' })}{' '}
+                      <time dateTime={post.updatedAt}>{fdate(post.updatedAt)}</time>
+                    </>
+                  ) : null}
+                </p>
                 <Link className="hsignal-more" href="/blog">
-                  {L({ en: 'All updates', ne: 'सबै अपडेट' })} <Icon name="arrow" size={15} />
+                  {L({ en: 'All stories', ne: 'सबै कथा' })} <Icon name="arrow" size={15} />
                 </Link>
               </div>
             </Reveal>
@@ -167,69 +195,23 @@ export function HomeSignal({ data }: { data: HomeData }) {
   );
 }
 
-function SignalRow({ item, index }: { item: LatestItem; index: number }) {
-  const { L } = useI18n();
-  const inner = (
-    <>
-      <span className="hsignal-num">{String(index + 1).padStart(2, '0')}</span>
-      <span className="hsignal-rowbody">
-        <span className="hsignal-rowtitle">
-          {L(item.title)}
-          {item.mem && (
-            <span className="badge b-vi">
-              <Icon name="lock" size={10} />
-              {L({ en: 'Members', ne: 'सदस्य' })}
-            </span>
-          )}
-        </span>
-        <span className="hsignal-rowmeta">
-          {item.kind.toUpperCase()} · {fdate(item.date)}
-        </span>
-      </span>
-      <span className="hsignal-arrow" style={{ color: item.color }}>
-        <Icon name="arrow" size={15} />
-      </span>
-    </>
-  );
-  if (item.ext) {
-    return (
-      <a
-        className="hsignal-row"
-        href={item.route}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={() => track('resource_open', { from: 'home_signal' })}
-      >
-        {inner}
-      </a>
-    );
-  }
-  return (
-    <Link
-      className="hsignal-row"
-      href={item.route}
-      onClick={() => item.kind === 'Blog' && track('article_view', { from: 'home_signal' })}
-    >
-      {inner}
-    </Link>
-  );
-}
-
 /* ── 02 · index — five divisions as one editorial ledger ───────── */
 
+/** What each division actually holds. Figures live in the deck, not here. */
+const CONTENTS: Record<string, Bi> = {
+  research: { en: 'Peer review · proposals · field reports', ne: 'समीक्षा · प्रस्ताव · क्षेत्र प्रतिवेदन' },
+  entertainment: { en: 'Screenings · series · Nepal stories', ne: 'प्रदर्शनी · शृङ्खला · नेपालका कथा' },
+  academy: { en: 'Courses · modules · private progress', ne: 'पाठ्यक्रम · मोड्युल · निजी प्रगति' },
+  games: { en: 'Arcade · 3D board · direct play', ne: 'आर्केड · थ्रीडी बोर्ड · सिधै खेल' },
+  darkroom: { en: 'Verified tools · datasets · archives', ne: 'प्रमाणित औजार · डाटासेट · अभिलेख' },
+};
+
 export function HomeIndex({ data }: { data: HomeData }) {
-  const { divisions: dvs, counts } = data;
+  const { divisions: dvs } = data;
   const { L, locale } = useI18n();
   const root = useRef<HTMLElement | null>(null);
   useFxScene(root);
   if (data.sections.divisions.visible === false) return null;
-  const cnt: Record<string, string> = {
-    research: `${nf(counts.research)} ${locale === 'ne' ? 'सेवा' : 'services'}`,
-    entertainment: `${nf(counts.entertainment)} ${locale === 'ne' ? 'सामग्री' : 'items'}`,
-    academy: `${nf(counts.academy)} ${locale === 'ne' ? 'पाठ्यक्रम' : 'courses'}`,
-    games: `${nf(counts.games)} ${locale === 'ne' ? 'खेल' : 'games'}`,
-    darkroom: `${nf(counts.darkroom)} ${locale === 'ne' ? 'स्रोत' : 'resources'}`,
-  };
   return (
     <section className="sec hsec" id="index" ref={root}>
       <div className="wrap">
@@ -248,23 +230,10 @@ export function HomeIndex({ data }: { data: HomeData }) {
               </h2>
               <p className="lead mt-4">
                 {L({
-                  en: 'Every division is a doorway. The descent is only the start.',
-                  ne: 'हरेक विभाग एउटा ढोका हो। अवतरण त केवल सुरुवात हो।',
+                  en: 'Every division is a doorway. Here is what is behind each one.',
+                  ne: 'हरेक विभाग एउटा ढोका हो। प्रत्येकभित्र के छ, यहाँ हेर्नुहोस्।',
                 })}
               </p>
-            </Reveal>
-            <Reveal delay={70}>
-              <div className="hindex-chips">
-                <span className="chip">
-                  {dvs.length} {L({ en: 'DIVISIONS', ne: 'विभाग' })}
-                </span>
-                <span className="chip">
-                  {nf(counts.posts)} {L({ en: 'ARTICLES', ne: 'लेख' })}
-                </span>
-                <span className="chip">
-                  {nf(counts.resources)} {L({ en: 'RESOURCES', ne: 'स्रोत' })}
-                </span>
-              </div>
             </Reveal>
             <Reveal delay={120}>
               <Link
@@ -293,29 +262,14 @@ export function HomeIndex({ data }: { data: HomeData }) {
                 </span>
                 <span className="hindex-name">
                   <b>{L(d.name)}</b>
-                  <em>{L(d.sub)}</em>
+                  <em>{L(CONTENTS[d.id] || d.sub)}</em>
                 </span>
-                <span className="hindex-count">{cnt[d.id] || ''}</span>
                 <span className="hindex-arrow">
                   <Icon name="arrow" size={17} />
                 </span>
               </Link>
             ))}
-            <div className="hbento-stats">
-              <span className="hbento-stat">
-                <b>{nf(counts.resources)}</b>
-                <span>{L({ en: 'verified resources', ne: 'प्रमाणित स्रोत' })}</span>
-              </span>
-              <span className="hbento-stat">
-                <b>{nf(counts.posts)}</b>
-                <span>{L({ en: 'articles', ne: 'लेख' })}</span>
-              </span>
-              <span className="hbento-stat">
-                <b>{nf(counts.games)}</b>
-                <span>{L({ en: 'games', ne: 'खेल' })}</span>
-              </span>
-            </div>
-            <WelcomeBack resources={counts.resources} courses={counts.academy} labelEn={locale !== 'ne'} />
+            <WelcomeBack labelEn={locale !== 'ne'} />
           </div>
         </div>
       </div>
@@ -326,14 +280,14 @@ export function HomeIndex({ data }: { data: HomeData }) {
 /* ── 03 · studio — three working surfaces, one band ────────────── */
 
 export function HomeStudio({ data }: { data: HomeData }) {
-  const { sections: sec, counts } = data;
-  const { L, locale } = useI18n();
-  const { currency, usdToNpr } = usePrefs();
+  const { sections: sec } = data;
+  const { L } = useI18n();
   const root = useRef<HTMLElement | null>(null);
   useFxScene(root);
   if (sec.academy.visible === false && sec.darkroom.visible === false && sec.offers.visible === false)
     return null;
   const offer = data.featured.offer;
+  const item = (label: string, href: string) => ({ label, href });
 
   const cards = [
     sec.academy.visible !== false && {
@@ -347,7 +301,7 @@ export function HomeStudio({ data }: { data: HomeData }) {
         en: 'Courses, modules and lessons with private progress.',
         ne: 'पाठ्यक्रम, मोड्युल र पाठ — प्रगति निजी।',
       }),
-      stat: `${nf(counts.academy)} ${L({ en: 'courses', ne: 'पाठ्यक्रम' })}`,
+      items: data.courses.slice(0, 2).map((c) => item(L(c.title), `/academy/${c.slug}`)),
       cta: L({ en: 'Enter Academy', ne: 'एकेडेमी खोल्नुहोस्' }),
       art: '/media/academy.jpg',
     },
@@ -362,7 +316,9 @@ export function HomeStudio({ data }: { data: HomeData }) {
         en: 'Verified tools, databases and hard-to-find resources.',
         ne: 'प्रमाणित उपकरण, डाटाबेस र दुर्लभ स्रोत।',
       }),
-      stat: `${nf(counts.darkroom)} ${L({ en: 'verified', ne: 'प्रमाणित' })}`,
+      items: data.drFeatured
+        .slice(0, 2)
+        .map((r) => item(r.name, r.presentation === 'profile' ? `/darkroom/${r.slug}` : r.url)),
       cta: L({ en: 'Search Darkroom', ne: 'डार्करूम खोज्नुहोस्' }),
       art: '/media/darkroom.jpg',
     },
@@ -377,9 +333,10 @@ export function HomeStudio({ data }: { data: HomeData }) {
         en: 'Selected opportunities, priced in NPR and USD.',
         ne: 'छानिएका अवसर — नेपाली रुपैयाँ र डलरमा।',
       }),
-      stat: offer
-        ? money({ npr: offer.npr, usd: offer.usd }, currency, usdToNpr, locale)
-        : `${nf(data.offers.length)} ${L({ en: 'offers', ne: 'अफर' })}`,
+      items: data.offers
+        .filter((o) => o.slug !== offer?.slug)
+        .slice(0, 2)
+        .map((o) => item(L(o.title), `/offers/${o.slug}`)),
       cta: L({ en: 'View offers', ne: 'अफर हेर्नुहोस्' }),
       art: '/media/offers.jpg',
     },
@@ -391,7 +348,7 @@ export function HomeStudio({ data }: { data: HomeData }) {
     kicker: string;
     title: string;
     line: string;
-    stat: string;
+    items: { label: string; href: string }[];
     cta: string;
     art: string;
   }[];
@@ -426,15 +383,16 @@ export function HomeStudio({ data }: { data: HomeData }) {
                 onClick={() => track('cta_interaction', { cta: `studio_${c.id}` })}
               >
                 <span className="hstudio-art">
-                  {}
-                  <img
-                    loading="lazy"
-                    decoding="async"
-                    src={resolveImage(c.art, c.id)}
-                    srcSet={`/media/derived/${c.id}-480.webp 480w, /media/derived/${c.id}-960.webp 960w`}
-                    sizes="(max-width: 900px) 92vw, 30vw"
-                    alt=""
-                  />
+                  <span className="hstudio-clip">
+                    <img
+                      loading="lazy"
+                      decoding="async"
+                      src={resolveImage(c.art, c.id)}
+                      srcSet={`/media/derived/${c.id}-480.webp 480w, /media/derived/${c.id}-960.webp 960w`}
+                      sizes="(max-width: 900px) 92vw, 30vw"
+                      alt=""
+                    />
+                  </span>
                   <span className="hstudio-glyph">
                     <Icon name={c.icon} size={17} />
                   </span>
@@ -443,8 +401,17 @@ export function HomeStudio({ data }: { data: HomeData }) {
                   <span className="hstudio-kicker">{c.kicker}</span>
                   <span className="hstudio-title">{c.title}</span>
                   <span className="hstudio-line">{c.line}</span>
+                  {c.items.length > 0 && (
+                    <span className="hstudio-items">
+                      {c.items.map((it) => (
+                        <span className="hstudio-item" key={it.href}>
+                          <Icon name="arrow" size={11} />
+                          {it.label}
+                        </span>
+                      ))}
+                    </span>
+                  )}
                   <span className="hstudio-foot">
-                    <span className="hstudio-stat">{c.stat}</span>
                     <span className="hstudio-go">
                       {c.cta} <Icon name="arrow" size={14} />
                     </span>
@@ -467,7 +434,9 @@ export function HomeClose({ data }: { data: HomeData }) {
   const root = useRef<HTMLElement | null>(null);
   useFxScene(root);
   if (sec.cta.visible === false) return null;
-  const words = ['DISCOVER', 'LEARN', 'CREATE', 'CONNECT', 'RESEARCH', 'PLAY'];
+  // A route roll-call, not a second copy of the hero tagline: the marquee names
+  // destinations the reader can actually go to, which no other block lists.
+  const words = ['/academy', '/darkroom', '/games', '/nepal', '/research', '/loksewa'];
   return (
     <section className="sec hsec hsec-last" id="cta" ref={root}>
       <div className="wrap">

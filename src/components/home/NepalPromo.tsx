@@ -22,17 +22,44 @@ export function NepalPromo({ section, locale = 'en' }: { section: HomeSection; l
   const shot = shotFor(g.hero.image, scanShots(readMediaFiles()));
   const highlights = g.places.filter((p) => p.unesco).slice(0, 3);
   const pick = (v: { en: string; ne?: string }) => (locale === 'ne' && v.ne ? v.ne : v.en);
+  // Gateway-only figures: the deck's guide card owns places/regions totals,
+  // so this band reports heritage, trekking and permit breadth instead.
+  const facts = [
+    { n: g.places.filter((p) => p.unesco).length, label: { en: 'UNESCO sites', ne: 'युनेस्को क्षेत्र' } },
+    { n: g.treks.length, label: { en: 'Trek routes', ne: 'ट्रेक मार्ग' } },
+    { n: g.permits.length, label: { en: 'Permit types', ne: 'अनुमति प्रकार' } },
+  ];
 
   return (
     <section className="sec npromo" id="nepal-promo" aria-label={locale === 'ne' ? 'नेपाल पर्यटन मार्गदर्शन' : 'Nepal tourism guide'}>
       <div className="npromo-bg" data-photo={shot ? '1' : '0'} data-plane="-1.2">
-        <NepalShot
-          shot={shot}
-          alt={shot ? (locale === 'ne' ? 'नेपालमा हिउँले ढकिएको हिमालय' : 'Himalayan peaks at sunrise in Nepal') : ''}
-          art="himalaya"
-          variant="wide"
-          className="npromo-img"
-        />
+        {shot && shot.has.length ? (
+          <NepalShot
+            shot={shot}
+            alt={locale === 'ne' ? 'नेपालमा हिउँले ढकिएको हिमालय' : 'Himalayan peaks at sunrise in Nepal'}
+            art="himalaya"
+            variant="wide"
+            className="npromo-img"
+          />
+        ) : (
+          /* No photograph on disk: ship the editorial AI art instead of the
+             procedural panel, responsive WebP first, JPEG as the fallback. */
+          <picture>
+            <source
+              type="image/webp"
+              srcSet="/media/ai/derived/editorial-nepal-480.webp 480w, /media/ai/derived/editorial-nepal-960.webp 960w"
+              sizes="100vw"
+            />
+            <img
+              className="npromo-img"
+              src="/media/ai/editorial-nepal.jpg"
+              alt=""
+              aria-hidden="true"
+              loading="lazy"
+              decoding="async"
+            />
+          </picture>
+        )}
         <div className="npromo-veil" />
         {/* ridge silhouette, drawn not photographed so it scales to any width */}
         <svg className="npromo-ridge" viewBox="0 0 1440 130" preserveAspectRatio="none" aria-hidden="true">
@@ -53,10 +80,12 @@ export function NepalPromo({ section, locale = 'en' }: { section: HomeSection; l
           <p className="npromo-lead">{pick(section.body)}</p>
 
           <div className="npromo-facts">
-            {g.stats.slice(0, 3).map((s, i) => (
-              <div key={i} className="npromo-fact">
-                <span className="mono npromo-fact-n">{s.n}</span>
-                <span className="npromo-fact-l">{pick(s.label)}</span>
+            {facts.map((f) => (
+              <div key={f.label.en} className="npromo-fact">
+                <span className="mono npromo-fact-n" style={{ fontVariantNumeric: 'tabular-nums' }}>
+                  {f.n}
+                </span>
+                <span className="npromo-fact-l">{pick(f.label)}</span>
               </div>
             ))}
           </div>
@@ -94,6 +123,7 @@ export function NepalPromo({ section, locale = 'en' }: { section: HomeSection; l
         .npromo { position: relative; overflow: hidden; display: flex; align-items: center; padding: 0;
           min-height: clamp(380px, 50vh, 500px); }
         .npromo-bg { position: absolute; inset: 0; z-index: 0; }
+        .npromo-bg picture { position: absolute; inset: 0; }
         .npromo-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
           animation: npromoDrift 46s ease-in-out infinite alternate; }
         .npromo-veil { position: absolute; inset: 0;
@@ -117,7 +147,7 @@ export function NepalPromo({ section, locale = 'en' }: { section: HomeSection; l
         .npromo-cta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
         .npromo-unesco { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 18px;
           padding-top: 14px; border-top: 1px solid var(--line); }
-        .npromo-unesco-label { font-size: 9.2px; letter-spacing: .2em; color: var(--gold); margin-right: 4px; }
+        .npromo-unesco-label { font-size: 10.5px; letter-spacing: .2em; color: var(--gold); margin-right: 4px; }
         .npromo-chip { font: 500 11px/1 var(--font-mono); letter-spacing: .06em; color: var(--mut);
           border: 1px solid var(--line); border-radius: 999px; padding: 6px 11px; text-decoration: none; transition: .3s; }
         .npromo-chip:hover { color: var(--txt); border-color: color-mix(in srgb, var(--cy) 55%, transparent); }

@@ -45,7 +45,7 @@ export function ConsentBanner() {
               </div>
               <div className="flex items-center gap-3 text-[13.1px]">
                 <button
-                  className={`sw${analytics ? 'on' : ''}`}
+                  className={`sw${analytics ? ' on' : ''}`}
                   aria-label={t('consent.ana')}
                   aria-pressed={analytics}
                   onClick={() => setAnalytics((v) => !v)}
@@ -54,7 +54,7 @@ export function ConsentBanner() {
               </div>
               <div className="flex items-center gap-3 text-[13.1px]">
                 <button
-                  className={`sw${personalization ? 'on' : ''}`}
+                  className={`sw${personalization ? ' on' : ''}`}
                   aria-label={t('consent.per')}
                   aria-pressed={personalization}
                   onClick={() => setPersonalization((v) => !v)}

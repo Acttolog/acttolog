@@ -109,13 +109,13 @@ export function PlaceExplorer({
           )}
         </div>
         <div className="np-flt-row" role="group" aria-label="Filter by region">
-          <button className={`chip${region === 'all' ? 'on' : ''}`} onClick={() => setRegion('all')}>
+          <button className={`chip${region === 'all' ? ' on' : ''}`} onClick={() => setRegion('all')}>
             {ne ? 'सबै क्षेत्र' : 'ALL REGIONS'}
           </button>
           {regions.map((r) => (
             <button
               key={r.id}
-              className={`chip${region === r.id ? 'on' : ''}`}
+              className={`chip${region === r.id ? ' on' : ''}`}
               onClick={() => setRegion(r.id)}
               style={{ ['--a']: r.accent } as React.CSSProperties}
             >
@@ -124,11 +124,11 @@ export function PlaceExplorer({
           ))}
         </div>
         <div className="np-flt-row" role="group" aria-label="Filter by type">
-          <button className={`chip${type === 'all' ? 'on' : ''}`} onClick={() => setType('all')}>
+          <button className={`chip${type === 'all' ? ' on' : ''}`} onClick={() => setType('all')}>
             {ne ? 'सबै प्रकार' : 'ALL TYPES'}
           </button>
           {types.map((t) => (
-            <button key={t} className={`chip${type === t ? 'on' : ''}`} onClick={() => setType(t)}>
+            <button key={t} className={`chip${type === t ? ' on' : ''}`} onClick={() => setType(t)}>
               {(TYPE_LABEL[t] || { en: t })[locale === 'ne' && TYPE_LABEL[t]?.ne ? 'ne' : 'en']}
             </button>
           ))}
@@ -189,7 +189,7 @@ export function PlaceExplorer({
                   </span>
                   <div className="np-card-acts">
                     <button
-                      className={`btn btn-sm ${saved ? 'btn-p' : 'btn-g'}`}
+                      className={`btn btn-sm ${saved ? ' btn-p' : ' btn-g'}`}
                       onClick={() => toggleSave('place', p.id, p.name.en, `/nepal#place-${p.id}`)}
                       aria-pressed={saved}
                     >

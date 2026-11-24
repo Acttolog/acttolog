@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { webglSupported, QUALITY_SETTINGS, type QualityTier } from './tier';
 import { useQuality } from './QualityProvider';
@@ -138,6 +139,11 @@ export function Globe() {
   const [layer, setLayer] = useState<'blue' | TileLayer>('blue');
   const [camsOpen, setCamsOpen] = useState(false);
   const [findOpen, setFindOpen] = useState(false);
+  const [deckOpen, setDeckOpen] = useState(false);
+  const [narrow, setNarrow] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const toggleRef = useRef<HTMLButtonElement>(null);
+  const sheetRef = useRef<HTMLDivElement>(null);
   const [findQ, setFindQ] = useState('');
   const [findBusy, setFindBusy] = useState(false);
   const [findErr, setFindErr] = useState('');
@@ -151,7 +157,34 @@ export function Globe() {
 
   useEffect(() => {
     setSupported(webglSupported());
+    setMounted(true);
+    const mq = window.matchMedia('(max-width: 900px)');
+    const sync = () => setNarrow(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
   }, []);
+
+  // A phone opens the controls as a dialog, so it must behave like one: Escape
+  // closes, focus moves in and returns to the toggle, and the page behind it
+  // cannot scroll away while the reader is using the controls.
+  useEffect(() => {
+    if (!deckOpen || !narrow) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setDeckOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    const first = sheetRef.current?.querySelector<HTMLElement>('button, input');
+    first?.focus();
+    const toggle = toggleRef.current;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prevOverflow;
+      toggle?.focus();
+    };
+  }, [deckOpen, narrow]);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -282,6 +315,131 @@ export function Globe() {
     setPointer({ x: e.clientX - r.left, y: e.clientY - r.top, inside: true });
   };
 
+  const panelBody = (
+    <>
+      {(
+        [
+          ['blue', 'EARTH'],
+          ['map', 'MAP'],
+          ['sat', 'SAT'],
+        ] as ['blue' | TileLayer, string][]
+      ).map(([k, label]) => (
+        <button
+          key={k}
+          className="chip !px-3 !py-1.5 !text-[10.5px]"
+          style={
+            layer === k
+              ? {
+                  color: 'var(--txt)',
+                  borderColor: 'color-mix(in srgb,var(--cy) 55%,transparent)',
+                  background: 'color-mix(in srgb,var(--cy) 14%,transparent)',
+                }
+              : undefined
+          }
+          onClick={() => setLayer(k)}
+          aria-pressed={layer === k}
+          title={`Layer: ${label}`}
+        >
+          {label}
+        </button>
+      ))}
+      <div className="hr w-full" />
+      <div className="grid w-full grid-cols-2 gap-1" role="group" aria-label="Visual quality level">
+        {QUALITY_SETTINGS.map((q) => (
+          <button
+            key={q}
+            className={`chip !px-1.5 !py-1 !text-[10.5px] !justify-center${setting === q ? ' on' : ''}`}
+            onClick={() => setSetting(q)}
+            aria-pressed={setting === q}
+            title={
+              q === 'auto'
+                ? `Auto — currently rendering ${tier.toUpperCase()}`
+                : `Force ${q.toUpperCase()} (auto-detect picked ${tier.toUpperCase()})`
+            }
+          >
+            {q.toUpperCase()}
+          </button>
+        ))}
+      </div>
+      <div className="hr w-full" />
+      <div className="flex w-full gap-1">
+        <button
+          className="ico !h-9 !w-9"
+          title="Find your home"
+          aria-label="Find your home"
+          onClick={() => setFindOpen((v) => !v)}
+        >
+          <Icon name="home" size={16} />
+        </button>
+        <button
+          className="ico !h-9 !w-9"
+          title="Live cam networks"
+          aria-label="Live cam networks"
+          onClick={() => setCamsOpen(true)}
+        >
+          <span className="dot" />
+        </button>
+        <button
+          className="ico !h-9 !w-9"
+          title="Reset view"
+          aria-label="Reset view"
+          onClick={() => {
+            distTargetRef.current = 3.15;
+            setPin(null);
+          }}
+        >
+          <Icon name="refresh" size={15} />
+        </button>
+      </div>
+      <div className="hr w-full" />
+      <button
+        className="chip !px-3 !py-1.5 !text-[10.5px]"
+        title="Open the Earth command center (EARTH · MAP · SAT · 360)"
+        onClick={() => {
+          const f = flyRef.current;
+          router.push(
+            f
+              ? `/explore?mode=earth&lat=${f.lat.toFixed(5)}&lng=${f.lon.toFixed(5)}`
+              : '/explore?mode=earth',
+          );
+        }}
+      >
+        COMMAND CENTER
+      </button>
+    </>
+  );
+
+  const findPanel = findOpen ? (
+    <div className="panel gdeck-find w-[min(320px,86vw)] p-4">
+      <div className="mono dim mb-2.5 text-[10.5px] tracking-[.2em]">
+        FIND YOUR HOME · ROADS · 3D VIEW
+      </div>
+      <form
+        className="flex gap-2"
+        onSubmit={(e) => {
+          e.preventDefault();
+          findHome();
+        }}
+      >
+        <input
+          className="inp !py-2 !text-[13px]"
+          value={findQ}
+          onChange={(e) => setFindQ(e.target.value)}
+          placeholder="Kathmandu, Nepal…"
+          aria-label="Search a place"
+        />
+        <button className="btn btn-p btn-sm" type="submit" disabled={findBusy}>
+          {findBusy ? '…' : <Icon name="arrow" size={14} />}
+        </button>
+      </form>
+      {findErr && <p className="mut mt-2 text-[11.6px]">{findErr}</p>}
+      <p className="dim mt-2 text-[10.5px] leading-relaxed">
+        Geocoding © OpenStreetMap contributors. The globe flies to your place — keep scrolling the wheel to
+        street level.
+      </p>
+    </div>
+  ) : null;
+
   return (
     <div
       ref={containerRef}
@@ -323,132 +481,67 @@ export function Globe() {
         </div>
       )}
 
-      {/* Explorer control deck */}
-      <div className="absolute top-[calc(var(--nav)+16px)] right-4 z-[5] flex flex-col items-end gap-2">
-        <div className="panel flex flex-col gap-1.5 p-1.5">
-          {(
-            [
-              ['blue', 'EARTH'],
-              ['map', 'MAP'],
-              ['sat', 'SAT'],
-            ] as ['blue' | TileLayer, string][]
-          ).map(([k, label]) => (
-            <button
-              key={k}
-              className="chip !px-3 !py-1.5 !text-[10px]"
-              style={
-                layer === k
-                  ? {
-                      color: 'var(--txt)',
-                      borderColor: 'color-mix(in srgb,var(--cy) 55%,transparent)',
-                      background: 'color-mix(in srgb,var(--cy) 14%,transparent)',
-                    }
-                  : undefined
-              }
-              onClick={() => setLayer(k)}
-              title={`Layer: ${label}`}
-            >
-              {label}
-            </button>
-          ))}
-          <div className="hr w-full" />
-          <div className="grid w-full grid-cols-2 gap-1" role="group" aria-label="Visual quality level">
-            {QUALITY_SETTINGS.map((q) => (
-              <button
-                key={q}
-                className={`chip !px-1.5 !py-1 !text-[8.6px] !justify-center${setting === q ? 'on' : ''}`}
-                onClick={() => setSetting(q)}
-                aria-pressed={setting === q}
-                title={
-                  q === 'auto'
-                    ? `Auto — currently rendering ${tier.toUpperCase()}`
-                    : `Force ${q.toUpperCase()} (auto-detect picked ${tier.toUpperCase()})`
-                }
-              >
-                {q.toUpperCase()}
-              </button>
-            ))}
-          </div>
-          <div className="hr w-full" />
-          <button
-            className="ico !h-9 !w-9"
-            title="Find your home"
-            aria-label="Find your home"
-            onClick={() => setFindOpen((v) => !v)}
-          >
-            <Icon name="home" size={16} />
-          </button>
-          <button
-            className="ico !h-9 !w-9"
-            title="Live cam networks"
-            aria-label="Live cam networks"
-            onClick={() => setCamsOpen(true)}
-          >
-            <span className="dot" />
-          </button>
-          <button
-            className="ico !h-9 !w-9"
-            title="Reset view"
-            aria-label="Reset view"
-            onClick={() => {
-              distTargetRef.current = 3.15;
-              setPin(null);
-            }}
-          >
-            <Icon name="refresh" size={15} />
-          </button>
-          <div className="hr w-full" />
-          <button
-            className="chip !px-3 !py-1.5 !text-[9.4px]"
-            title="Open the Earth command center (EARTH · MAP · SAT · 360)"
-            onClick={() => {
-              const f = flyRef.current;
-              router.push(
-                f
-                  ? `/explore?mode=earth&lat=${f.lat.toFixed(5)}&lng=${f.lon.toFixed(5)}`
-                  : '/explore?mode=earth',
-              );
-            }}
-          >
-            COMMAND CENTER
-          </button>
-        </div>
-        {findOpen && (
-          <div className="panel w-[min(320px,86vw)] p-4">
-            <div className="mono dim mb-2.5 text-[9.6px] tracking-[.2em]">
-              FIND YOUR HOME · ROADS · 3D VIEW
-            </div>
-            <form
-              className="flex gap-2"
-              onSubmit={(e) => {
-                e.preventDefault();
-                findHome();
-              }}
-            >
-              <input
-                className="inp !py-2 !text-[13px]"
-                value={findQ}
-                onChange={(e) => setFindQ(e.target.value)}
-                placeholder="Kathmandu, Nepal…"
-                aria-label="Search a place"
-              />
-              <button className="btn btn-p btn-sm" type="submit" disabled={findBusy}>
-                {findBusy ? '…' : <Icon name="arrow" size={14} />}
-              </button>
-            </form>
-            {findErr && <p className="mut mt-2 text-[11.6px]">{findErr}</p>}
-            <p className="dim mt-2 text-[10.4px] leading-relaxed">
-              Geocoding © OpenStreetMap contributors. The globe flies to your place — keep scrolling the wheel
-              to street level.
-            </p>
+      {/* Explorer control deck. On a phone the inline panel lay across the hero
+          paragraph, so the toggle opens a body-level dialog instead. */}
+      <div
+        className={`gdeck absolute top-[calc(var(--nav)+16px)] right-4 z-[5] flex flex-col items-end gap-2${deckOpen ? ' open' : ''}`}
+      >
+        <button
+          type="button"
+          ref={toggleRef}
+          className="gdeck-toggle ico"
+          aria-expanded={deckOpen}
+          aria-controls={narrow ? 'gdeck-sheet' : 'gdeck-panel'}
+          aria-label={deckOpen ? 'Close globe controls' : 'Open globe controls'}
+          onClick={() => setDeckOpen((v) => !v)}
+        >
+          <Icon name={deckOpen ? 'close' : 'gear'} size={17} />
+        </button>
+        {!narrow && (
+          <div className="panel gdeck-panel flex flex-col gap-1.5 p-1.5" id="gdeck-panel">
+            {panelBody}
           </div>
         )}
+        {!narrow && findPanel}
       </div>
+
+      {narrow && deckOpen && mounted
+        ? createPortal(
+            <>
+              <div className="gdeck-scrim" aria-hidden="true" onClick={() => setDeckOpen(false)} />
+              <div
+                className="gdeck-sheet"
+                id="gdeck-sheet"
+                ref={sheetRef}
+                role="dialog"
+                aria-modal="true"
+                aria-label="Globe controls"
+              >
+                <div className="gdeck-sheet-head">
+                  <span className="mono">
+                    GLOBE · LAYER {layer.toUpperCase()} · {tier.toUpperCase()}
+                  </span>
+                  <button
+                    type="button"
+                    className="ico !h-11 !w-11"
+                    aria-label="Close globe controls"
+                    onClick={() => setDeckOpen(false)}
+                  >
+                    <Icon name="close" size={16} />
+                  </button>
+                </div>
+                <div className="gdeck-sheet-body">{panelBody}</div>
+                {findPanel}
+              </div>
+            </>,
+            document.body,
+          )
+        : null}
 
       {/* attribution */}
       {layer !== 'blue' && (
         <div
-          className="mono dim absolute bottom-[40px] left-3 z-[5] text-[9px] tracking-[.1em]"
+          className="mono dim absolute bottom-[40px] left-3 z-[5] text-[10.5px] tracking-[.1em]"
           style={{
             background: 'color-mix(in srgb,var(--bg) 66%,transparent)',
             padding: '3px 8px',

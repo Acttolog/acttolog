@@ -155,7 +155,7 @@ export function IntelligenceClient({ variant }: { variant: 'analytics' | 'intell
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex flex-wrap gap-2">
             {PERIODS.map(({ id, label }) => (
-              <button key={id} className={`chip${period === id ? 'on' : ''}`} onClick={() => setPeriod(id)}>
+              <button key={id} className={`chip${period === id ? ' on' : ''}`} onClick={() => setPeriod(id)}>
                 {label}
               </button>
             ))}
@@ -174,7 +174,7 @@ export function IntelligenceClient({ variant }: { variant: 'analytics' | 'intell
                 Export CSV
               </a>
             )}
-            <span className="dim mono text-[10.4px]">displayed in Asia/Kathmandu</span>
+            <span className="dim mono text-[10.5px]">displayed in Asia/Kathmandu</span>
           </div>
         </div>
       </div>
@@ -183,7 +183,7 @@ export function IntelligenceClient({ variant }: { variant: 'analytics' | 'intell
         <div className="panel mb-5 p-6">
           <div className="mb-4 flex items-center gap-2.5">
             <span className="dot" />
-            <div className="mono dim text-[9.7px] tracking-[.2em]">
+            <div className="mono dim text-[10.5px] tracking-[.2em]">
               LIVE NOW · NEPAL TIME · AGGREGATED ONLY
             </div>
           </div>
@@ -226,28 +226,28 @@ export function IntelligenceClient({ variant }: { variant: 'analytics' | 'intell
           ] as [string, number, number][]
         ).map(([label, v, prev]) => (
           <div key={label} className="panel p-5">
-            <div className="mono dim mb-2 text-[9.6px] tracking-[.18em]">{label.toUpperCase()}</div>
+            <div className="mono dim mb-2 text-[10.5px] tracking-[.18em]">{label.toUpperCase()}</div>
             <div className="font-display text-[28px] font-bold tracking-[-.03em]">
               {v.toLocaleString('en-US')}
             </div>
             {prev > 0 ? (
-              <span className={`badge mt-2 ${pct(v, prev) >= 0 ? 'b-ok' : 'b-err'}`}>
+              <span className={`badge mt-2 ${pct(v, prev) >= 0 ? ' b-ok' : ' b-err'}`}>
                 {pct(v, prev) > 0 ? '+' : ''}
                 {pct(v, prev)}%
               </span>
             ) : (
-              <span className="dim mt-2 block text-[10.4px]">no prior-period base</span>
+              <span className="dim mt-2 block text-[10.5px]">no prior-period base</span>
             )}
           </div>
         ))}
         <div className="panel p-5">
-          <div className="mono dim mb-2 text-[9.6px] tracking-[.18em]">ENGAGED RATE</div>
+          <div className="mono dim mb-2 text-[10.5px] tracking-[.18em]">ENGAGED RATE</div>
           {data.eng === null ? (
             <div className="mut text-[13px] leading-snug">Insufficient measured data</div>
           ) : (
             <>
               <div className="font-display text-[28px] font-bold tracking-[-.03em]">{data.eng}%</div>
-              <span className="dim mt-2 block text-[10.4px]">
+              <span className="dim mt-2 block text-[10.5px]">
                 {data.engagedSessions} of {data.sessions} sessions engaged
               </span>
             </>
@@ -257,14 +257,14 @@ export function IntelligenceClient({ variant }: { variant: 'analytics' | 'intell
 
       <div className="mb-5 grid gap-5 lg:grid-cols-[1.2fr_.8fr]">
         <div className="panel p-6">
-          <div className="mono dim mb-4 text-[9.7px] tracking-[.2em]">TRAFFIC TREND · PAGE VIEWS</div>
+          <div className="mono dim mb-4 text-[10.5px] tracking-[.2em]">TRAFFIC TREND · PAGE VIEWS</div>
           <AreaTrend data={data.byDay} forecast={forecastSeries(data.byDay.map(([, v]) => v), 7)} />
         </div>
         <div className="panel p-6">
           <div className="mb-4 flex items-center justify-between gap-2">
-            <div className="mono dim text-[9.7px] tracking-[.2em]">DIVISION PERFORMANCE</div>
+            <div className="mono dim text-[10.5px] tracking-[.2em]">DIVISION PERFORMANCE</div>
             {filters.div && (
-              <button className="chip on !text-[10px]" onClick={() => patchFilters({ div: null })}>
+              <button className="chip on !text-[10.5px]" onClick={() => patchFilters({ div: null })}>
                 {filters.div} ✕
               </button>
             )}
@@ -273,13 +273,13 @@ export function IntelligenceClient({ variant }: { variant: 'analytics' | 'intell
             data={Object.entries(data.byDiv)}
             onSelect={(k) => patchFilters({ div: filters.div === k ? null : k })}
           />
-          <p className="dim mt-2 text-[10.4px]">Click a division to cross-filter the dashboard.</p>
+          <p className="dim mt-2 text-[10.5px]">Click a division to cross-filter the dashboard.</p>
         </div>
       </div>
 
       <div className="panel mb-5 p-6">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-          <div className="mono dim text-[9.7px] tracking-[.2em]">ANOMALY WATCH · DAILY PAGE VIEWS</div>
+          <div className="mono dim text-[10.5px] tracking-[.2em]">ANOMALY WATCH · DAILY PAGE VIEWS</div>
           <span className="badge b-vi">{anomalies.length} flagged</span>
         </div>
         {anomalies.length === 0 ? (
@@ -296,7 +296,7 @@ export function IntelligenceClient({ variant }: { variant: 'analytics' | 'intell
                 style={{ borderColor: 'var(--line)', background: 'var(--panel2)' }}
               >
                 <span className="mono text-[12px]">{a.x}</span>
-                <span className={`badge ${a.direction === 'spike' ? 'b-ok' : 'b-err'}`}>
+                <span className={`badge ${a.direction === 'spike' ? ' b-ok' : ' b-err'}`}>
                   {a.direction === 'spike' ? 'spike' : 'drop'} · z {a.z}
                 </span>
                 <span className="mono dim text-[11.6px]">{a.y.toLocaleString('en-US')} page views</span>
@@ -304,11 +304,11 @@ export function IntelligenceClient({ variant }: { variant: 'analytics' | 'intell
             ))}
           </div>
         )}
-        <p className="dim mt-3 text-[10.4px]">{ANOMALY_LABEL}</p>
+        <p className="dim mt-3 text-[10.5px]">{ANOMALY_LABEL}</p>
       </div>
 
       <div className="panel mb-5 p-6">
-        <div className="mono dim mb-4 text-[9.7px] tracking-[.2em]">DAILY MEASURED DATA</div>
+        <div className="mono dim mb-4 text-[10.5px] tracking-[.2em]">DAILY MEASURED DATA</div>
         <DataGrid
           columns={DAY_COLUMNS}
           data={data.byDay.map(([day, views]) => ({ day, views }))}
@@ -319,7 +319,7 @@ export function IntelligenceClient({ variant }: { variant: 'analytics' | 'intell
 
       {variant === 'intelligence' && (
         <div className="panel mb-5 p-6">
-          <div className="mono dim mb-4 text-[9.7px] tracking-[.2em]">ASK YOUR DATA</div>
+          <div className="mono dim mb-4 text-[10.5px] tracking-[.2em]">ASK YOUR DATA</div>
           <div className="mb-4 flex gap-2.5">
             <input
               className="inp flex-1"
@@ -354,7 +354,7 @@ export function IntelligenceClient({ variant }: { variant: 'analytics' | 'intell
             >
               {answer.map((l, i) => (
                 <p key={i} className="mut text-[13px] leading-relaxed">
-                  <span className={`badge mr-2 ${l.startsWith('MEASURED') ? 'b-info' : 'b-vi'}`}>
+                  <span className={`badge mr-2 ${l.startsWith('MEASURED') ? ' b-info' : ' b-vi'}`}>
                     {l.split('.')[0]}
                   </span>
                   {l.slice(l.indexOf('.') + 2)}
@@ -370,7 +370,7 @@ export function IntelligenceClient({ variant }: { variant: 'analytics' | 'intell
       )}
 
       <div className="panel p-6">
-        <div className="mono dim mb-4 text-[9.7px] tracking-[.2em]">EVENT BREAKDOWN</div>
+        <div className="mono dim mb-4 text-[10.5px] tracking-[.2em]">EVENT BREAKDOWN</div>
         <DrilldownBar data={Object.entries(data.byType)} />
       </div>
     </div>

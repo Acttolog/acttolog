@@ -25,7 +25,7 @@ export default function Page() {
       <div className="grid items-start gap-5 lg:grid-cols-[1fr_360px]">
         <BackupClient />
         <div className="panel p-6">
-          <div className="mono dim mb-4 text-[9.7px] tracking-[.2em]">POLICY</div>
+          <div className="mono dim mb-4 text-[10.5px] tracking-[.2em]">POLICY</div>
           <div className="space-y-2.5 text-[13px]">
             <div className="flex justify-between">
               <span className="dim">Provider</span>

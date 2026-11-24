@@ -56,7 +56,7 @@ export default function Page() {
       <div className="space-y-2.5">
         {ITEMS.map(([t, d, s]) => (
           <div key={t} className="panel flex items-start gap-4 p-5">
-            <span className={`badge ${s === 'ok' ? 'b-ok' : 'b-info'} mt-0.5 flex-none`}>
+            <span className={`badge ${s === 'ok' ? ' b-ok' : ' b-info'} mt-0.5 flex-none`}>
               {s === 'ok' ? 'implemented' : 'staged'}
             </span>
             <div>

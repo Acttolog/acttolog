@@ -24,7 +24,7 @@ export default function Page() {
         ]}
       />
       <div className="panel mt-5 p-6">
-        <div className="mono dim mb-4 text-[9.7px] tracking-[.2em]">DIVISIONS (mega-menu source)</div>
+        <div className="mono dim mb-4 text-[10.5px] tracking-[.2em]">DIVISIONS (mega-menu source)</div>
         <CollectionTable
           rows={db.divisions as unknown as Record<string, unknown>[]}
           cols={[

@@ -73,7 +73,7 @@ export function BackupClient() {
               <td style={{ color: 'var(--txt)' }}>{b.kind}</td>
               <td className="mono text-[11px]">{b.location}</td>
               <td>
-                <span className={`badge ${b.status === 'ok' ? 'b-ok' : 'b-err'}`}>{b.status}</span>
+                <span className={`badge ${b.status === 'ok' ? ' b-ok' : ' b-err'}`}>{b.status}</span>
               </td>
               <td className="mono text-[11px]">{fktm(b.createdAt)}</td>
             </tr>

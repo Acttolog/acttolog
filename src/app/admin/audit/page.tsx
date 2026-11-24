@@ -30,7 +30,7 @@ export default async function Page() {
         <div className="panel overflow-x-auto p-0">
           <table className="w-full text-left text-[12.4px]">
             <thead>
-              <tr className="mono dim text-[9.6px] tracking-[.16em]" style={{ borderBottom: '1px solid var(--line)' }}>
+              <tr className="mono dim text-[10.5px] tracking-[.16em]" style={{ borderBottom: '1px solid var(--line)' }}>
                 <th className="px-4 py-3">TIMESTAMP (UTC)</th>
                 <th className="px-4 py-3">ACTOR</th>
                 <th className="px-4 py-3">ACTION</th>

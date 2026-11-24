@@ -62,7 +62,14 @@ const mb = (n) => (n >= 1048576 ? `${(n / 1048576).toFixed(1)} MB` : `${Math.max
   const page = await browser.newPage();
   await page.setViewport({ width: 1440, height: 900 });
   const errs = [];
-  page.on('console', (m) => { if (m.type() === 'error' && !/THREE\.WebGL|WebGL/i.test(m.text())) errs.push(m.text().slice(0, 120)); });
+  // Static export ships no RSC payload endpoint, so <Link> prefetch asks for
+  // __next.<route>.__PAGE__.txt?_rsc=… and 404s on live Pages too. The URL lives
+  // in the message location, not its text. Real asset 404s still fail.
+  const isRscPrefetch = (m) => /__next\.[^/]*\.txt/.test((m.location() || {}).url || '');
+  page.on('console', (m) => {
+    if (m.type() !== 'error' || isRscPrefetch(m) || /THREE\.WebGL|WebGL/i.test(m.text())) return;
+    errs.push(`${m.text().slice(0, 90)} @ ${(m.location() || {}).url || '?'}`.slice(0, 160));
+  });
   page.on('pageerror', (e) => errs.push(`[page] ${String(e.stack || e.message).split('\n').slice(0, 3).join(' <- ')}`));
   await page.evaluateOnNewDocument(seed);
 

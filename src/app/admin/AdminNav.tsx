@@ -100,7 +100,7 @@ export function AdminNav({ user }: { user: { name: string; email: string; role: 
           Admin menu
         </button>
       </div>
-      <aside className={`aside ${open ? 'open' : ''}`} onClick={() => setOpen(false)}>
+      <aside className={`aside ${open ? ' open' : ''}`} onClick={() => setOpen(false)}>
         <Link
           href="/admin/dashboard"
           className="flex items-center gap-2.5 px-2.5 pt-1 pb-4"
@@ -109,13 +109,13 @@ export function AdminNav({ user }: { user: { name: string; email: string; role: 
           <Logo variant="icon" width={26} />
           <div>
             <div className="font-display text-[13.6px] font-bold tracking-[.12em]">ACTTOLOG</div>
-            <div className="mono dim text-[8.8px] tracking-[.24em]">ADMIN CONSOLE</div>
+            <div className="mono dim text-[10.5px] tracking-[.24em]">ADMIN CONSOLE</div>
           </div>
         </Link>
 
         <div className="px-2.5 py-3.5" style={{ borderBottom: '1px solid var(--line)' }}>
           <div className="font-display truncate text-[12.8px] font-semibold">{user.name}</div>
-          <div className="dim mono mt-0.5 truncate text-[9.6px]">{user.email}</div>
+          <div className="dim mono mt-0.5 truncate text-[10.5px]">{user.email}</div>
           <span className="badge b-info mt-2">{user.role}</span>
         </div>
 

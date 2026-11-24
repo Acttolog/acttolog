@@ -30,7 +30,7 @@ export function ItemBody({ item }: { item: EntertainmentItem }) {
           <div className="overflow-hidden rounded-xl border" style={{ borderColor: 'var(--line)' }}>
             <div className="grid aspect-video place-items-center" style={{ background: 'var(--panel2)' }}>
               <div className="p-8 text-center">
-                <div className="mono dim mb-3 text-[10px] tracking-[.24em]">PROTECTED MEDIA</div>
+                <div className="mono dim mb-3 text-[10.5px] tracking-[.24em]">PROTECTED MEDIA</div>
                 <p className="mut mx-auto max-w-[52ch] text-[13.4px]">{body}</p>
               </div>
             </div>
@@ -45,7 +45,7 @@ export function ItemBody({ item }: { item: EntertainmentItem }) {
           className="rounded-xl border p-8 text-center"
           style={{ borderColor: 'var(--line)', background: 'var(--panel2)' }}
         >
-          <div className="mono dim mb-3 text-[10px] tracking-[.24em]">MEDIA COMING SOON</div>
+          <div className="mono dim mb-3 text-[10.5px] tracking-[.24em]">MEDIA COMING SOON</div>
           <Md src={body} />
           <p className="dim mt-4 text-[12px]">
             {locale === 'ne'

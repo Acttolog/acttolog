@@ -93,7 +93,7 @@ export default async function ResourcePage({ params }: { params: Promise<{ slug:
                   </div>
                 </div>
 
-                <div className="mono dim mb-4 text-[9.8px] tracking-[.18em]">
+                <div className="mono dim mb-4 text-[10.5px] tracking-[.18em]">
                   {r.category.toUpperCase()} · {r.subcategory || '—'} · {r.type || '—'} · AUDIENCE:{' '}
                   {r.audience || 'Everyone'} · LANG: {(r.language || 'en').toUpperCase()}
                 </div>
@@ -143,7 +143,7 @@ export default async function ResourcePage({ params }: { params: Promise<{ slug:
                     >
                       <div className="min-w-0">
                         <div className="font-display truncate text-[13.4px] font-semibold">{x.name}</div>
-                        <div className="dim mono mt-0.5 text-[9.4px] tracking-[.14em]">
+                        <div className="dim mono mt-0.5 text-[10.5px] tracking-[.14em]">
                           {x.category.toUpperCase()} · {x.pricing}
                         </div>
                       </div>

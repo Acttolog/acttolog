@@ -9,6 +9,7 @@ import { ResearchConnect } from '@/components/research/ResearchConnect';
 import { ResearchLibrary } from '@/components/content/Extensions';
 import { getDB, pub, seoFor } from '@/lib/content';
 import { WorldPortal } from '@/components/world/WorldPortal';
+import { NoticeSection } from '@/components/notices/NoticeSection';
 
 const db = getDB();
 
@@ -98,7 +99,7 @@ export default function ResearchPage() {
                         className="rounded-xl border px-4 py-3 text-center"
                         style={{ borderColor: 'var(--line)', background: 'var(--panel2)' }}
                       >
-                        <div className="mono dim mb-1.5 text-[9.4px] tracking-[.2em]">
+                        <div className="mono dim mb-1.5 text-[10.5px] tracking-[.2em]">
                           STEP {String(i + 1).padStart(2, '0')}
                         </div>
                         <div className="font-display text-[13.6px] font-semibold whitespace-nowrap">
@@ -237,6 +238,9 @@ export default function ResearchPage() {
           </Reveal>
         </div>
       </section>
+
+      {/* Notice board — research grants, calls and service windows */}
+      <NoticeSection scope="research" variant="section" accent="var(--cy)" id="rs-notices" />
 
       {/* Public Facebook page + direct contact channels */}
       <ResearchConnect />

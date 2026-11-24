@@ -141,25 +141,25 @@ export function ContactForm({ divisions }: { divisions: { id: string; name: stri
         <label className="fld">
           <span>{t('c.name')} *</span>
           <input
-            className={`inp${err('name') ? 'err' : ''}`}
+            className={`inp${err('name') ? ' err' : ''}`}
             value={form.name}
             onChange={set('name')}
             autoComplete="name"
           />
-          <div className={`emsg${err('name') ? 'show' : ''}`}>
+          <div className={`emsg${err('name') ? ' show' : ''}`}>
             {locale === 'ne' ? 'नाम आवश्यक छ' : 'Name is required'}
           </div>
         </label>
         <label className="fld">
           <span>{t('c.email')} *</span>
           <input
-            className={`inp${err('email') ? 'err' : ''}`}
+            className={`inp${err('email') ? ' err' : ''}`}
             type="email"
             value={form.email}
             onChange={set('email')}
             autoComplete="email"
           />
-          <div className={`emsg${err('email') ? 'show' : ''}`}>
+          <div className={`emsg${err('email') ? ' show' : ''}`}>
             {locale === 'ne' ? 'मान्य इमेल आवश्यक छ' : 'Valid email required'}
           </div>
         </label>
@@ -182,23 +182,23 @@ export function ContactForm({ divisions }: { divisions: { id: string; name: stri
       <label className="fld">
         <span>{t('c.subject')} *</span>
         <input
-          className={`inp${err('subject') ? 'err' : ''}`}
+          className={`inp${err('subject') ? ' err' : ''}`}
           value={form.subject}
           onChange={set('subject')}
         />
-        <div className={`emsg${err('subject') ? 'show' : ''}`}>
+        <div className={`emsg${err('subject') ? ' show' : ''}`}>
           {locale === 'ne' ? 'विषय आवश्यक छ' : 'Subject is required'}
         </div>
       </label>
       <label className="fld">
         <span>{t('c.msg')} *</span>
         <textarea
-          className={`ta${err('message') ? 'err' : ''}`}
+          className={`ta${err('message') ? ' err' : ''}`}
           rows={6}
           value={form.message}
           onChange={set('message')}
         />
-        <div className={`emsg${err('message') ? 'show' : ''}`}>
+        <div className={`emsg${err('message') ? ' show' : ''}`}>
           {locale === 'ne' ? 'कम्तीमा १० अक्षर' : 'At least 10 characters'}
         </div>
       </label>

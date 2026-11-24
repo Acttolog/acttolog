@@ -11,11 +11,13 @@ import {
   HomeStudio,
   HomeClose,
   type HomeData,
-  type LatestItem,
 } from '@/components/home/HomeSections';
 import { getDB, pub, homeSection, divisions as getDivisions } from '@/lib/content';
 import { nepalGuide } from '@/lib/content/nepal';
 import { loksewaCounts } from '@/lib/content/loksewa';
+import { allNotices, noticeFeatured, noticeCategoriesOf, noticeMeta } from '@/lib/content/notices';
+import { allSources, sourceMeta, reachByHost, wireEvents, type WireRelease } from '@/lib/content/sources';
+import { urlHost } from '@/lib/content/source-utils';
 import { HomeDeck, type DeckData } from '@/components/home/HomeDeck';
 import type { Bi } from '@/lib/content/types';
 
@@ -47,63 +49,58 @@ export function HomeView({
     fs.existsSync(path.join(mediaDir, `${id}.jpg`)),
   );
 
-  const feed: LatestItem[] = [];
+  const releases: WireRelease[] = [];
   posts
     .slice(0, 4)
     .forEach((p) =>
-      feed.push({
+      releases.push({
         title: p.title as Bi,
-        kind: 'Blog',
+        kind: 'blog',
         date: p.publishedAt,
         route: `/blog/${p.slug}`,
         color: 'var(--vi)',
         icon: 'doc',
-        mem: p.access === 'members',
       }),
     );
   ents
     .filter((e) => e.featured)
     .slice(0, 2)
     .forEach((e) =>
-      feed.push({
+      releases.push({
         title: e.title as Bi,
-        kind: 'Entertainment',
+        kind: 'entertainment',
         date: e.date,
         route: `/entertainment/${e.slug}`,
         color: 'var(--mg)',
         icon: 'play',
-        mem: e.access === 'members',
       }),
     );
   drs
     .filter((r) => r.featured)
     .slice(0, 2)
     .forEach((r) =>
-      feed.push({
+      releases.push({
         title: { en: r.name, ne: r.name },
-        kind: 'Darkroom',
+        kind: 'darkroom',
         date: r.reviewDate,
         route: r.presentation === 'profile' ? `/darkroom/${r.slug}` : r.url,
-        ext: r.presentation !== 'profile',
         color: 'var(--gold)',
         icon: 'search',
-        mem: false,
       }),
     );
   games
     .slice(0, 2)
     .forEach((g) =>
-      feed.push({
+      releases.push({
         title: g.title as Bi,
-        kind: 'Games',
+        kind: 'games',
         date: g.release,
         route: `/games/${g.slug}`,
         color: 'var(--ok)',
         icon: 'game',
-        mem: g.access === 'members',
       }),
     );
-  feed.sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
+  releases.sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
 
   const sections: HomeData['sections'] = {};
   for (const id of [
@@ -142,7 +139,6 @@ export function HomeView({
       ent: ents.find((e) => e.featured),
       dr: drs.find((r) => r.featured),
     },
-    latest: feed,
     courses,
     drCats: db.drCats.filter((c) => c.visible !== false),
     drFeatured: drs.filter((r) => r.featured).slice(0, 6),
@@ -176,12 +172,59 @@ export function HomeView({
   }
 
   const lk = loksewaCounts();
+  const srcAll = allSources();
+  const srcMeta = sourceMeta();
+
+  // The portals an applicant actually needs first, in the order they need them:
+  // read the notice, apply online, check the gazette, then the sector boards.
+  const firstIds = ['psc', 'psconline1-psc', 'gorkhapatra', 'jobs-nrb', 'moha', 'nea'];
+  const ledgerRows = [
+    ...firstIds.map((id) => srcAll.find((s) => s.id === id)).filter((s): s is NonNullable<typeof s> => !!s),
+    ...srcAll.filter((s) => !firstIds.includes(s.id)),
+  ]
+    .slice(0, 6)
+    .map((s) => ({
+      id: s.id,
+      name: s.name,
+      host: s.host,
+      url: s.url,
+      status: s.status,
+      httpStatus: s.httpStatus,
+      ms: s.ms,
+      checkedAt: s.checkedAt,
+      lastVerifiedOn: s.lastVerifiedOn,
+    }));
+
+  // The ledger already names these portals with their measured answer, so the
+  // notice card must not name them again. Filtering before selection keeps the
+  // card full and leaves Loksewa's own notices, which live on the board its
+  // "view full board" link opens.
+  const ledgerHosts = new Set(ledgerRows.map((r) => urlHost(r.url)).filter(Boolean));
+  const featNotices = noticeFeatured(5, ledgerHosts);
+
+  const wire = wireEvents({
+    releases,
+    notices: allNotices(),
+    sources: srcAll,
+    limit: 6,
+  });
+
   const deck: DeckData = {
     locale,
-    divisions: dvs.map((d) => ({ name: d.name, route: d.route, color: d.color })),
+    divisions: dvs.map((d) => ({ name: d.name, route: d.route, color: d.color, icon: d.icon })),
     counts: data.counts,
     cadence,
-    latest: feed.slice(0, 6),
+    wire,
+    sources: {
+      items: ledgerRows,
+      meta: {
+        compiledAt: srcMeta.compiledAt,
+        checked: srcMeta.checked,
+        reachable: srcMeta.reachable,
+        unreachable: srcMeta.unreachable,
+        note: srcMeta.note,
+      },
+    },
     quick,
     offer: data.featured.offer
       ? {
@@ -194,26 +237,43 @@ export function HomeView({
       : null,
     loksewa: { papers: lk.papers, subjects: lk.subjects, points: lk.points, questions: lk.questions },
     guide: { places: ng.places.length, regions: ng.regions.length },
+    notices: { items: featNotices, categories: noticeCategoriesOf(featNotices), meta: noticeMeta(), reach: reachByHost() },
   };
 
   const esc = (x: string) => x.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  const ticker: string[] = [
-    `<b>LIVE</b> ACTTOLOG WORLD NETWORK`,
-    ...dvs.map((d) => `${esc(d.name.en.toUpperCase())} <b>ONLINE</b>`),
-    `NEPAL GUIDE <b>${ng.places.length}</b> PLACES · <b>${ng.regions.length}</b> REGIONS <b>LIVE</b>`,
-    `BLOG ENTRIES <b>${posts.length}</b>`,
-    ...posts.slice(0, 2).map((pp) => `NEW · ${esc(pp.title.en.toUpperCase())}`),
-    ...drs
-      .filter((r) => r.featured)
-      .slice(0, 2)
-      .map((r) => `FEATURED RESOURCE · ${esc(r.name.toUpperCase())}`),
-  ];
+  const kindLabel: Record<string, string> = {
+    release: 'NEW',
+    notice: 'NOTICE',
+    verified: 'VERIFIED',
+    unreachable: 'NO RESPONSE',
+    blocked: 'BOT CHECK',
+    closing: 'CLOSING',
+  };
+  // The wire card owns the six headline events. The ticker scrolls the check
+  // chronology behind them (slice 6+), so no event title is stated twice on the
+  // page and the measured HTTP/ms line gets a fast, visible home of its own.
+  const wireTail = wireEvents({
+    releases,
+    notices: allNotices(),
+    sources: srcAll,
+    limit: 16,
+  }).slice(6);
+  const ticker: string[] = wireTail.map((e) => {
+    const title = locale === 'ne' ? e.title.ne || e.title.en : e.title.en;
+    const meta = e.meta ? ` · ${esc(locale === 'ne' ? e.meta.ne || e.meta.en : e.meta.en)}` : '';
+    return `${kindLabel[e.kind] ?? 'WIRE'} · ${esc(title.toUpperCase())}${meta}`;
+  });
 
   return (
     <>
-      <Hero settings={db.settings} ticker={ticker} altLang={altLang} />
+      <Hero
+        settings={db.settings}
+        ticker={ticker}
+        altLang={altLang}
+        verified={{ count: srcMeta.reachable, total: srcMeta.checked, date: srcMeta.compiledAt }}
+      />
       <HomeDeck data={deck} />
-      <Descent divisions={dvs} counts={data.counts} />
+      <Descent divisions={dvs} />
       <HomeSignal data={data} />
       <HomeIndex data={data} />
       <FxScene>

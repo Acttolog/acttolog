@@ -7,6 +7,7 @@ import { AcademyClient } from './AcademyClient';
 import { AcademyExtraSections } from '@/components/content/Extensions';
 import { getDB, pub, seoFor } from '@/lib/content';
 import { WorldPortal } from '@/components/world/WorldPortal';
+import { NoticeSection } from '@/components/notices/NoticeSection';
 
 const db = getDB();
 
@@ -50,7 +51,7 @@ export default function AcademyPage() {
                   <div className="eyebrow mb-3">LEARNING & KNOWLEDGE</div>
                   <p className="mut text-[13.8px] leading-relaxed">{db.academy.intro.en}</p>
                   <p className="dim mt-3 text-[12.8px] leading-relaxed">{db.academy.intro.ne}</p>
-                  <div className="mono dim mt-5 flex flex-wrap gap-2 text-[10px] tracking-[.16em]">
+                  <div className="mono dim mt-5 flex flex-wrap gap-2 text-[10.5px] tracking-[.16em]">
                     <span className="chip">COURSES → MODULES → LESSONS → RESOURCES</span>
                   </div>
                 </div>
@@ -58,7 +59,7 @@ export default function AcademyPage() {
                   className="rounded-xl border p-5"
                   style={{ borderColor: 'var(--line)', background: 'var(--panel2)' }}
                 >
-                  <div className="mono dim mb-3 text-[9.7px] tracking-[.2em]">PUBLIC NOTE</div>
+                  <div className="mono dim mb-3 text-[10.5px] tracking-[.2em]">PUBLIC NOTE</div>
                   <p className="mut text-[12.9px] leading-relaxed">{db.academy.publicNote.en}</p>
                 </div>
               </div>
@@ -120,6 +121,9 @@ export default function AcademyPage() {
           </Reveal>
         </div>
       </section>
+
+      {/* Notice board — enrolment windows, scholarships and course calls */}
+      <NoticeSection scope="academy" variant="section" accent="var(--vi)" id="ac-notices" />
     </>
   );
 }

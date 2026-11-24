@@ -73,7 +73,7 @@ export default function ReportsPage() {
 
       <div className="panel mb-5 p-6">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-          <div className="mono dim text-[9.7px] tracking-[.2em]">REPORT PREVIEW · {data?.period || '…'}</div>
+          <div className="mono dim text-[10.5px] tracking-[.2em]">REPORT PREVIEW · {data?.period || '…'}</div>
           <button className="btn btn-p btn-sm" onClick={download} disabled={!data || !data.configured}>
             Download report (CSV)
           </button>
@@ -91,7 +91,7 @@ export default function ReportsPage() {
               ] as [string, string][]
             ).map(([k, v]) => (
               <div key={k} className="rounded-lg border p-4" style={{ borderColor: 'var(--line)' }}>
-                <div className="mono dim mb-1 text-[9.6px] tracking-[.18em]">{k.toUpperCase()}</div>
+                <div className="mono dim mb-1 text-[10.5px] tracking-[.18em]">{k.toUpperCase()}</div>
                 <div className="font-display text-[20px] font-bold">{v}</div>
               </div>
             ))}
@@ -100,7 +100,7 @@ export default function ReportsPage() {
       </div>
 
       <div className="panel p-6">
-        <div className="mono dim mb-4 text-[9.7px] tracking-[.2em]">SCHEDULED DELIVERY · HONEST STATUS</div>
+        <div className="mono dim mb-4 text-[10.5px] tracking-[.2em]">SCHEDULED DELIVERY · HONEST STATUS</div>
         <div className="mb-4 flex flex-wrap gap-2">
           {['daily', 'weekly', 'monthly'].map((c) => (
             <button key={c} className={`chip${cadence === c ? ' on' : ''}`} onClick={() => setCadence(c)}>

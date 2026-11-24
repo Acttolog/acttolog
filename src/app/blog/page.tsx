@@ -80,7 +80,7 @@ export default function BlogPage() {
                       <span className="badge b-info">Featured</span>
                       <AccessBadge access={featured.access} />
                     </div>
-                    <div className="mono mb-3 text-[10.3px] tracking-[.2em]" style={{ color: 'var(--vi)' }}>
+                    <div className="mono mb-3 text-[10.5px] tracking-[.2em]" style={{ color: 'var(--vi)' }}>
                       {featured.category.toUpperCase()} · {fdate(featured.publishedAt)} ·{' '}
                       {rt(featured.content.en)} MIN
                     </div>
@@ -114,7 +114,7 @@ export default function BlogPage() {
                     </div>
                   </SpatialFrame>
                   <div className="p-5">
-                    <div className="mono dim mb-2.5 text-[9.8px] tracking-[.18em]">
+                    <div className="mono dim mb-2.5 text-[10.5px] tracking-[.18em]">
                       {p.category.toUpperCase()} · {fdate(p.publishedAt)}
                     </div>
                     <h3 className="h3 mb-2 !text-[16.2px]">{p.title.en}</h3>

@@ -165,10 +165,10 @@ export function AiChat({
         style={{ borderBottom: '1px solid var(--line)' }}
       >
         <div className="flex flex-1 gap-2">
-          <button className={`chip${mode === 'act' ? 'on' : ''}`} onClick={() => changeMode('act')}>
+          <button className={`chip${mode === 'act' ? ' on' : ''}`} onClick={() => changeMode('act')}>
             {t('ai.act')}
           </button>
-          <button className={`chip${mode === 'actweb' ? 'on' : ''}`} onClick={() => changeMode('actweb')}>
+          <button className={`chip${mode === 'actweb' ? ' on' : ''}`} onClick={() => changeMode('actweb')}>
             {t('ai.web')}
           </button>
         </div>
@@ -190,10 +190,10 @@ export function AiChat({
             <div key={i} className="aimsg a">
               {m.steps && m.steps.length > 0 && (
                 <div className="mb-3 space-y-1.5">
-                  <div className="mono dim text-[8.8px] tracking-[.22em]">AGENT TRACE</div>
+                  <div className="mono dim text-[10.5px] tracking-[.22em]">AGENT TRACE</div>
                   {m.steps.map((st, j) => (
                     <div key={j} className="mono dim flex items-center gap-2 text-[10.6px]">
-                      <span className="badge b-vi !text-[8.6px]">{String(j + 1).padStart(2, '0')}</span>
+                      <span className="badge b-vi !text-[10.5px]">{String(j + 1).padStart(2, '0')}</span>
                       <span style={{ color: 'var(--txt)' }}>{st.label}</span>
                       <span className="truncate">{st.detail}</span>
                     </div>

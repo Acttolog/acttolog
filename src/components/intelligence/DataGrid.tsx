@@ -66,7 +66,7 @@ export function DataGrid<T>({
   return (
     <div>
       <div className="mb-3 flex items-center justify-between gap-2">
-        <span className="dim mono text-[10.4px]">
+        <span className="dim mono text-[10.5px]">
           {table.getSortedRowModel().rows.length.toLocaleString('en-US')} rows
         </span>
         <button className="btn btn-g btn-sm" onClick={exportCsv} disabled={!data.length}>
@@ -81,7 +81,7 @@ export function DataGrid<T>({
                 {hg.headers.map((h) => (
                   <th
                     key={h.id}
-                    className="mono dim px-3 py-2 text-left text-[9.6px] font-medium tracking-[.14em] uppercase"
+                    className="mono dim px-3 py-2 text-left text-[10.5px] font-medium tracking-[.14em] uppercase"
                     style={{ borderBottom: '1px solid var(--line)' }}
                   >
                     {h.isPlaceholder ? null : (
@@ -123,7 +123,7 @@ export function DataGrid<T>({
       </div>
       {pageCount > 1 && (
         <div className="mt-3 flex items-center justify-between gap-2">
-          <span className="dim mono text-[10.4px]">
+          <span className="dim mono text-[10.5px]">
             Page {pageIndex + 1} of {pageCount}
           </span>
           <div className="flex gap-2">

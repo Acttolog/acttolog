@@ -251,14 +251,14 @@ export function NepalMap({
             {!ready && <div className="np-map-loading mono">BOOTING MAP…</div>}
             <div className="np-map-tools">
               <button
-                className={`chip${layer === 'map' ? 'on' : ''}`}
+                className={`chip${layer === 'map' ? ' on' : ''}`}
                 onClick={() => setLayer('map')}
                 aria-pressed={layer === 'map'}
               >
                 {locale === 'ne' ? 'नक्सा' : 'MAP'}
               </button>
               <button
-                className={`chip${layer === 'sat' ? 'on' : ''}`}
+                className={`chip${layer === 'sat' ? ' on' : ''}`}
                 onClick={() => setLayer('sat')}
                 aria-pressed={layer === 'sat'}
               >
@@ -275,7 +275,7 @@ export function NepalMap({
             <button
               key={r.id}
               aria-pressed={r.id === active}
-              className={`np-zone-btn${r.id === active ? 'on' : ''}`}
+              className={`np-zone-btn${r.id === active ? ' on' : ''}`}
               onClick={() => {
                 setActive(r.id);
                 track('nepal_zone_pick', { zone: r.id });

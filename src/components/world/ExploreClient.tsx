@@ -637,7 +637,7 @@ export function ExploreClient() {
           {MODES.map((m) => (
             <button
               key={m.id}
-              className={`chip !px-4 !py-2 !text-[10.6px]${m.id === mode || (m.id === 'search' && searchOpen) ? 'on' : ''}`}
+              className={`chip !px-4 !py-2 !text-[10.6px]${m.id === mode || (m.id === 'search' && searchOpen) ? ' on' : ''}`}
               onClick={() => (m.id === 'search' ? setSearchOpen((v) => !v) : switchTo(m.id as Mode))}
             >
               {m.label}
@@ -655,7 +655,7 @@ export function ExploreClient() {
           {QUALITY_SETTINGS.map((q) => (
             <button
               key={q}
-              className={`chip !px-2 !py-1 !text-[9px] sm:!px-2.5 sm:!text-[9.4px]${quality === q ? 'on' : ''}`}
+              className={`chip !px-2 !py-1 !text-[10.5px] sm:!px-2.5 sm:!text-[10.5px]${quality === q ? ' on' : ''}`}
               onClick={() => setQuality(q)}
               aria-pressed={quality === q}
               title={q === 'auto' ? `Auto — rendering ${tier.toUpperCase()}` : `Force ${q.toUpperCase()}`}
@@ -669,7 +669,7 @@ export function ExploreClient() {
             {WORLDS_360.map((w) => (
               <button
                 key={w.id}
-                className={`chip !px-2.5 !py-1 !text-[9.4px]${world360 === w.id ? 'on' : ''}`}
+                className={`chip !px-2.5 !py-1 !text-[10.5px]${world360 === w.id ? ' on' : ''}`}
                 onClick={() => {
                   setWorld360(w.id);
                   syncUrl('360', loc, mapZoom, place?.name, w.id);
@@ -682,7 +682,7 @@ export function ExploreClient() {
         )}
         {(mode === 'map' || mode === 'sat' || mode === '360') && place && (
           <button
-            className={`chip !px-2.5 !py-1.5 !text-[9.4px]${streetView ? 'on' : ''}`}
+            className={`chip !px-2.5 !py-1.5 !text-[10.5px]${streetView ? ' on' : ''}`}
             title={googleOn ? 'Google Street View' : 'Google Street View — NOT CONFIGURED'}
             onClick={() => setStreetView((v) => !v)}
           >
@@ -773,7 +773,7 @@ export function ExploreClient() {
               {DISCOVERY_CATS.map((c) => (
                 <button
                   key={c.id}
-                  className={`chip !py-1 !text-[9.6px]${discoveryCat === c.id ? 'on' : ''}`}
+                  className={`chip !py-1 !text-[10.5px]${discoveryCat === c.id ? ' on' : ''}`}
                   onClick={() => setDiscoveryCat(c.id)}
                 >
                   {c.label}
@@ -792,7 +792,7 @@ export function ExploreClient() {
                     <div className="truncate text-[13.2px] font-semibold">
                       {ne && c.nameNe ? c.nameNe : c.name}
                     </div>
-                    <span className="mono dim flex-none text-[8.6px] tracking-[.16em]">
+                    <span className="mono dim flex-none text-[10.5px] tracking-[.16em]">
                       {c.mode.toUpperCase()} · {c.category.toUpperCase()}
                     </span>
                   </div>
@@ -801,7 +801,7 @@ export function ExploreClient() {
                 </button>
               ))}
             </div>
-            <div className="dim mt-3 text-[10.4px]">
+            <div className="dim mt-3 text-[10.5px]">
               Real coordinates · imagery © OSM/Esri when opened ·{' '}
               {ne ? 'कुनै पनि कुरा बनाइएको छैन' : 'nothing invented'}
             </div>
@@ -813,7 +813,7 @@ export function ExploreClient() {
       <div className="absolute bottom-4 left-4 z-20 hidden max-w-[52vw] flex-col items-start gap-2 md:flex">
         <div className="flex gap-1.5">
           <button
-            className={`chip !py-1.5 !text-[9.6px]${discoverOpen ? 'on' : ''}`}
+            className={`chip !py-1.5 !text-[10.5px]${discoverOpen ? ' on' : ''}`}
             onClick={() => {
               setDiscoverOpen((v) => !v);
               track('cta_interaction', { cta: 'discover_toggle' });
@@ -822,7 +822,7 @@ export function ExploreClient() {
             <Icon name="compass" size={11} />
             {ne ? 'अन्वेषण' : 'DISCOVER'}
           </button>
-          <Link className="chip !py-1.5 !text-[9.6px]" href="/">
+          <Link className="chip !py-1.5 !text-[10.5px]" href="/">
             {ne ? 'संसारमा फर्कनुहोस्' : 'RETURN TO WORLD'}
           </Link>
         </div>
@@ -830,7 +830,7 @@ export function ExploreClient() {
           {CAMERA_PRESETS.map((cp) => (
             <button
               key={cp.id}
-              className="chip !py-1 !text-[9px]"
+              className="chip !py-1 !text-[10.5px]"
               title={`Camera preset ${cp.id}`}
               onClick={() => {
                 if (cp.lat != null && cp.lon != null) {
@@ -858,14 +858,14 @@ export function ExploreClient() {
           {MODES.map((m) => (
             <button
               key={m.id}
-              className={`chip !px-2 !py-2 !text-[9.4px] flex-1${m.id === mode || (m.id === 'search' && searchOpen) ? 'on' : ''}`}
+              className={`chip !px-2 !py-2 !text-[10.5px] flex-1${m.id === mode || (m.id === 'search' && searchOpen) ? ' on' : ''}`}
               onClick={() => (m.id === 'search' ? setSearchOpen((v) => !v) : switchTo(m.id as Mode))}
             >
               {m.label}
             </button>
           ))}
           <button
-            className={`chip !px-2 !py-2 !text-[9.4px] flex-1${discoverOpen ? 'on' : ''}`}
+            className={`chip !px-2 !py-2 !text-[10.5px] flex-1${discoverOpen ? ' on' : ''}`}
             onClick={() => setDiscoverOpen((v) => !v)}
           >
             {ne ? 'खोज' : 'FIND'}

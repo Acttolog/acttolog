@@ -76,7 +76,9 @@ async function main() {
     page.on('console', (m) => {
       if (m.type() === 'error') errors.push({ t: 'console', x: m.text().slice(0, 220) });
     });
-    page.on('requestfailed', (r) => errors.push({ t: 'requestfailed', x: r.url().slice(0, 150) }));
+    page.on('requestfailed', (r) =>
+      errors.push({ t: 'requestfailed', x: r.url().slice(0, 150), err: r.failure()?.errorText || '' }),
+    );
     return page;
   };
 
@@ -171,8 +173,10 @@ async function main() {
   check('no broken images', inv.brokenImgs === 0, `${inv.brokenImgs} broken`);
   check(
     'our images lazy-loaded',
-    inv.ourLazy >= ourTotal - 2,
-    `${inv.ourLazy}/${ourTotal} (hero is eager on purpose)`,
+    // Eager by design: the hero pano plus the featured reel's first two cells
+    // (FxReel loads the visible carousel pair immediately).
+    inv.ourLazy >= ourTotal - 3,
+    `${inv.ourLazy}/${ourTotal} (hero + reel pair are eager on purpose)`,
   );
   check(
     'gallery renders real photographs',
@@ -319,6 +323,9 @@ async function main() {
         (a.getAttribute('href') || '').startsWith('/nepal'),
       ).length,
       facts: el.querySelectorAll('.npromo-fact').length,
+      factTexts: Array.from(el.querySelectorAll('.npromo-fact')).map((f) =>
+        (f.textContent || '').replace(/\s+/g, ' ').trim(),
+      ),
       chips: el.querySelectorAll('.npromo-chip').length,
     };
   });
@@ -329,7 +336,18 @@ async function main() {
       promo.heading.trim().slice(0, 70),
     );
     check('promo links into /nepal', promo.linksNepal >= 3, `${promo.linksNepal} links`);
-    check('promo shows stat facts', promo.facts >= 4, `${promo.facts}`);
+    // After the recomposition the promo owns UNESCO / trek routes / permits;
+    // places & regions live only in the deck's Nepal guide card (dk-i).
+    const joined = promo.factTexts.join(' | ');
+    check(
+      'promo shows exactly three UNESCO/trek/permit facts (not places/regions)',
+      promo.facts === 3 &&
+        /unesco/i.test(joined) &&
+        /trek/i.test(joined) &&
+        /permit/i.test(joined) &&
+        !/\bplaces\b|\bregions\b/i.test(joined),
+      joined,
+    );
     check('promo lists UNESCO entries', promo.chips >= 3, `${promo.chips} chips`);
     await home.evaluate(() => document.querySelector('#nepal-promo').scrollIntoView());
     await sleep(1200);
@@ -375,15 +393,21 @@ async function main() {
 
   await browser.close();
 
-  const SITE_ROUTES =
-    /^https?:\/\/127\.0\.0\.1:3\d{3}\/(mypage|nepal|explore|blog|offers|about|contact|ai|research|entertainment|academy|games|darkroom|search|my(\/.*)?|admin(\/.*)?|sitemap\.xml|robots\.txt|brand(\/.*)?|media(\/.*)?|textures(\/.*)?)?$/;
-  // A crude static file server cannot answer Next's RSC prefetch (?_rsc=…) with
-  // the right content type, so those abort. GitHub Pages serves the .txt
-  // segments and does not have this problem — do not count them as defects.
+  // Next prefetches route documents and RSC payloads; a crude static server
+  // cannot answer ?_rsc=… with the right content type and the browser cancels
+  // the rest on navigation. Those are ERR_ABORTED on this origin's route URLs,
+  // not defects. GitHub Pages serves the .txt segments and has neither problem.
+  // Match the origin we actually tested, and keep real asset failures visible.
+  const ORIGIN = new URL(BASE).origin;
+  const isRouteAbort = (e) => {
+    if (e.err !== 'net::ERR_ABORTED' || !e.x.startsWith(ORIGIN)) return false;
+    const p = e.x.slice(ORIGIN.length).split('?')[0];
+    return !/\.[a-z0-9]{2,5}$/i.test(p) || /[?&]_rsc=/.test(e.x);
+  };
   const TILE_NOISE = /tile\.openstreetmap\.org|arcgisonline|unpkg\.com/i;
   const isNoise = (e) =>
     e.t === 'requestfailed'
-      ? SITE_ROUTES.test(e.x) || TILE_NOISE.test(e.x)
+      ? isRouteAbort(e) || TILE_NOISE.test(e.x)
       : /Failed to load resource/i.test(e.x) ||
         /favicon|Download the React|DevTools|hmr|WebSocket/i.test(e.x);
   const suppressed = errors.filter(isNoise).length;
@@ -391,7 +415,7 @@ async function main() {
   console.log(`\n${'─'.repeat(60)}`);
   console.log(`CHECKS ${results.filter((r) => r.ok).length}/${results.length} passed`);
   console.log(`GENUINE JS/NETWORK ERRORS ${real.length}`);
-  real.slice(0, 15).forEach((e) => console.log(`  [${e.t}] ${e.x}`));
+  real.slice(0, 15).forEach((e) => console.log(`  [${e.t}] ${e.x}${e.err ? '  ' + e.err : ''}`));
   console.log(
     `(suppressed ${suppressed} RSC-prefetch / tile-abort notices — harness artifact, not a defect)`,
   );

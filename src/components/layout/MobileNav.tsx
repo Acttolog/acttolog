@@ -42,7 +42,7 @@ export function MobileNav() {
       {items.map((it) => (
         <button key={it.label} onClick={it.act} className={it.on ? 'on' : ''}>
           <Icon name={it.icon} size={18} />
-          <span className="mono text-[8.6px] tracking-[.14em]">{it.label.toUpperCase()}</span>
+          <span className="mono text-[10.5px] tracking-[.14em]">{it.label.toUpperCase()}</span>
         </button>
       ))}
     </nav>

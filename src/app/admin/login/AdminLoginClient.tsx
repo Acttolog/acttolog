@@ -14,7 +14,7 @@ export function AdminLoginClient({ notStaff }: { notStaff: boolean }) {
           <div className="mb-6 flex justify-center">
             <Logo variant="icon" width={48} />
           </div>
-          <div className="mono dim mb-3 text-[10px] tracking-[.3em]">PRIVATE AREA</div>
+          <div className="mono dim mb-3 text-[10.5px] tracking-[.3em]">PRIVATE AREA</div>
           <h1 className="h2 mb-3 !text-[clamp(1.5rem,3.4vw,2.2rem)]">Admin Console</h1>
           <p className="mut mx-auto mb-7 max-w-[46ch] text-[13.6px] leading-relaxed">
             Owner and Admin access only. Sign in with Google — roles are resolved server-side and the console

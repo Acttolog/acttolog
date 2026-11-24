@@ -80,7 +80,7 @@ export default function OffersPage() {
                   <Icon name="mail" size={14} />
                   Ask about a custom scope
                 </Link>
-                <span className="dim mono self-center text-[10.4px] tracking-[.15em]">
+                <span className="dim mono self-center text-[10.5px] tracking-[.15em]">
                   PRICES ARE CMS-EDITABLE · NEVER HARD-CODED
                 </span>
               </div>

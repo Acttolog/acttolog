@@ -91,7 +91,7 @@ function Clip({
   };
 
   return (
-    <div ref={ref} className={`np-clip${primary ? 'np-clip-hero' : ''}`} data-broken={broken || undefined}>
+    <div ref={ref} className={`np-clip${primary ? ' np-clip-hero' : ''}`} data-broken={broken || undefined}>
       {!broken && (
         <video
           ref={videoRef}

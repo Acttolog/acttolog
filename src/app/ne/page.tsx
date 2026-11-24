@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { HomeView } from '@/components/home/HomeView';
+import { HomeJsonLd } from '@/components/home/HomeJsonLd';
 import { seoFor } from '@/lib/content';
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.acttolog.com.np';
@@ -32,6 +33,7 @@ export const metadata: Metadata = {
 export default function NepaliHomePage() {
   return (
     <div lang="ne">
+      <HomeJsonLd locale="ne" />
       <HomeView locale="ne" altLang={{ href: '/', label: 'English version', lang: 'en' }} />
     </div>
   );

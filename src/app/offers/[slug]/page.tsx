@@ -102,7 +102,7 @@ export default async function OfferPage({ params }: { params: Promise<{ slug: st
                     className="rounded-xl border p-5"
                     style={{ borderColor: 'var(--line)', background: 'var(--panel2)' }}
                   >
-                    <div className="mono dim mb-2 text-[9.7px] tracking-[.2em]">TERMS</div>
+                    <div className="mono dim mb-2 text-[10.5px] tracking-[.2em]">TERMS</div>
                     <p className="mut text-[12.8px] leading-relaxed">{offer.terms.en}</p>
                     {offer.terms.ne && (
                       <p className="dim mt-2 text-[12px] leading-relaxed">{offer.terms.ne}</p>

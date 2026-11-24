@@ -5,6 +5,7 @@ import { Reveal } from '@/components/ui/Reveal';
 import { Icon } from '@/components/ui/Icon';
 import { getDB, seoFor, divisions as getDivisions } from '@/lib/content';
 import { WorldPortal } from '@/components/world/WorldPortal';
+import { NoticeSection } from '@/components/notices/NoticeSection';
 
 const db = getDB();
 const s = db.settings;
@@ -115,7 +116,7 @@ export default function AboutPage() {
               {pillars.map(([k, v, c], i) => (
                 <Reveal key={k} delay={i * 70}>
                   <div className="card h-full p-7">
-                    <div className="mono mb-3 text-[9.8px] tracking-[.24em]" style={{ color: c }}>
+                    <div className="mono mb-3 text-[10.5px] tracking-[.24em]" style={{ color: c }}>
                       {k.toUpperCase()}
                     </div>
                     <p className="mut text-[13.4px] leading-relaxed">{v}</p>
@@ -132,7 +133,7 @@ export default function AboutPage() {
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
                 {s.values.map((v, i) => (
                   <div key={v} className="panel p-5 text-center">
-                    <div className="mono dim mb-2 text-[9.4px] tracking-[.2em]">
+                    <div className="mono dim mb-2 text-[10.5px] tracking-[.2em]">
                       {String(i + 1).padStart(2, '0')}
                     </div>
                     <div className="font-display mb-1 text-[13.8px] font-semibold">{v}</div>
@@ -164,7 +165,7 @@ export default function AboutPage() {
                     <div className="font-display mb-1 text-[14.2px] font-semibold transition-colors group-hover:text-[var(--cy)]">
                       {d.name.en}
                     </div>
-                    <div className="mono dim mb-2 text-[9px] tracking-[.16em]">{d.sub.en.toUpperCase()}</div>
+                    <div className="mono dim mb-2 text-[10.5px] tracking-[.16em]">{d.sub.en.toUpperCase()}</div>
                     <p className="mut text-[12px] leading-relaxed">{d.desc.en}</p>
                   </Link>
                 </Reveal>
@@ -193,6 +194,14 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
+
+      <NoticeSection
+        scope="network"
+        variant="section"
+        accent="var(--cy)"
+        id="ab-sources"
+        title={{ en: 'Open data sources', ne: 'खुला डाटा स्रोत' }}
+      />
     </>
   );
 }

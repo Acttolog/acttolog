@@ -84,7 +84,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
                   {post.title.ne}
                 </p>
               )}
-              <div className="mono dim mb-5 flex flex-wrap items-center gap-3 text-[10.3px] tracking-[.2em]">
+              <div className="mono dim mb-5 flex flex-wrap items-center gap-3 text-[10.5px] tracking-[.2em]">
                 <span>{post.author.toUpperCase()}</span>
                 <span>·</span>
                 <span>{fdate(post.publishedAt)}</span>
@@ -143,7 +143,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
                         <div className="font-display text-[13.4px] leading-snug font-semibold transition-colors group-hover:text-[var(--cy)]">
                           {p.title.en}
                         </div>
-                        <div className="dim mono mt-1 text-[9.6px] tracking-[.14em]">
+                        <div className="dim mono mt-1 text-[10.5px] tracking-[.14em]">
                           {p.category.toUpperCase()} · {fdate(p.publishedAt)}
                         </div>
                       </Link>

@@ -57,7 +57,7 @@ export default async function GamePage({ params }: { params: Promise<{ slug: str
                 <p className="font-display mut mt-2 text-[16px] font-semibold">{game.title.ne}</p>
               )}
             </div>
-            <span className="dim mono mt-2 text-[10.4px] tracking-[.16em]">
+            <span className="dim mono mt-2 text-[10.5px] tracking-[.16em]">
               RELEASED {fdate(game.release)}
             </span>
           </div>

@@ -124,7 +124,7 @@ export function DarkroomClient({
 
           <div className="mb-3 flex flex-wrap gap-2">
             <button
-              className={`chip${cat === 'All' ? 'on' : ''}`}
+              className={`chip${cat === 'All' ? ' on' : ''}`}
               onClick={() => {
                 setCat('All');
                 setSub('All');
@@ -135,7 +135,7 @@ export function DarkroomClient({
             {cats.map((c) => (
               <button
                 key={c.id}
-                className={`chip${cat === c.slug ? 'on' : ''}`}
+                className={`chip${cat === c.slug ? ' on' : ''}`}
                 onClick={() => {
                   setCat(c.slug);
                   setSub('All');
@@ -181,19 +181,19 @@ export function DarkroomClient({
             <span className="mx-1 hidden sm:block" style={{ color: 'var(--line2)' }}>
               |
             </span>
-            <span className="mono dim text-[10px] tracking-[.16em]">{t('dark.sort')}:</span>
-            <button className={`chip${sort === 'smart' ? 'on' : ''}`} onClick={() => setSort('smart')}>
+            <span className="mono dim text-[10.5px] tracking-[.16em]">{t('dark.sort')}:</span>
+            <button className={`chip${sort === 'smart' ? ' on' : ''}`} onClick={() => setSort('smart')}>
               {t('dark.smart')}
             </button>
-            <button className={`chip${sort === 'newest' ? 'on' : ''}`} onClick={() => setSort('newest')}>
+            <button className={`chip${sort === 'newest' ? ' on' : ''}`} onClick={() => setSort('newest')}>
               {t('dark.new')}
             </button>
-            <button className={`chip${sort === 'alpha' ? 'on' : ''}`} onClick={() => setSort('alpha')}>
+            <button className={`chip${sort === 'alpha' ? ' on' : ''}`} onClick={() => setSort('alpha')}>
               A→Z
             </button>
           </div>
 
-          <div className="mono dim mt-4 text-[10.4px] tracking-[.16em]" id="drN">
+          <div className="mono dim mt-4 text-[10.5px] tracking-[.16em]" id="drN">
             {ranked.length} {locale === 'ne' ? 'स्रोत भेट्टाइयो' : 'RESOURCES MATCHED'}
             {q ? ` · “${q}”` : ''}
           </div>
@@ -257,7 +257,7 @@ export function DarkroomClient({
               ['Access', 'Open Here for the in-app profile or Open in New Tab for the official destination.'],
             ].map(([k, v], i) => (
               <div key={k}>
-                <div className="mono mb-2 text-[9.7px] tracking-[.2em]" style={{ color: 'var(--gold)' }}>
+                <div className="mono mb-2 text-[10.5px] tracking-[.2em]" style={{ color: 'var(--gold)' }}>
                   0{i + 1} · {k.toUpperCase()}
                 </div>
                 <p className="mut text-[12.6px] leading-relaxed">{v}</p>

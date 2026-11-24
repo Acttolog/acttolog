@@ -21,7 +21,7 @@ export function EntertainmentGrid({ items, cats }: { items: EntertainmentItem[];
     <>
       <div className="mb-8 flex flex-wrap gap-2">
         {['All', ...cats].map((c) => (
-          <button key={c} className={`chip${cat === c ? 'on' : ''}`} onClick={() => setCat(c)}>
+          <button key={c} className={`chip${cat === c ? ' on' : ''}`} onClick={() => setCat(c)}>
             {c === 'All' ? t('all') : c}
           </button>
         ))}
@@ -74,7 +74,7 @@ export function EntertainmentGrid({ items, cats }: { items: EntertainmentItem[];
                         </span>
                       ))}
                     </div>
-                    <span className="dim mono text-[10px] tracking-[.14em]">{fdate(e.date)}</span>
+                    <span className="dim mono text-[10.5px] tracking-[.14em]">{fdate(e.date)}</span>
                   </div>
                 </div>
               </Link>

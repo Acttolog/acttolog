@@ -50,11 +50,12 @@ async function capture(browser, viewport, tag) {
       /* private mode */
     }
   });
-  await page.goto(`${BASE}/`, { waitUntil: 'networkidle0', timeout: 90000 });
+  await page.goto(`${BASE}/`, { waitUntil: 'domcontentloaded', timeout: 90000 });
+  await page.waitForSelector('.deck-card', { timeout: 60000 });
   await ready(page);
-  for (const id of ['signal', 'index', 'nepal-promo', 'studio', 'cta']) {
+  for (const id of ['hero', 'deck', 'signal', 'index', 'nepal-promo', 'studio', 'cta', 'foot']) {
     await page.evaluate((sid) => {
-      const el = document.getElementById(sid);
+      const el = document.getElementById(sid) || document.querySelector('.' + sid);
       el?.scrollIntoView({ behavior: 'instant', block: 'start' });
     }, id);
     await sleep(700);
@@ -85,6 +86,11 @@ async function capture(browser, viewport, tag) {
     browser,
     { width: 390, height: 844, deviceScaleFactor: 2, isMobile: true, hasTouch: true },
     'mob',
+  );
+  await capture(
+    browser,
+    { width: 320, height: 568, deviceScaleFactor: 2, isMobile: true, hasTouch: true },
+    'narrow',
   );
   await browser.close();
 })();

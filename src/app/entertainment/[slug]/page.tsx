@@ -76,7 +76,7 @@ export default async function EntertainmentItemPage({ params }: { params: Promis
               </div>
             </SpatialFrame>
             <div className="p-6 sm:p-9">
-              <div className="mono mb-3 text-[10.3px] tracking-[.2em]" style={{ color: 'var(--mg)' }}>
+              <div className="mono mb-3 text-[10.5px] tracking-[.2em]" style={{ color: 'var(--mg)' }}>
                 {item.category.toUpperCase()} · {fdate(item.date)} · {rt(item.desc.en)} MIN
               </div>
               <h1 className="h1 mb-4 !text-[clamp(1.8rem,4.4vw,3rem)]">{item.title.en}</h1>

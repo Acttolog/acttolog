@@ -78,7 +78,7 @@ export function NlSearch({ onClose, onApply }: { onClose: () => void; onApply: (
               className="mb-5 rounded-xl border p-4"
               style={{ borderColor: 'var(--line)', background: 'var(--panel2)' }}
             >
-              <div className="mono dim mb-3 text-[9.7px] tracking-[.2em]">INTERPRETED INTENT</div>
+              <div className="mono dim mb-3 text-[10.5px] tracking-[.2em]">INTERPRETED INTENT</div>
               <div className="mb-3 flex flex-wrap gap-2">
                 {Object.entries(result.intent).map(([k, v]) =>
                   v && (Array.isArray(v) ? v.length > 0 : true) ? (

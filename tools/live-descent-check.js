@@ -139,12 +139,42 @@ async function waitActive(page, want, timeout = 8000) {
     nepal: Boolean(document.querySelector('#nepal-promo')),
     rows: document.querySelectorAll('.hindex-row').length,
     cards: document.querySelectorAll('.hstudio-card').length,
+    shards: document.querySelectorAll('.hero-shard').length,
+    signalRows: document.querySelectorAll('.hsignal-row').length,
+    signalCard: document.querySelectorAll('.hsignal-card').length,
+    removedCounts: [
+      '.hindex-count',
+      '.hindex-chips',
+      '.hbento-stats',
+      '.hstudio-stat',
+      '.eco-chip-n',
+      '.eco-node-num',
+    ].map((s) => document.querySelectorAll(s).length),
+    gateFacts: [...document.querySelectorAll('.dsc-fact')].map((f) =>
+      (f.textContent || '').replace(/\s+/g, ' ').trim(),
+    ),
   }));
   check(comp.signal && comp.index && comp.studio && comp.nepal, 'live: concise sections present');
   check(
     comp.rows === 5 && comp.cards === 3,
     'live: one division index + three studio surfaces',
     `${comp.rows}/${comp.cards}`,
+  );
+  check(comp.shards === 2, 'live: two hero HUD shards on desktop', `${comp.shards}`);
+  check(
+    comp.signalCard === 1 && comp.signalRows <= 5,
+    'live: one featured story + its own outline (≤5 rows)',
+    `card=${comp.signalCard} rows=${comp.signalRows}`,
+  );
+  check(
+    comp.removedCounts.every((n) => n === 0),
+    'live: repeated count nodes removed',
+    comp.removedCounts.join(','),
+  );
+  check(
+    comp.gateFacts.length > 0 && comp.gateFacts.every((t) => /GATE\s*\d{2}\s*\/\s*06/.test(t)),
+    'live: descent facts are GATE nn/06 only',
+    comp.gateFacts.slice(0, 3).join(' | '),
   );
   check(
     comp.body < comp.vh * 12,

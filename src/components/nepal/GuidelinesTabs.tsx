@@ -37,7 +37,7 @@ export function GuidelinesTabs({ g }: { g: NepalGuide }) {
             id={`np-tab-${p.key}`}
             aria-selected={tab === p.key}
             aria-controls={`np-panel-${p.key}`}
-            className={`np-gt-tab${tab === p.key ? 'on' : ''}`}
+            className={`np-gt-tab${tab === p.key ? ' on' : ''}`}
             onClick={() => setTab(p.key)}
             onKeyDown={(e) => {
               const i = PANELS.findIndex((x) => x.key === tab);

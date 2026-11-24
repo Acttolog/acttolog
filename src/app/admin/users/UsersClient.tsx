@@ -65,11 +65,11 @@ export function UsersClient() {
                 <div className="font-medium" style={{ color: 'var(--txt)' }}>
                   {u.name}
                 </div>
-                <div className="dim mono text-[10.4px]">{u.email}</div>
+                <div className="dim mono text-[10.5px]">{u.email}</div>
               </td>
               <td>
                 <span
-                  className={`badge ${u.role === 'OWNER' ? 'b-info' : u.role === 'ADMIN' ? 'b-vi' : 'b-mut'}`}
+                  className={`badge ${u.role === 'OWNER' ? 'b-info' : u.role === 'ADMIN' ? ' b-vi' : ' b-mut'}`}
                 >
                   {u.role}
                 </span>

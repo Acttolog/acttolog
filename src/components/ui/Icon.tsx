@@ -24,6 +24,7 @@ const IC: Record<string, string> = {
   out: '<path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>',
   gear: '<circle cx="12" cy="12" r="3.2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>',
   menu: '<path d="M4 6h16M4 12h16M4 18h10"/>',
+  close: '<path d="M6 6l12 12M18 6L6 18"/>',
   eye: '<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>',
   users:
     '<circle cx="9" cy="8" r="3.4"/><path d="M2.5 20a6.5 6.5 0 0113 0M17 11.5a3 3 0 100-6M18 20a5.6 5.6 0 00-2-4.3"/>',

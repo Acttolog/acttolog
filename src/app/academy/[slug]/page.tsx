@@ -78,7 +78,7 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
               </div>
             </SpatialFrame>
             <div className="p-6 sm:p-9">
-              <div className="mono mb-3 text-[10.3px] tracking-[.2em]" style={{ color: 'var(--vi)' }}>
+              <div className="mono mb-3 text-[10.5px] tracking-[.2em]" style={{ color: 'var(--vi)' }}>
                 {course.level.toUpperCase()} · {mods.length} MODULES · {lessonCount} LESSONS
               </div>
               <h1 className="h1 mb-4 !text-[clamp(1.8rem,4.4vw,2.9rem)]">{course.title.en}</h1>

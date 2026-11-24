@@ -27,21 +27,21 @@ export function OffersClient({ offers, divisions }: { offers: Offer[]; divisions
       <Reveal>
         <div className="mb-8 flex flex-wrap items-center justify-between gap-2">
           <div className="flex flex-wrap gap-2">
-            <button className={`chip${div === 'All' ? 'on' : ''}`} onClick={() => setDiv('All')}>
+            <button className={`chip${div === 'All' ? ' on' : ''}`} onClick={() => setDiv('All')}>
               {t('all')}
             </button>
             {divisions.map((d) => (
-              <button key={d.id} className={`chip${div === d.id ? 'on' : ''}`} onClick={() => setDiv(d.id)}>
+              <button key={d.id} className={`chip${div === d.id ? ' on' : ''}`} onClick={() => setDiv(d.id)}>
                 {L(d.name)}
               </button>
             ))}
           </div>
           <div className="flex items-center gap-2">
-            <span className="mono dim text-[10px] tracking-[.16em]">{t('cur')}:</span>
-            <button className={`chip${currency === 'NPR' ? 'on' : ''}`} onClick={() => setCurrency('NPR')}>
+            <span className="mono dim text-[10.5px] tracking-[.16em]">{t('cur')}:</span>
+            <button className={`chip${currency === 'NPR' ? ' on' : ''}`} onClick={() => setCurrency('NPR')}>
               NPR रु
             </button>
-            <button className={`chip${currency === 'USD' ? 'on' : ''}`} onClick={() => setCurrency('USD')}>
+            <button className={`chip${currency === 'USD' ? ' on' : ''}`} onClick={() => setCurrency('USD')}>
               USD $
             </button>
           </div>
@@ -69,7 +69,7 @@ export function OffersClient({ offers, divisions }: { offers: Offer[]; divisions
                 </span>
                 {o.featured && <span className="badge b-info">{t('featured')}</span>}
               </div>
-              <div className="mono dim mb-2 text-[9.6px] tracking-[.18em]">
+              <div className="mono dim mb-2 text-[10.5px] tracking-[.18em]">
                 {divName(o.division).toUpperCase()}
               </div>
               <h3

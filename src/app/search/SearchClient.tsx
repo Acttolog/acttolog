@@ -185,7 +185,7 @@ export function SearchClient() {
 
       {Object.keys(groups).map((k) => (
         <div className="mb-8" key={k}>
-          <div className="mono dim mb-3 text-[10px] tracking-[.2em]">
+          <div className="mono dim mb-3 text-[10.5px] tracking-[.2em]">
             {(names[k] || k).toUpperCase()} · {groups[k].length}
           </div>
           <div className="panel" style={{ borderRadius: 16, overflow: 'hidden' }}>

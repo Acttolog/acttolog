@@ -162,14 +162,14 @@ export function DarkroomSubmit({ onClose }: { onClose: () => void }) {
       </span>
       {ta ? (
         <textarea
-          className={`ta${errors[k] ? 'err' : ''}`}
+          className={`ta${errors[k] ? ' err' : ''}`}
           rows={3}
           value={form[k]}
           onChange={(e) => setForm({ ...form, [k]: e.target.value })}
         />
       ) : (
         <input
-          className={`inp${errors[k] ? 'err' : ''}${k === 'url' ? 'mono !text-[13px]' : ''}`}
+          className={`inp${errors[k] ? ' err' : ''}${k === 'url' ? ' mono !text-[13px]' : ''}`}
           value={form[k]}
           placeholder={k === 'url' ? 'https://' : k === 'tags' ? 'comma, separated' : undefined}
           onChange={(e) => setForm({ ...form, [k]: e.target.value })}
@@ -253,7 +253,7 @@ export function DarkroomSubmit({ onClose }: { onClose: () => void }) {
                 className="mb-5 rounded-xl border p-4"
                 style={{ borderColor: 'var(--line)', background: 'var(--panel2)' }}
               >
-                <div className="mono dim mb-3 text-[9.7px] tracking-[.2em]">AUTOMATED PRE-CHECK</div>
+                <div className="mono dim mb-3 text-[10.5px] tracking-[.2em]">AUTOMATED PRE-CHECK</div>
                 {precheck.map(([label, ok]) => (
                   <div key={label} className="flex items-center gap-2.5 py-1 text-[12.7px]">
                     <span style={{ color: ok ? 'var(--ok)' : 'var(--err)' }}>
@@ -273,7 +273,7 @@ export function DarkroomSubmit({ onClose }: { onClose: () => void }) {
               <button className="btn btn-p" type="submit" disabled={busy}>
                 {t('submit')} <Icon name="arrow" size={15} />
               </button>
-              <span className="dim mono self-center text-[10.3px] tracking-[.14em]">
+              <span className="dim mono self-center text-[10.5px] tracking-[.14em]">
                 AUTOMATED PRE-CHECK → ADMIN REVIEW → PUBLISH
               </span>
             </div>

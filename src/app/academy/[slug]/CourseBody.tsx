@@ -19,7 +19,7 @@ export function CourseBody({ course }: { course: AcademyCourse }) {
         <Reveal key={i} delay={i * 40}>
           <div className="panel p-5 sm:p-6">
             <div className="mb-4 flex items-center gap-3">
-              <span className="mono dim text-[10px] tracking-[.2em]">
+              <span className="mono dim text-[10.5px] tracking-[.2em]">
                 MODULE {String(i + 1).padStart(2, '0')}
               </span>
               <span className="hr flex-1" />
@@ -32,7 +32,7 @@ export function CourseBody({ course }: { course: AcademyCourse }) {
                   className="mut flex items-center gap-3 rounded-lg px-3 py-2 text-[13.2px]"
                   style={{ background: 'var(--panel2)' }}
                 >
-                  <span className="mono dim w-6 text-[10px]">{String(j + 1).padStart(2, '0')}</span>
+                  <span className="mono dim w-6 text-[10.5px]">{String(j + 1).padStart(2, '0')}</span>
                   <Icon name="play" size={13} />
                   {titleOf(l, L)}
                 </li>

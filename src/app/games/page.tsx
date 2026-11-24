@@ -7,6 +7,7 @@ import { GamesClient } from './GamesClient';
 import { GamesExtraGrid } from '@/components/content/Extensions';
 import { getDB, pub, seoFor } from '@/lib/content';
 import { WorldPortal } from '@/components/world/WorldPortal';
+import { NoticeSection } from '@/components/notices/NoticeSection';
 
 const db = getDB();
 
@@ -99,6 +100,9 @@ export default function GamesPage() {
           </Reveal>
         </div>
       </section>
+
+      {/* Notice board — new releases, tournaments and lab experiments */}
+      <NoticeSection scope="games" variant="section" accent="var(--ok)" id="gm-notices" />
     </>
   );
 }

@@ -17,7 +17,7 @@ export default function Page() {
       />
       <div className="grid gap-5 lg:grid-cols-2">
         <div className="panel p-6">
-          <div className="mono dim mb-4 text-[9.7px] tracking-[.2em]">PROVIDER</div>
+          <div className="mono dim mb-4 text-[10.5px] tracking-[.2em]">PROVIDER</div>
           <div className="space-y-2.5 text-[13px]">
             <div className="flex justify-between">
               <span className="dim">Provider</span>
@@ -29,7 +29,7 @@ export default function Page() {
             </div>
             <div className="flex justify-between">
               <span className="dim">Key</span>
-              <span className={`badge ${configured ? 'b-ok' : 'b-mut'}`}>
+              <span className={`badge ${configured ? ' b-ok' : ' b-mut'}`}>
                 {configured ? 'configured' : 'not configured'}
               </span>
             </div>
@@ -45,17 +45,17 @@ export default function Page() {
           </p>
         </div>
         <div className="panel p-6">
-          <div className="mono dim mb-4 text-[9.7px] tracking-[.2em]">DARKROOM AI DISCOVERY RULES</div>
+          <div className="mono dim mb-4 text-[10.5px] tracking-[.2em]">DARKROOM AI DISCOVERY RULES</div>
           <div className="space-y-3 text-[13.2px]">
             <div className="flex items-center justify-between">
               <span className="mut">Show AI-found resources to the user</span>
-              <span className={`badge ${drAi.showUser ? 'b-ok' : 'b-mut'}`}>
+              <span className={`badge ${drAi.showUser ? ' b-ok' : ' b-mut'}`}>
                 {drAi.showUser ? 'on' : 'off'}
               </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="mut">Suggest AI-found resources to Admin</span>
-              <span className={`badge ${drAi.suggestAdmin ? 'b-ok' : 'b-mut'}`}>
+              <span className={`badge ${drAi.suggestAdmin ? ' b-ok' : ' b-mut'}`}>
                 {drAi.suggestAdmin ? 'on' : 'off'}
               </span>
             </div>
@@ -63,7 +63,7 @@ export default function Page() {
               <span className="mut" style={{ color: 'var(--err)' }}>
                 Auto-publish (never enable silently)
               </span>
-              <span className={`badge ${drAi.autoPublish ? 'b-err' : 'b-ok'}`}>
+              <span className={`badge ${drAi.autoPublish ? ' b-err' : ' b-ok'}`}>
                 {drAi.autoPublish ? 'ON — review!' : 'off'}
               </span>
             </div>
