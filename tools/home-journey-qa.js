@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /* ACTTOLOG immersive homepage journey QA. Usage: node tools/home-journey-qa.js [base] */
 const puppeteer = require('puppeteer');
-const BASE = process.argv[2] || 'http://127.0.0.1:3120';
+const BASE = (process.argv[2] || 'http://127.0.0.1:3120').replace(/\/+$/, '');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const count = (page, selector) => page.$$eval(selector, (els) => els.length);
 const visible = (page, selector) => page.$eval(selector, (el) => { const s = getComputedStyle(el); const r = el.getBoundingClientRect(); return s.visibility !== 'hidden' && s.display !== 'none' && r.width > 0 && r.height > 0; }).catch(() => false);
@@ -51,12 +51,15 @@ async function scrollTo(page, y) {
   check(await count(p, '.portal-overlay') === 1 && await count(p, '.atrium-overlay') === 1, 'one portal and one atrium overlay');
   check(await count(p, '.deck, .dsc, .hindex') === 0, 'old duplicate deck/descent/index removed from homepage');
 
-  await scrollTo(p, 1700);
+  await scrollTo(p, 1300);
+  await p.waitForFunction(() => ['approach', 'doors'].includes(document.querySelector('#hero')?.dataset.phase), { timeout: 20000, polling: 250 });
   let phase = await p.$eval('#hero', (el) => el.dataset.phase);
   check(phase === 'approach' || phase === 'doors', 'scroll reaches portal phase', phase);
+  await p.waitForFunction(() => Number(getComputedStyle(document.querySelector('.portal-overlay')).opacity) > 0.5, { timeout: 20000, polling: 250 });
   check(await p.$eval('.portal-overlay', (el) => Number(getComputedStyle(el).opacity) > 0.5), 'portal copy becomes visible');
 
-  await scrollTo(p, 2050);
+  await scrollTo(p, 1600);
+  await p.waitForFunction(() => document.querySelector('#hero')?.dataset.phase === 'doors', { timeout: 20000, polling: 250 });
   phase = await p.$eval('#hero', (el) => el.dataset.phase);
   check(phase === 'doors', 'scroll reaches door phase', phase);
 
