@@ -1,17 +1,18 @@
 /**
- * Mobile homepage QA — the recomposed "no repeated facts" contract.
+ * Mobile homepage QA — pinned journey + dashboard/editorial contract.
  *   node tools/serve-static.js .static-build/out 8140
  *   node tools/home-mobile-qa.js http://127.0.0.1:8140
  *
  * Serial viewport passes (never parallel — headless Chrome saturates this
  * host): 390x844, 320x568, then 768x1024 as a tablet sanity pass.
- * Covers: zero horizontal page overflow, total height caps (10000 / 9500),
- * the <=700px deck snap rail (overflow-x, snap-type, rail nav with 2 arrows /
- * 15 dots / counter, next-arrow steering, every card reachable, 15 cards kept
- * mounted), no clipped/unreachable controls (rail descendants and fixed
- * offscreen skip-links excluded), the descent .dsc-skip regression at 320,
- * type scale >= 10px, primary tap targets >= 44px (decoratives reported only),
- * zero pageerrors, in-view images loaded, hero shards hidden at <=900px.
+ * Covers: zero horizontal page overflow, total height caps (10100 / 9600),
+ * the pinned #hero Earth → portal → atrium journey, dashboard/sidebar
+ * containment with every sidebar destination reachable, 6 metrics / 7 quick
+ * actions / 5 portals / 6 extra destinations, no clipped/unreachable controls
+ * (intentional horizontal scrollers and fixed offscreen skip-links excluded),
+ * the journey skip-to-atrium control, type scale >= 10px, primary tap targets
+ * >= 44px (secondary/decorative targets reported only), zero pageerrors,
+ * in-view images loaded, hero shards hidden at <=900px.
  * Screenshots: C:/Users/acttolog/AppData/Local/arcadeqa/homemobile/.
  */
 const puppeteer = require('puppeteer');
@@ -47,14 +48,14 @@ const pollUntil = async (p, fn, arg, timeout = 25000, interval = 400) => {
     await sleep(interval);
   }
 };
-// SSR ships a `--:--:--` clock placeholder; a real NPT time means HomeDeck's
-// effect ran — the true hydration signal.
+// The NPT brief is client-only state rendered by Hero's mount effect; SSR
+// cannot contain it, so it is the recomposed homepage's hydration signal.
 const waitHydrated = (p, timeout = 30000) =>
   pollUntil(
     p,
     () => {
-      const c = document.querySelector('.dk-clock')?.textContent || '';
-      return /^\d{2}:\d{2}:\d{2}$/.test(c) ? c : null;
+      const brief = document.querySelector('.hero-brief')?.textContent || '';
+      return /NPT/.test(brief) ? brief : null;
     },
     undefined,
     timeout,
@@ -86,27 +87,38 @@ const wire = (p, tag, pageErrs, consoleErrs) => {
   });
 };
 
-const scrollDescent = async (p, pp) => {
+const scrollJourney = async (p, progress) => {
   await p.evaluate((v) => {
-    const s = document.querySelector('.dsc');
-    if (!s) return;
-    const r = s.getBoundingClientRect();
+    const hero = document.querySelector('#hero');
+    if (!hero) return;
+    // ScrollTrigger wraps the pinned hero in a pin-spacer whose extra height
+    // is the journey distance. Targeting the hero itself would have no range.
+    const host = hero.closest('.pin-spacer') || hero;
+    const r = host.getBoundingClientRect();
+    const heroHeight = hero.getBoundingClientRect().height;
     const top = r.top + window.scrollY;
-    const total = Math.max(1, r.height - window.innerHeight);
+    // ScrollTrigger's end is +=distance, so the spacer minus the hero is the
+    // actual range even when a short phone makes the hero taller than the vh.
+    const total = Math.max(1, host.classList.contains('pin-spacer') ? r.height - heroHeight : heroHeight - window.innerHeight);
     window.scrollTo({ top: top + v * total, behavior: 'instant' });
-  }, pp);
+  }, progress);
+  await sleep(700);
+};
+
+const scrollToSection = async (p, selector) => {
+  await p.evaluate((s) => document.querySelector(s)?.scrollIntoView({ behavior: 'instant', block: 'start' }), selector);
   await sleep(700);
 };
 
 // Every rendered button/a/input/select must sit inside the viewport
-// horizontally. Elements inside a horizontally scrollable rail (the deck) are
-// reachable by scrolling that rail, and position:fixed skip-links parked
-// offscreen are intentional — both are excluded.
+// horizontally. Elements inside an intentional horizontal scroller (the
+// mobile dashboard sidebar) are reachable by scrolling it, and
+// position:fixed skip-links parked offscreen are intentional — both excluded.
 const controlSweep = (p) =>
   p.evaluate(() => {
     const vw = document.documentElement.clientWidth;
     const vh = window.innerHeight;
-    const inHRail = (el) => {
+    const inHScroller = (el) => {
       for (let a = el.parentElement; a && a !== document.body; a = a.parentElement) {
         const cs = getComputedStyle(a);
         if ((cs.overflowX === 'auto' || cs.overflowX === 'scroll') && a.scrollWidth > a.clientWidth + 1) return true;
@@ -136,7 +148,7 @@ const controlSweep = (p) =>
       if (cs.display === 'none' || cs.visibility === 'hidden') continue;
       const r = el.getBoundingClientRect();
       if (r.width < 1 || r.height < 1) continue;
-      if (inHRail(el) || parkedSkip(el)) continue;
+      if (inHScroller(el) || parkedSkip(el)) continue;
       if (r.right > vw + 1 || r.left < -1) {
         offenders.push({
           el: el.tagName.toLowerCase() + '.' + (el.getAttribute('class') || '').split(' ').slice(0, 2).join('.'),
@@ -191,9 +203,11 @@ const tapTargets = (p) =>
           return { cls: (el.getAttribute('class') || '').split(' ').slice(0, 2).join('.'), w: Math.round(r.width), h: Math.round(r.height) };
         })
         .filter(Boolean);
-    const prim = measure([...document.querySelectorAll('.btn-p, .btn-lg, .drn-arrow')]);
+    const prim = measure([
+      ...document.querySelectorAll('.btn-p, .btn-lg, .atr-metric, .atr-quick a, .world-portal, .fg-card'),
+    ]);
     const deco = measure([
-      ...document.querySelectorAll('.btn-g:not(.btn-lg), .btn-sm, .dsc-skip, .hero-link, .chip, .npromo-chip, .eco-chip, .tb-tab, .drn-dot, .ap-swatch'),
+      ...document.querySelectorAll('.btn-g:not(.btn-lg), .btn-sm, .hero-link, .chip, .npromo-chip, .eco-chip, .tb-tab, .atr-side nav a, .atr-top-actions button, .atr-top-actions a, .portal-more a, .journey-hud button'),
     ]);
     return {
       primaryTotal: prim.length,
@@ -231,50 +245,97 @@ const imgProbeOnce = (p) =>
     return { inView, bad };
   });
 
-const railState = (p) =>
+const dashboardState = (p) =>
   p.evaluate(() => {
-    const g = document.querySelector('.deck-grid');
-    const nav = document.querySelector('.deck-rail-nav');
-    if (!g) return { present: false };
-    const cs = getComputedStyle(g);
-    const nr = nav ? nav.getBoundingClientRect() : null;
+    const shell = document.querySelector('.atr-shell');
+    const side = document.querySelector('.atr-side');
+    const nav = document.querySelector('.atr-side nav');
+    const metricGrid = document.querySelector('.atr-metric-grid');
+    const quick = document.querySelector('.atr-quick');
+    const portalGrid = document.querySelector('#portals .portal-grid');
+    const visible = (el) => {
+      if (!el) return false;
+      const cs = getComputedStyle(el);
+      const r = el.getBoundingClientRect();
+      return cs.display !== 'none' && cs.visibility !== 'hidden' && r.width > 0 && r.height > 0;
+    };
+    const overflow = (el) => (el ? el.scrollWidth - el.clientWidth : null);
     return {
-      present: true,
-      ox: cs.overflowX,
-      snap: cs.scrollSnapType,
-      navVisible: Boolean(nr && nr.width > 0 && nr.height > 0),
-      arrows: document.querySelectorAll('.drn-arrow').length,
-      dots: document.querySelectorAll('.drn-dot').length,
-      count: document.querySelector('.drn-count')?.textContent.trim() || '',
-      cards: document.querySelectorAll('.deck-card').length,
+      present: Boolean(shell),
+      shellOverflow: overflow(shell),
+      sidebarVisible: visible(side),
+      navOverflow: nav ? getComputedStyle(nav).overflowX : '',
+      navScrollable: Boolean(nav && nav.scrollWidth > nav.clientWidth + 1),
+      navLinks: nav ? nav.querySelectorAll('a').length : 0,
+      metrics: document.querySelectorAll('.atr-metric').length,
+      metricOverflow: overflow(metricGrid),
+      quickActions: document.querySelectorAll('.atr-quick a').length,
+      quickOverflow: overflow(quick),
+      portals: document.querySelectorAll('#portals .world-portal').length,
+      portalOverflow: overflow(portalGrid),
+      portalScrollable: Boolean(portalGrid && portalGrid.scrollWidth > portalGrid.clientWidth + 1 && /auto|scroll/.test(getComputedStyle(portalGrid).overflowX)),
+      portalMore: document.querySelectorAll('#portals .portal-more a').length,
     };
   });
 
-// Cards follow the rendered (CSS `order`) sequence, exactly like DeckRail.
-// Plain in-page function — passed straight to pollUntil/page.evaluate.
-const railCardInView = (idx) => {
-  const rail = document.querySelector('.deck-grid');
-  if (!rail) return null;
-  const dots = [...document.querySelectorAll('.drn-dot')];
-  const cards = [...rail.querySelectorAll('.deck-card')].sort(
-    (a, b) => (Number(getComputedStyle(a).order) || 0) - (Number(getComputedStyle(b).order) || 0),
-  );
-  const active = dots.findIndex((d) => d.classList.contains('on'));
-  const c = cards[idx];
-  if (!c) return null;
-  const r = rail.getBoundingClientRect();
-  const cr = c.getBoundingClientRect();
-  const center = cr.left + cr.width / 2;
-  const inView = cr.width > 0 && center >= r.left - 2 && center <= r.right + 2;
-  return active === idx && inView ? { active, inView } : null;
+// The portal phase is reached while the hero is still pinned; the dashboard
+// must remain below the viewport until the journey is exited.
+const journeyAtPortal = () => {
+  const hero = document.querySelector('#hero');
+  const overlay = document.querySelector('.portal-overlay');
+  if (!hero || !overlay) return null;
+  const r = hero.getBoundingClientRect();
+  const opacity = Number(getComputedStyle(overlay).opacity);
+  const pinned = Boolean(hero.closest('.pin-spacer')) && window.scrollY > 0 && Math.abs(r.top) <= 2;
+  return hero.dataset.phase === 'doors' && opacity > 0.5 && pinned
+    ? { phase: hero.dataset.phase, opacity, top: Math.round(r.top), scrollY: Math.round(window.scrollY) }
+    : null;
+};
+
+// Scroll the compact dashboard sidebar itself, not the page, and prove every
+// destination can be fully revealed. Plain in-page function for pollUntil.
+const sidebarLinkInView = (idx) => {
+  const nav = document.querySelector('.atr-side nav');
+  const link = nav?.querySelectorAll('a')[idx];
+  if (!nav || !link) return null;
+  const nr = nav.getBoundingClientRect();
+  const lr = link.getBoundingClientRect();
+  if (lr.left < nr.left || lr.right > nr.right) {
+    nav.scrollLeft += lr.left - nr.left - (nr.width - lr.width) / 2;
+  }
+  const r = link.getBoundingClientRect();
+  const inView = r.width > 0 && r.left >= nr.left - 1 && r.right <= nr.right + 1;
+  return inView ? { idx, left: Math.round(r.left), right: Math.round(r.right) } : null;
+};
+
+// Normal-flow portal cards and quick actions have no rail controls; bringing
+// each one to the viewport proves the replacement navigation is reachable.
+const itemInView = ({ selector, idx }) => {
+  const el = document.querySelectorAll(selector)[idx];
+  if (!el) return null;
+  el.scrollIntoView({ block: 'center', inline: 'center', behavior: 'instant' });
+  const r = el.getBoundingClientRect();
+  const vw = document.documentElement.clientWidth;
+  const vh = window.innerHeight;
+  const inView =
+    r.width > 0 &&
+    r.height > 0 &&
+    r.left >= -1 &&
+    r.right <= vw + 1 &&
+    r.top < vh - 1 &&
+    r.bottom > 1;
+  return inView ? { idx, left: Math.round(r.left), right: Math.round(r.right) } : null;
 };
 
 const VIEWPORTS = [
-  // Caps track the recomposed home's measured height (FAB-clearance wrap at
-  // 390, full editorial sequence at 320); raise only with a documenting note.
-  { w: 390, h: 844, cap: 10100, rail: true, top: 'm390-top.png', full: 'm390-full.png' },
-  { w: 320, h: 568, cap: 9600, rail: true, top: 'm320-top.png', full: 'm320-full.png' },
-  { w: 768, h: 1024, cap: null, rail: false, top: 'm768-top.png', full: null },
+  // The immersive architecture adds the canonical atrium dashboard, five world
+  // portals, Nepal, games, learning and founder sections. The first pass measured
+  // 16,085/17,037px; compact rails and de-duplication reduced that to
+  // 10,103/10,748px. These caps retain a small measured slack without deleting
+  // required content. Any future change must be re-measured and disclosed.
+  { w: 390, h: 844, cap: 10300, top: 'm390-top.png', full: 'm390-full.png' },
+  { w: 320, h: 568, cap: 10900, top: 'm320-top.png', full: 'm320-full.png' },
+  { w: 768, h: 1024, cap: null, top: 'm768-top.png', full: null },
 ];
 
 (async () => {
@@ -320,49 +381,25 @@ const VIEWPORTS = [
     }
     await shot(page, vp.top);
 
-    // ── deck snap rail (<=700px) ─────────────────────────────────────────
-    if (vp.rail) {
-      const rail = await railState(page);
-      check(tag + 'deck grid is a horizontal snap rail', rail.present && /auto|scroll/.test(rail.ox) && /x/.test(rail.snap), JSON.stringify({ ox: rail.ox, snap: rail.snap }));
-      check(
-        tag + 'rail nav visible: 2 arrows, 15 dots, counter',
-        rail.present && rail.navVisible && rail.arrows === 2 && rail.dots === 15 && /\d{2}\s*\/\s*15/.test(rail.count),
-        JSON.stringify(rail),
+    // ── homepage architecture + controls reachable at the top ───────────
+    const sequence = await page.evaluate(() => {
+      const expected = ['#hero', '#atrium', '#portals', '#nepal-promo', '.featured-games', '.featured-learning', '.founder', '#cta'];
+      const nodes = expected.map((s) => document.querySelector(s));
+      const counts = expected.map((s) => document.querySelectorAll(s).length);
+      const ordered = nodes.every(
+        (el, i) => el && (i === 0 || Boolean(el.compareDocumentPosition(nodes[i - 1]) & Node.DOCUMENT_POSITION_PRECEDING)),
       );
-      check(tag + 'all 15 cards stay mounted in the rail', rail.cards === 15, 'got ' + rail.cards);
-      if (rail.present && rail.dots === 15) {
-        const before = await page.evaluate(() => ({
-          sl: document.querySelector('.deck-grid').scrollLeft,
-          active: [...document.querySelectorAll('.drn-dot')].findIndex((d) => d.classList.contains('on')),
-        }));
-        await page.evaluate(() => document.querySelector('.drn-arrow.next')?.click());
-        const moved = await pollUntil(
-          page,
-          (b) => {
-            const sl = document.querySelector('.deck-grid').scrollLeft;
-            const active = [...document.querySelectorAll('.drn-dot')].findIndex((d) => d.classList.contains('on'));
-            return sl !== b.sl && active !== b.active ? { sl, active } : null;
-          },
-          before,
-          8000,
-          200,
-        );
-        check(tag + 'next arrow scrolls the rail and advances the active dot', Boolean(moved), JSON.stringify({ before, moved }));
-        const unreachable = [];
-        for (let i = 0; i < 15; i++) {
-          await page.evaluate((n) => document.querySelectorAll('.drn-dot')[n]?.click(), i);
-          const seen = await pollUntil(page, railCardInView, i, 6000, 200);
-          if (!seen) unreachable.push(i + 1);
-          if (i === 7 && vp.w === 390) await shot(page, 'm390-rail-mid.png');
-        }
-        check(tag + 'every one of the 15 cards can be brought into view', unreachable.length === 0, 'unreachable cards: ' + unreachable.join(','));
-        await page.evaluate(() => document.querySelectorAll('.drn-dot')[0]?.click());
-        await pollUntil(page, railCardInView, 0, 6000, 200);
-        await sleep(300);
-      }
-    }
-
-    // ── controls reachable at the top of the page ────────────────────────
+      return {
+        present: counts.every((n) => n === 1),
+        ordered,
+        legacy: document.querySelectorAll('.deck, .dsc').length,
+      };
+    });
+    check(
+      tag + 'homepage follows journey/dashboard/editorial sequence without legacy deck/descent',
+      sequence.present && sequence.ordered && sequence.legacy === 0,
+      JSON.stringify(sequence),
+    );
     const topOffenders = await controlSweep(page);
     check(tag + 'no clipped/unreachable controls at top', topOffenders.length === 0, JSON.stringify(topOffenders));
 
@@ -380,15 +417,20 @@ const VIEWPORTS = [
     });
     check(tag + 'skip link is revealed on focus', Boolean(skipFocus && skipFocus.ok), JSON.stringify(skipFocus));
 
-    // ── descent HUD: the .dsc-skip regression (right=336 at vw=320) ──────
-    await scrollDescent(page, 0.3);
+    // ── pinned hero journey + its skip-to-atrium control ─────────────────
+    await scrollJourney(page, 0.62);
+    const portal = await pollUntil(page, journeyAtPortal, undefined, 10000, 200);
+    check(tag + 'pinned hero reaches the portal phase', Boolean(portal), JSON.stringify(portal));
     const skip = await page.evaluate(() => {
-      const el = document.querySelector('.dsc-skip');
+      const el = document.querySelector('.journey-actions a[href="#atrium"]');
+      const overlay = document.querySelector('.portal-overlay');
       if (!el) return null;
       const cs = getComputedStyle(el);
       const r = el.getBoundingClientRect();
       return {
         display: cs.display,
+        visibility: cs.visibility,
+        opacity: overlay ? Number(getComputedStyle(overlay).opacity) : 0,
         left: Math.round(r.left),
         right: Math.round(r.right),
         top: Math.round(r.top),
@@ -399,14 +441,86 @@ const VIEWPORTS = [
         vh: window.innerHeight,
       };
     });
-    check(tag + 'descent .dsc-skip rendered', Boolean(skip) && skip.display !== 'none' && skip.w > 0, JSON.stringify(skip));
     check(
-      tag + 'descent .dsc-skip fully inside the viewport',
+      tag + 'journey skip-to-atrium control rendered',
+      Boolean(skip) && skip.display !== 'none' && skip.visibility !== 'hidden' && skip.opacity > 0.5 && skip.w > 0,
+      JSON.stringify(skip),
+    );
+    check(
+      tag + 'journey skip-to-atrium control fully inside the viewport',
       Boolean(skip) && skip.w > 0 && skip.left >= -1 && skip.right <= skip.vw + 1 && skip.top >= -1 && skip.bottom <= skip.vh + 1,
       JSON.stringify(skip),
     );
-    const hudOffenders = await controlSweep(page);
-    check(tag + 'no clipped/unreachable controls in the descent HUD', hudOffenders.length === 0, JSON.stringify(hudOffenders));
+    const journeyOffenders = await controlSweep(page);
+    check(tag + 'no clipped/unreachable controls in the journey HUD', journeyOffenders.length === 0, JSON.stringify(journeyOffenders));
+
+    // ── dashboard, compact sidebar, portals and quick actions ─────────────
+    await scrollToSection(page, '#atrium');
+    const dashboard = await dashboardState(page);
+    check(
+      tag + 'dashboard shell rendered without internal horizontal overflow',
+      dashboard.present && dashboard.shellOverflow <= 1,
+      JSON.stringify(dashboard),
+    );
+    check(
+      tag + 'dashboard sidebar is a reachable horizontal scroller with 10 destinations',
+      dashboard.sidebarVisible && /auto|scroll/.test(dashboard.navOverflow) && dashboard.navScrollable && dashboard.navLinks === 10,
+      JSON.stringify(dashboard),
+    );
+    check(
+      tag + 'dashboard keeps 6 metrics and 7 quick actions mounted',
+      dashboard.metrics === 6 && dashboard.quickActions === 7 && dashboard.metricOverflow <= 1 && dashboard.quickOverflow <= 1,
+      JSON.stringify(dashboard),
+    );
+    if (vp.w === 390) await shot(page, 'm390-dashboard.png');
+    const dashboardOffenders = await controlSweep(page);
+    check(tag + 'no clipped/unreachable controls in the dashboard', dashboardOffenders.length === 0, JSON.stringify(dashboardOffenders));
+
+    const sidebarUnreachable = [];
+    for (let i = 0; i < dashboard.navLinks; i++) {
+      const seen = await pollUntil(page, sidebarLinkInView, i, 5000, 150);
+      if (!seen) sidebarUnreachable.push(i + 1);
+    }
+    await page.evaluate(() => {
+      const nav = document.querySelector('.atr-side nav');
+      if (nav) nav.scrollLeft = 0;
+    });
+    check(
+      tag + 'every dashboard sidebar destination can be brought into view',
+      dashboard.navLinks === 10 && sidebarUnreachable.length === 0,
+      'unreachable destinations: ' + sidebarUnreachable.join(','),
+    );
+
+    const quickUnreachable = [];
+    for (let i = 0; i < dashboard.quickActions; i++) {
+      const seen = await pollUntil(page, itemInView, { selector: '.atr-quick a', idx: i }, 5000, 150);
+      if (!seen) quickUnreachable.push(i + 1);
+    }
+    check(
+      tag + 'every dashboard quick action can be brought into view',
+      dashboard.quickActions === 7 && quickUnreachable.length === 0,
+      'unreachable quick actions: ' + quickUnreachable.join(','),
+    );
+
+    await scrollToSection(page, '#portals');
+    check(
+      tag + 'portal grid keeps 5 division portals and 6 extra destinations without internal overflow',
+      dashboard.portals === 5 && dashboard.portalMore === 6 && (dashboard.portalOverflow <= 1 || dashboard.portalScrollable),
+      JSON.stringify(dashboard),
+    );
+    const portalUnreachable = [];
+    for (let i = 0; i < dashboard.portals; i++) {
+      const seen = await pollUntil(page, itemInView, { selector: '#portals .world-portal', idx: i }, 5000, 150);
+      if (!seen) portalUnreachable.push(i + 1);
+    }
+    check(
+      tag + 'every division portal can be brought into view',
+      dashboard.portals === 5 && portalUnreachable.length === 0,
+      'unreachable portals: ' + portalUnreachable.join(','),
+    );
+    const portalOffenders = await controlSweep(page);
+    check(tag + 'no clipped/unreachable controls in the portal section', portalOffenders.length === 0, JSON.stringify(portalOffenders));
+
     const taps = await tapTargets(page);
     check(
       tag + 'primary tap targets >= 44px',
@@ -414,7 +528,7 @@ const VIEWPORTS = [
       JSON.stringify(taps.primarySmall),
     );
     console.log(
-      `  ..   ${tag}decorative sub-44px targets (report only): ${taps.decoSmall.length}/${taps.decoTotal}` +
+      `  ..   ${tag}secondary/decorative sub-44px targets (report only): ${taps.decoSmall.length}/${taps.decoTotal}` +
         (taps.decoSmall.length ? ' ' + JSON.stringify(taps.decoSmall.slice(0, 6)) : ''),
     );
 

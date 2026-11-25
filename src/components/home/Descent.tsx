@@ -452,7 +452,7 @@ export function Descent({ divisions }: { divisions: Division[] }) {
               0.0 m/s
             </em>
           </div>
-          <a className="dsc-skip" href="#world">
+          <a className="dsc-skip" href="#index">
             {locale === 'ne' ? 'अवतरण छोड्नुहोस्' : 'Skip'} <Icon name="down" size={12} />
           </a>
         </div>
@@ -509,9 +509,11 @@ export function Descent({ divisions }: { divisions: Division[] }) {
                   <span className="dsc-portal-shadow" />
                   <span className="dsc-sheen" />
                 </div>
-                <div className="dsc-gate-copy">
-                  <ChapterBody gate={g} locale={locale} L={L} inline />
-                </div>
+                {reduced && (
+                  <div className="dsc-gate-copy">
+                    <ChapterBody gate={g} locale={locale} L={L} inline />
+                  </div>
+                )}
               </article>
             ))}
           </div>
@@ -519,16 +521,18 @@ export function Descent({ divisions }: { divisions: Division[] }) {
 
         <div className="dsc-flash" key={active} aria-hidden="true" />
 
-        <div className="dsc-copy">
-          <div className="dsc-chapter" key={current.id}>
-            <ChapterBody
-              gate={current}
-              locale={locale}
-              L={L}
-              onNext={active < N - 1 ? () => jump(active + 1) : undefined}
-            />
+        {!reduced && (
+          <div className="dsc-copy">
+            <div className="dsc-chapter" key={current.id}>
+              <ChapterBody
+                gate={current}
+                locale={locale}
+                L={L}
+                onNext={active < N - 1 ? () => jump(active + 1) : undefined}
+              />
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="dsc-rail-wrap">
           <nav className="dsc-rail" aria-label={locale === 'ne' ? 'अवतरण अध्याय' : 'Descent chapters'}>

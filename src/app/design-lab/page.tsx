@@ -4,6 +4,10 @@ import './lab.css';
 import { BiText } from '@/components/ui/Bi';
 import { Icon } from '@/components/ui/Icon';
 import type { IconName } from '@/components/ui/Icon';
+import { Appearance } from '@/components/home/deck/Appearance';
+import { PointerStudio } from '@/components/home/deck/PointerStudio';
+import { ToolBench } from '@/components/home/deck/ToolBench';
+import { Pulse } from '@/components/home/deck/Pulse';
 
 export const metadata: Metadata = {
   // The root layout template appends "| ACTTOLOG" — never store the suffix here.
@@ -209,9 +213,9 @@ export default function DesignLabPage() {
               </span>
             </div>
             <div>
-              <b>0</b>
+              <b>4</b>
               <span className="lab-label">
-                <BiText value={{ en: 'bytes of JavaScript added', ne: 'थपिएको JavaScript' }} />
+                <BiText value={{ en: 'working interactive studios', ne: 'कार्यरत इन्टरएक्टिभ स्टुडियो' }} />
               </span>
             </div>
           </div>
@@ -249,6 +253,139 @@ export default function DesignLabPage() {
                 <span>{s.n}</span>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="lab-utilities" aria-labelledby="utilities-h">
+        <div className="wrap">
+          <header className="lab-utilities-head">
+            <div>
+              <p className="lab-label">
+                <BiText value={{ en: 'Utilities, relocated', ne: 'उपयोगिताहरू, स्थानान्तरित' }} />
+              </p>
+              <h2 id="utilities-h" className="lab-display lab-utilities-title">
+                <BiText value={{ en: 'Working instruments', ne: 'कार्यरत उपकरणहरू' }} />
+              </h2>
+            </div>
+            <p className="lab-body lab-lede">
+              <BiText
+                value={{
+                  en: 'The homepage is for exploration. These working controls live here at fixed addresses, so the system can be tuned without turning the entrance into a dashboard.',
+                  ne: 'गृहपृष्ठ अन्वेषणका लागि रहन्छ। यी काम गर्ने नियन्त्रणहरू यहाँ, स्थिर ठेगानामा राखिएका छन्, जसले प्रवेशद्वारलाई ड्यासबोर्ड बनाउनु पर्दैन।',
+                }}
+              />
+            </p>
+          </header>
+
+          <div className="lab-utility-grid">
+            <section
+              id="appearance"
+              className="lab-utility lab-utility--narrow"
+              aria-labelledby="appearance-h"
+            >
+              <header className="lab-utility-head">
+                <span className="lab-utility-no" aria-hidden="true">
+                  01
+                </span>
+                <div>
+                  <h3 id="appearance-h" className="lab-utility-title">
+                    <BiText value={{ en: 'Appearance Studio', ne: 'रूप स्टुडियो' }} />
+                  </h3>
+                  <p className="lab-body">
+                    <BiText
+                      value={{
+                        en: 'Theme, density, motion and surface settings are saved on this device.',
+                        ne: 'थिम, घनत्व, गति र सतहका सेटिङहरू यही यन्त्रमा सुरक्षित हुन्छन्।',
+                      }}
+                    />
+                  </p>
+                </div>
+              </header>
+              <div className="lab-utility-panel">
+                <Appearance locale="en" />
+              </div>
+            </section>
+
+            <section id="pointer" className="lab-utility lab-utility--wide" aria-labelledby="pointer-h">
+              <header className="lab-utility-head">
+                <span className="lab-utility-no" aria-hidden="true">
+                  02
+                </span>
+                <div>
+                  <h3 id="pointer-h" className="lab-utility-title">
+                    <BiText value={{ en: 'Pointer Studio', ne: 'पोइन्टर स्टुडियो' }} />
+                  </h3>
+                  <p className="lab-body">
+                    <BiText
+                      value={{
+                        en: 'Tune the magnetic cursor and export a JSON preset. Touch devices keep their native cursor.',
+                        ne: 'चुम्बकीय कर्सर मिलाउनुहोस् र JSON प्रिसेट निर्यात गर्नुहोस्। टच यन्त्रमा नेटिभ कर्सर रहन्छ।',
+                      }}
+                    />
+                  </p>
+                </div>
+              </header>
+              <div className="lab-utility-panel">
+                <PointerStudio locale="en" />
+              </div>
+            </section>
+
+            <section
+              id="instruments"
+              className="lab-utility lab-utility--wide"
+              aria-labelledby="instruments-h"
+            >
+              <header className="lab-utility-head">
+                <span className="lab-utility-no" aria-hidden="true">
+                  03
+                </span>
+                <div>
+                  <h3 id="instruments-h" className="lab-utility-title">
+                    <BiText value={{ en: 'Tool Bench', ne: 'औजार बेन्च' }} />
+                  </h3>
+                  <p className="lab-body">
+                    <BiText
+                      value={{
+                        en: 'Convert units, calculate, time a focus session, keep notes and generate passwords entirely in the browser.',
+                        ne: 'एकाइ रूपान्तरण, क्याल्कुलेटर, फोकस टाइमर, नोट र पासवर्ड जनरेटर पूरै ब्राउजरमा चल्छन्।',
+                      }}
+                    />
+                  </p>
+                </div>
+              </header>
+              <div className="lab-utility-panel">
+                <ToolBench locale="en" />
+              </div>
+            </section>
+
+            <section
+              id="diagnostics"
+              className="lab-utility lab-utility--narrow"
+              aria-labelledby="diagnostics-h"
+            >
+              <header className="lab-utility-head">
+                <span className="lab-utility-no" aria-hidden="true">
+                  04
+                </span>
+                <div>
+                  <h3 id="diagnostics-h" className="lab-utility-title">
+                    <BiText value={{ en: 'Device Pulse', ne: 'यन्त्र पल्स' }} />
+                  </h3>
+                  <p className="lab-body">
+                    <BiText
+                      value={{
+                        en: 'A live readout of this device’s connection, viewport, pointer, motion and theme.',
+                        ne: 'यस यन्त्रको जडान, भ्युपोर्ट, पोइन्टर, गति र थिमको प्रत्यक्ष विवरण।',
+                      }}
+                    />
+                  </p>
+                </div>
+              </header>
+              <div className="lab-utility-panel">
+                <Pulse locale="en" />
+              </div>
+            </section>
           </div>
         </div>
       </section>

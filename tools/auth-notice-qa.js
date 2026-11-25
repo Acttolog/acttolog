@@ -65,7 +65,7 @@ async function main() {
 
   // Static mirrors ship without /api routes: retry cannot leave for an OAuth
   // start, so the honest outcome is the in-page preview notice.
-  const staticHost = await fetch(`${BASE}/api/auth/session`)
+  const staticHost = process.env.NEXT_PUBLIC_STATIC === '1' || await fetch(`${BASE}/api/auth/session`)
     .then((r) => r.status === 404)
     .catch(() => false);
   console.log(`TARGET ${BASE} — ${staticHost ? 'static mirror' : 'SSR runtime'}`);

@@ -32,6 +32,12 @@ export function Hero({
   useMotionArm();
   const title = useRef<HTMLHeadingElement | null>(null);
   const heroRef = useRef<HTMLElement | null>(null);
+  const journeyRef = useRef(0);
+  const heroCopyRef = useRef<HTMLDivElement | null>(null);
+  const portalCopyRef = useRef<HTMLDivElement | null>(null);
+  const atriumLabelRef = useRef<HTMLDivElement | null>(null);
+  const phaseLabelRef = useRef<HTMLSpanElement | null>(null);
+  const timelineRef = useRef<gsap.core.Timeline | null>(null);
 
   // Live intelligence line: NPT time-of-day greeting + today's date. Client-only
   // (set after mount) so SSR markup never mismatches; nothing here is fabricated.
@@ -79,28 +85,69 @@ export function Hero({
     };
   }, []);
 
-  // Kinetic type: the letterforms open up and gain weight as you leave the hero.
+  // One scroll controller owns the Earth → portal → doors → atrium journey.
   useEffect(() => {
-    const h1 = title.current;
     const hero = heroRef.current;
-    if (!h1 || !hero) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!hero) return;
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduced) {
+      journeyRef.current = 1;
+      hero.dataset.phase = 'atrium';
+      if (phaseLabelRef.current) phaseLabelRef.current.textContent = 'ATRIUM';
+      if (heroCopyRef.current) gsap.set(heroCopyRef.current, { autoAlpha: 0 });
+      if (portalCopyRef.current) gsap.set(portalCopyRef.current, { autoAlpha: 0 });
+      if (atriumLabelRef.current) gsap.set(atriumLabelRef.current, { autoAlpha: 1 });
+      return;
+    }
     gsap.registerPlugin(ScrollTrigger);
     const ctx = gsap.context(() => {
-      gsap.to(h1, {
-        letterSpacing: '-0.02em',
-        fontVariationSettings: "'wght' 700",
-        ease: 'none',
-        scrollTrigger: { trigger: hero, start: 'top top', end: '+=460', scrub: true },
+      const distance = window.innerWidth < 700 ? 1100 : window.innerWidth < 1100 ? 1800 : 2600;
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: hero,
+          start: 'top top',
+          end: `+=${distance}`,
+          scrub: window.innerWidth < 700 ? true : 0.8,
+          pin: true,
+          anticipatePin: 1,
+        },
+        onUpdate: () => {
+          const p = journeyRef.current;
+          const phase = p < 0.18 ? 'earth' : p < 0.5 ? 'approach' : p < 0.74 ? 'doors' : 'atrium';
+          hero.dataset.phase = phase;
+          hero.style.setProperty('--journey', p.toFixed(3));
+          if (phaseLabelRef.current) phaseLabelRef.current.textContent = phase.toUpperCase();
+        },
       });
+      tl.to(journeyRef, { current: 0.38, duration: 1, ease: 'none' }, 0)
+        .to(heroCopyRef.current, { autoAlpha: 0, y: -50, duration: 0.24, ease: 'power2.in' }, 0.12)
+        .to(portalCopyRef.current, { autoAlpha: 1, y: 0, duration: 0.2, ease: 'power2.out' }, 0.34)
+        .to(journeyRef, { current: 0.7, duration: 0.36, ease: 'none' }, 0.38)
+        .to(portalCopyRef.current, { autoAlpha: 0, y: -24, duration: 0.16 }, 0.7)
+        .to(atriumLabelRef.current, { autoAlpha: 1, y: 0, duration: 0.18, ease: 'power2.out' }, 0.78)
+        .to(journeyRef, { current: 1, duration: 0.22, ease: 'none' }, 0.78);
+      timelineRef.current = tl;
     });
-    return () => ctx.revert();
+    return () => {
+      ctx.revert();
+      timelineRef.current = null;
+    };
   }, []);
+
+  const enterJourney = () => {
+    const trigger = timelineRef.current?.scrollTrigger;
+    if (!trigger) {
+      document.getElementById('atrium')?.scrollIntoView({ behavior: 'smooth' });
+      return;
+    }
+    const top = trigger.start + (trigger.end - trigger.start) * 0.62;
+    window.scrollTo({ top, behavior: 'smooth' });
+  };
 
   return (
     <section id="hero" className="hero" ref={heroRef}>
       <AuroraGL />
-      <Globe />
+      <Globe journeyRef={journeyRef} />
       <div className="hvig" />
       <div className="hero-aura" aria-hidden="true" />
       <div className="hero-rings" aria-hidden="true">
@@ -155,7 +202,7 @@ export function Hero({
       </div>
 
       <div className="wrap heroin" style={{ pointerEvents: 'none' }}>
-        <div className="max-w-[760px]">
+        <div ref={heroCopyRef} className="max-w-[760px]">
           <div className="eyebrow">
             {locale === 'ne'
               ? 'ACTTOLOG संसार · एउटै जोडिएको इकोसिस्टम'
@@ -211,13 +258,16 @@ export function Hero({
               <Icon name="globe" size={17} />
               {locale === 'ne' ? 'पृथ्वी अन्वेषण गर्नुहोस्' : 'Explore Earth'}
             </Link>
-            <a
+            <button
+              type="button"
               className="btn btn-g btn-lg"
-              href="#descent"
-              onClick={() => track('cta_interaction', { cta: 'hero_descent' })}
+              onClick={() => {
+                track('cta_interaction', { cta: 'hero_enter' });
+                enterJourney();
+              }}
             >
-              {locale === 'ne' ? 'अवतरण सुरु गर्नुहोस्' : 'Begin descent'} <Icon name="down" size={17} />
-            </a>
+              {locale === 'ne' ? 'ACTTOLOG मा प्रवेश गर्नुहोस्' : 'Enter ACTTOLOG'} <Icon name="arrow" size={17} />
+            </button>
           </div>
           <div
             className="hero-sub"
@@ -248,6 +298,10 @@ export function Hero({
                 {altLang.label}
               </Link>
             )}
+            <Link className="hero-link" href="#atrium">
+              <Icon name="arrow" size={14} />
+              {locale === 'ne' ? 'सिधै एट्रियम' : 'Skip to atrium'}
+            </Link>
           </div>
           <div
             className="mt-7 flex flex-wrap gap-2"
@@ -262,15 +316,53 @@ export function Hero({
         </div>
       </div>
 
-      <a
+      <div ref={portalCopyRef} className="journey-overlay portal-overlay">
+        <p className="eyebrow justify-center">{locale === 'ne' ? 'एक्टोलग प्रवेशद्वार' : 'ACTTOLOG GRAND ENTRANCE'}</p>
+        <h2 className="h2 journey-title">{locale === 'ne' ? 'एउटा संसारको ढोका' : 'The doorway to one connected world'}</h2>
+        <p className="lead journey-lead">
+          {locale === 'ne'
+            ? 'पृथ्वीबाट एट्रियमसम्म — वास्तविक ढोका, वास्तविक गहिराइ, र तपाईंको अगाडि खुला संसार।'
+            : 'From Earth to atrium — real architecture, real depth, and a world opening in front of you.'}
+        </p>
+        <div className="journey-actions">
+          <button type="button" className="btn btn-p btn-lg" onClick={enterJourney}>
+            {locale === 'ne' ? 'भित्र प्रवेश गर्नुहोस्' : 'Enter the atrium'} <Icon name="arrow" size={17} />
+          </button>
+          <Link className="btn btn-g btn-lg" href="#atrium">
+            {locale === 'ne' ? 'सिधै एट्रियम' : 'Skip to atrium'}
+          </Link>
+        </div>
+      </div>
+
+      <div ref={atriumLabelRef} className="journey-overlay atrium-overlay">
+        <p className="eyebrow justify-center">{locale === 'ne' ? 'डिजिटल एट्रियम' : 'DIGITAL ATRIUM'}</p>
+        <h2 className="h2 journey-title">{locale === 'ne' ? 'ACTTOLOG संसारमा स्वागत छ' : 'Welcome to the ACTTOLOG world'}</h2>
+        <p className="lead journey-lead">
+          {locale === 'ne' ? 'सिक्नुहोस्। अनुसन्धान गर्नुहोस्। खेल्नुहोस्। खोज्नुहोस्। जोडिनुहोस्।' : 'Discover. Learn. Create. Connect.'}
+        </p>
+        <Link className="btn btn-p btn-lg" href="#atrium">
+          {locale === 'ne' ? 'ड्यासबोर्ड खोल्नुहोस्' : 'Open the world dashboard'} <Icon name="arrow" size={17} />
+        </Link>
+      </div>
+
+      <div className="journey-hud">
+        <span>JOURNEY</span>
+        <b ref={phaseLabelRef}>EARTH</b>
+        <button type="button" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+          {locale === 'ne' ? 'पृथ्वी' : 'Earth'}
+        </button>
+      </div>
+
+      <button
+        type="button"
         className="cue"
-        href="#descent"
-        aria-label={locale === 'ne' ? 'अवतरण सुरु गर्नुहोस्' : 'Begin the descent'}
+        aria-label={locale === 'ne' ? 'ACTTOLOG मा प्रवेश गर्नुहोस्' : 'Enter ACTTOLOG'}
         style={{ bottom: 46 }}
+        onClick={enterJourney}
       >
-        <span>SCROLL</span>
+        <span>ENTER</span>
         <i />
-      </a>
+      </button>
       {ticker.length > 0 && (
         <div className="hero-ticker" aria-hidden="true">
           <div className="marqt">

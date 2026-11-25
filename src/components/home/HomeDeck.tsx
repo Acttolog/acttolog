@@ -137,6 +137,10 @@ function useInView<T extends Element>() {
   useEffect(() => {
     const el = ref.current;
     if (!el || seen) return;
+    if (typeof IntersectionObserver === 'undefined') {
+      setSeen(true);
+      return;
+    }
     const io = new IntersectionObserver(
       (es) => es.forEach((e) => e.isIntersecting && setSeen(true)),
       { threshold: 0.2 },
@@ -147,11 +151,10 @@ function useInView<T extends Element>() {
   return { ref, seen };
 }
 
-function CountUp({ value, run }: { value: number; run: boolean }) {
-  const [n, setN] = useState(0);
+function CountUp({ value, run, reduced }: { value: number; run: boolean; reduced: boolean }) {
+  const [n, setN] = useState(value);
   useEffect(() => {
-    if (!run) return;
-    if (reduced()) {
+    if (reduced || !run) {
       setN(value);
       return;
     }
@@ -164,7 +167,7 @@ function CountUp({ value, run }: { value: number; run: boolean }) {
     };
     raf = requestAnimationFrame(step);
     return () => cancelAnimationFrame(raf);
-  }, [run, value]);
+  }, [run, value, reduced]);
   return <b className="dk-num">{n.toLocaleString('en-US')}</b>;
 }
 
@@ -315,10 +318,10 @@ export function HomeDeck({ data }: { data: DeckData }) {
           <Card i={0} ac="var(--cy)" span="dk-a" label={t.clock}>
             <p className="dk-kicker mono">{t.clock}</p>
             <div className="dk-clock mono" suppressHydrationWarning>
-              {now ? fmt.time.format(now) : '--:--:--'}
+              {now ? fmt.time.format(now) : 'SYNCING'}
             </div>
             <p className="dk-date mono" suppressHydrationWarning>
-              {now ? fmt.date.format(now) : '—'}
+              {now ? fmt.date.format(now) : 'SYNCING'}
             </p>
             <p className="dk-foot mono">{t.clockSub}</p>
           </Card>
@@ -347,7 +350,7 @@ export function HomeDeck({ data }: { data: DeckData }) {
               <div className="dk-stats">
                 {stats.map((s) => (
                   <div className="dk-stat" key={s.k} style={{ '--ac': s.ac } as CSSProperties}>
-                    <CountUp value={s.v} run={idx.seen} />
+                    <CountUp value={s.v} run={idx.seen} reduced={effMotion === 'reduced'} />
                     <span>{s.k}</span>
                   </div>
                 ))}

@@ -1,4 +1,4 @@
-// Captures the post-descent homepage sections for visual review.
+// Captures the pinned-journey, dashboard and editorial homepage sections for visual review.
 const puppeteer = require('puppeteer');
 const path = require('path');
 const fs = require('fs');
@@ -51,19 +51,30 @@ async function capture(browser, viewport, tag) {
     }
   });
   await page.goto(`${BASE}/`, { waitUntil: 'domcontentloaded', timeout: 90000 });
-  await page.waitForSelector('.deck-card', { timeout: 60000 });
+  await page.waitForSelector('.hero-brief', { timeout: 60000 });
   await ready(page);
-  for (const id of ['hero', 'deck', 'signal', 'index', 'nepal-promo', 'studio', 'cta', 'foot']) {
-    await page.evaluate((sid) => {
-      const el = document.getElementById(sid) || document.querySelector('.' + sid);
-      el?.scrollIntoView({ behavior: 'instant', block: 'start' });
-    }, id);
+  const sections = [
+    { selector: '#hero', name: 'hero' },
+    { selector: '#atrium', name: 'atrium' },
+    { selector: '#portals', name: 'portals' },
+    { selector: '#signal', name: 'signal' },
+    { selector: '#nepal-promo', name: 'nepal-promo' },
+    { selector: '.featured-games', name: 'featured-games' },
+    { selector: '#studio', name: 'studio' },
+    { selector: '.founder', name: 'founder' },
+    { selector: '#cta', name: 'cta' },
+    { selector: '.foot', name: 'foot' },
+  ];
+  for (const section of sections) {
+    await page.evaluate((selector) => {
+      document.querySelector(selector)?.scrollIntoView({ behavior: 'instant', block: 'start' });
+    }, section.selector);
     await sleep(700);
     await page.evaluate(() => {
       document.querySelectorAll('[data-rv]').forEach((el) => el.classList.add('in'));
     });
     await sleep(300);
-    await shot(page, `home-${tag}-${id}.png`);
+    await shot(page, `home-${tag}-${section.name}.png`);
   }
   await page.close();
 }

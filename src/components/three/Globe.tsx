@@ -23,19 +23,29 @@ interface HudState {
 }
 
 const fmtCoord = (v: number, pos: string, neg: string) => `${Math.abs(v).toFixed(2)}°${v >= 0 ? pos : neg}`;
+const fmtAlt = (dist: number) => {
+  const altKm = Math.max(0, (dist - 1.002) * 6371);
+  return altKm >= 1000
+    ? `${Math.round(altKm).toLocaleString('en-US')} km`
+    : altKm >= 1
+      ? `${altKm.toFixed(1)} km`
+      : `${Math.round(altKm * 1000)} m`;
+};
 
 function Hud({
   tier,
   hud,
   visible,
   layer,
+  supported,
 }: {
   tier: QualityTier;
   hud: HudState;
   visible: boolean;
   layer: 'blue' | TileLayer;
+  supported: boolean | null;
 }) {
-  const [clocks, setClocks] = useState({ zulu: '—', npt: '—' });
+  const [clocks, setClocks] = useState({ zulu: 'SYNCING', npt: 'SYNCING' });
   useEffect(() => {
     const tick = () => {
       const now = new Date();
@@ -46,7 +56,7 @@ function Hud({
           try {
             return new Intl.DateTimeFormat('en-GB', { timeStyle: 'medium', timeZone: KTM }).format(now);
           } catch {
-            return '—';
+            return 'UNAVAILABLE';
           }
         })(),
       });
@@ -55,6 +65,7 @@ function Hud({
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
   }, []);
+  const renderState = supported === false ? 'STATIC' : !visible ? 'PAUSED' : hud.fps > 0 ? `${hud.fps} FPS` : 'MEASURING';
   return (
     <>
       <div className="hud hudtl">
@@ -68,7 +79,7 @@ function Hud({
       </div>
       <div className="hud hudbr">
         <div>QUALITY · {visible ? tier.toUpperCase() : 'PAUSED'}</div>
-        <div>RENDER · {visible && hud.fps > 0 ? `${hud.fps} FPS` : '—'}</div>
+        <div>RENDER · {renderState}</div>
         <div>
           NODES · {nf(DIVISION_NODES.length)} · LINKS · {nf(ARC_PAIRS.length)} · ENTITIES · {nf(ENTITY_COUNT)}
         </div>
@@ -89,7 +100,7 @@ function Hud({
           without it a phone shows no render state at all. */}
       <div className="hud hudm">
         <div>
-          {visible ? tier.toUpperCase() : 'PAUSED'} · {visible && hud.fps > 0 ? `${hud.fps} FPS` : '—'} · NPT{' '}
+          {visible ? tier.toUpperCase() : 'PAUSED'} · {renderState} · NPT{' '}
           {clocks.npt}
         </div>
         <div>
@@ -124,7 +135,7 @@ function Poster() {
   );
 }
 
-export function Globe() {
+export function Globe({ journeyRef }: { journeyRef?: React.RefObject<number> }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef(0);
   const distTargetRef = useRef(3.15);
@@ -134,8 +145,8 @@ export function Globe() {
   const cursorRef = useRef<{ lat: number | null; lon: number | null }>({ lat: null, lon: null });
   const [visible, setVisible] = useState(true);
   const { tier, setting, setSetting } = useQuality();
-  const [hud, setHud] = useState<HudState>({ fps: 0, lat: null, lon: null, zoom: 1, alt: '—' });
-  const [supported, setSupported] = useState<boolean | null>(null);
+  const [hud, setHud] = useState<HudState>({ fps: 0, lat: null, lon: null, zoom: 1, alt: fmtAlt(3.15) });
+  const [supported, setSupported] = useState(false);
   const [layer, setLayer] = useState<'blue' | TileLayer>('blue');
   const [camsOpen, setCamsOpen] = useState(false);
   const [findOpen, setFindOpen] = useState(false);
@@ -212,13 +223,7 @@ export function Globe() {
   useEffect(() => {
     const id = setInterval(() => {
       const dist = distRef.current ?? 3.15;
-      const altKm = Math.max(0, (dist - 1.002) * 6371);
-      const alt =
-        altKm >= 1000
-          ? `${Math.round(altKm).toLocaleString('en-US')} km`
-          : altKm >= 1
-            ? `${altKm.toFixed(1)} km`
-            : `${Math.round(altKm * 1000)} m`;
+      const alt = fmtAlt(dist);
       setHud({
         fps: hudFps.current,
         lat: cursorRef.current.lat,
@@ -454,6 +459,7 @@ export function Globe() {
           tier={tier}
           frameloop={visible ? 'always' : 'never'}
           scrollRef={scrollRef}
+          journeyRef={journeyRef}
           distTargetRef={distTargetRef}
           distRef={distRef}
           flyRef={flyRef}
@@ -466,7 +472,7 @@ export function Globe() {
           pin={pin}
         />
       )}
-      <Hud tier={tier} hud={hud} visible={visible} layer={layer} />
+      <Hud tier={tier} hud={hud} visible={visible} layer={layer} supported={supported} />
 
       {/* visible mouse pointer: targeting ring + live geodetic readout */}
       {pointer.inside && (

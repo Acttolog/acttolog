@@ -237,7 +237,7 @@ function makeHotspotLabel(text: string): THREE.CanvasTexture {
   x.fill();
   x.stroke();
   x.fillStyle = '#e8eeff';
-  x.font = '600 26px "Space Grotesk", sans-serif';
+  x.font = '600 26px Cambria, Georgia, serif';
   x.textAlign = 'center';
   x.textBaseline = 'middle';
   x.fillText(text, 160, 49, 292);

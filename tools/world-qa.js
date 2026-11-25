@@ -66,7 +66,7 @@ const check = (name, ok, extra = '') => {
   };
   const txt = () => page.evaluate(() => document.body.textContent || '');
 
-  // ── 1. Home: first-visit overlay + hero + nav + worlds row ────────
+  // ── 1. Home: first visit + portal journey + atrium + portals ─────
   await step('home', async () => {
     await page.goto(BASE + '/', { waitUntil: 'domcontentloaded' });
     // Decide consent first (welcome must never stack on the consent dialog).
@@ -116,7 +116,7 @@ const check = (name, ok, extra = '') => {
       ),
     );
     const hero = await page.evaluate(() =>
-      [...document.querySelectorAll('.hero a.btn, .hero button.btn')].map((b) => ({
+      [...document.querySelectorAll('#hero a.btn, #hero button.btn')].map((b) => ({
         t: b.textContent.trim(),
         h: b.getAttribute('href'),
       })),
@@ -127,10 +127,43 @@ const check = (name, ok, extra = '') => {
       JSON.stringify(hero),
     );
     check(
-      'Hero: Begin descent → #descent',
-      hero.some((x) => /Begin descent/i.test(x.t) && x.h === '#descent'),
+      'Hero: Enter ACTTOLOG portal-journey action + Skip to atrium → #atrium',
+      hero.some((x) => /Enter ACTTOLOG/i.test(x.t)) &&
+        (await page.evaluate(() =>
+          [...document.querySelectorAll('#hero a.hero-link')].some(
+            (a) => /Skip to atrium/i.test(a.textContent) && a.getAttribute('href') === '#atrium',
+          ),
+        )),
       JSON.stringify(hero),
     );
+    // The brief is client-only, so it is a reliable signal that the journey's
+    // effects (including the Enter ACTTOLOG scroll controller) have hydrated.
+    await page
+      .waitForFunction(() => !!document.querySelector('#hero .hero-brief'), { timeout: 40000 })
+      .catch(() => {});
+    const entered = await page.evaluate(() => {
+      const button = [...document.querySelectorAll('#hero button.btn')].find((b) =>
+        /Enter ACTTOLOG/i.test(b.textContent),
+      );
+      if (!button) return false;
+      button.click();
+      return true;
+    });
+    await page
+      .waitForFunction(
+        () => ['approach', 'doors', 'atrium'].includes(document.querySelector('#hero')?.dataset.phase),
+        { timeout: 20000, polling: 250 },
+      )
+      .catch(() => {});
+    const journeyPhase = await page.$eval('#hero', (el) => el.dataset.phase || '').catch(() => '');
+    check(
+      'Hero: Enter ACTTOLOG advances Earth into the portal journey',
+      entered && ['approach', 'doors', 'atrium'].includes(journeyPhase),
+      journeyPhase,
+    );
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+    await sleep(500);
+
     const nav = await page.evaluate(() =>
       [...document.querySelectorAll('.nlink')].map((a) => ({
         t: a.textContent.trim(),
@@ -142,14 +175,85 @@ const check = (name, ok, extra = '') => {
       nav.some((x) => x.t === 'World' && x.h === '/explore'),
       nav.map((x) => x.t).join('|'),
     );
+
+    await page
+      .waitForFunction(
+        () =>
+          !!document.querySelector('#atrium .atr-shell') &&
+          !!document.querySelector('#portals .world-portal') &&
+          !!document.querySelector('.featured-games .fg-card') &&
+          !!document.querySelector('.founder'),
+        { timeout: 40000 },
+      )
+      .catch(() => {});
+    const home = await page.evaluate(() => {
+      const wire = document.querySelector('#atrium .atr-signals .wire');
+      const wireRows = [...(wire?.querySelectorAll('.dk-feed li') || [])];
+      return {
+        legacy: document.querySelectorAll('.deck, .dsc, .hindex').length,
+        atrium: !!document.querySelector('#atrium .atr-shell'),
+        journey:
+          !!document.querySelector('#hero') &&
+          document.querySelectorAll('#hero .portal-overlay').length === 1 &&
+          document.querySelectorAll('#hero .atrium-overlay').length === 1,
+        metrics: [...document.querySelectorAll('#atrium .atr-metric b')].map((b) =>
+          Number(b.textContent.replace(/,/g, '')),
+        ),
+        wireRows: wireRows.length,
+        wireKinds: wireRows.map((li) => li.querySelector('.dk-kind')?.textContent.trim() || ''),
+        wireRoutes: wireRows.map((li) => li.querySelector('a')?.getAttribute('href') || ''),
+        wireCompiled: !!wire?.querySelector('time[datetime]'),
+        portalRoutes: [...document.querySelectorAll('#portals .world-portal')].map((a) =>
+          a.getAttribute('href'),
+        ),
+        gameHrefs: [...document.querySelectorAll('.featured-games .fg-card')].map((a) =>
+          a.getAttribute('href') || '',
+        ),
+        founder:
+          document.querySelectorAll('.founder').length === 1 &&
+          /one person with one idea/i.test(document.querySelector('.founder')?.textContent || '') &&
+          !!document.querySelector('.founder img[src="/media/founder-pro.jpg"]') &&
+          !!document.querySelector('.founder img[src="/media/founder-casual.jpg"]'),
+      };
+    });
     check(
-      'Hero deck COMMAND CENTER button',
-      await page.evaluate(() =>
-        [...document.querySelectorAll('.chip')].some((c) => /COMMAND CENTER/i.test(c.textContent)),
-      ),
+      'Home: #hero portal journey + #atrium dashboard replace deck/descent',
+      home.journey && home.atrium && home.legacy === 0,
+      `legacy=${home.legacy}`,
     );
-    // The 13 360-worlds left the home hero when the homepage became the glass
-    // deck; they now live in the /explore world selector. Assert them there.
+    check(
+      'Atrium: six catalogue metrics with real nonzero counts',
+      home.metrics.length === 6 && home.metrics.every((n) => Number.isFinite(n) && n > 0),
+      home.metrics.join(','),
+    );
+    check(
+      'Atrium LiveWire: four dated events + compilation timestamp',
+      home.wireRows === 4 && home.wireCompiled,
+      `${home.wireRows} events`,
+    );
+    check(
+      'Atrium LiveWire includes measured source states and real notices',
+      home.wireKinds.some((k) => /VERIFIED|NO RESPONSE|BOT CHECK|प्रमाणित|प्रतिक्रिया छैन|बोट जाँच/.test(k)) &&
+        home.wireKinds.some((k) => /NOTICE|CLOSING|सूचना|बन्द हुँदै/.test(k)) &&
+        home.wireRoutes.every((href) => /^(\/|https?:\/\/)/.test(href)),
+      home.wireKinds.join(','),
+    );
+    const divisionRoutes = ['/research', '/entertainment', '/academy', '/games', '/darkroom'];
+    check(
+      '#portals: five canonical division doorways',
+      home.portalRoutes.length === 5 && divisionRoutes.every((r) => home.portalRoutes.includes(r)),
+      home.portalRoutes.join('|'),
+    );
+    check(
+      'Featured games: six direct-play launches preserved',
+      home.gameHrefs.length === 6 &&
+        home.gameHrefs.every((h) => /^\/arcade\/index\.html\?game=/.test(h)),
+      home.gameHrefs.join('|'),
+    );
+    check('Founder: approved story + both photos on homepage', home.founder);
+    await shot('02-home-architecture');
+
+    // The 13 360-worlds live in the /explore world selector. Assert them there.
     await page.goto(BASE + '/explore?mode=360', { waitUntil: 'domcontentloaded', timeout: 60000 });
     const worldsPanel = () => {
       const p = [...document.querySelectorAll('div.panel')].find((x) =>
@@ -162,7 +266,11 @@ const check = (name, ok, extra = '') => {
     check('Explore lists all 13 ACTTOLOG 360 worlds', worlds === 13, `${worlds} chips`);
     // cmdk below expects a hydrated home, so return there before leaving this step.
     await page.goto(BASE + '/', { waitUntil: 'domcontentloaded', timeout: 60000 });
-    await page.waitForSelector('.dk-clock', { timeout: 40000 }).catch(() => {});
+    await page
+      .waitForFunction(() => !!document.querySelector('#atrium .nb-status:not(.s-idle)'), {
+        timeout: 40000,
+      })
+      .catch(() => {});
     await sleep(800);
   });
 

@@ -477,7 +477,7 @@ export default function NepalPage() {
         .np-hero-grain { position: absolute; inset: 0; opacity: .16; pointer-events: none; mix-blend-mode: overlay;
           background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E"); }
         .np-hero-inner { position: relative; z-index: 2; padding-bottom: clamp(34px, 6vw, 72px); }
-        .np-h1 { font-family: var(--font-display); font-weight: 700; margin: 18px 0 0;
+        .np-h1 { font-family: var(--font-display); font-weight: 600; margin: 18px 0 0;
           font-size: clamp(2.35rem, 7.4vw, 5.4rem); line-height: .96; letter-spacing: -.035em; color: var(--txt);
           max-width: 19ch; text-wrap: balance; }
         .np-hero-line { margin-top: 20px; max-width: 62ch; color: var(--mut);

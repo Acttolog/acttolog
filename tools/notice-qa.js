@@ -2,11 +2,13 @@
  * Notice-board QA — curated, source-linked notice directory.
  *   node tools/serve-static.js .static-build/out 8140
  *   DECK_BASE=http://127.0.0.1:8140 node tools/notice-qa.js
- * Covers: Loksewa full board (35 notices; government/sansthan/bank/exam chips;
- * search, sort, save + localStorage persistence, detail expand, official source
- * links, live countdown, measured reachability badges + check freshness, honesty
- * disclosure), every division board (research/entertainment/academy/games/
- * darkroom/nepal), mobile 390/320 fit, console/page errors.
+ * Covers: homepage #atrium compact NoticeBoard (featured notices, official
+ * source links, honesty disclosure, full-board route), Loksewa full board (35
+ * notices; government/sansthan/bank/exam chips; search, sort, save + localStorage
+ * persistence, detail expand, official source links, live countdown, measured
+ * reachability badges + check freshness, honesty disclosure), every division
+ * board (research/entertainment/academy/games/darkroom/nepal), mobile 390/320 fit,
+ * console/page errors.
  *
  * "Live" here means live-computed status/countdown/freshness in the browser over
  * a curated ledger of real official portals — NOT an automated government feed.
@@ -147,6 +149,28 @@ const scrollToBoard = async (page, sel) => {
     } catch {}
   });
   await page.setViewport({ width: 1440, height: 900 });
+
+  /* ── HOMEPAGE ATRIUM · LATEST NOTICE SIGNALS ──────────────────── */
+  console.log('\nNOTICES · HOMEPAGE ATRIUM');
+  await page.goto(BASE + '/', { waitUntil: 'domcontentloaded', timeout: 60000 });
+  await page.waitForFunction(() => document.querySelectorAll('.atr-signals .wire .dk-feed li').length === 4, { timeout: 60000, polling: 300 });
+  await scrollToBoard(page, '#atrium .atr-signals');
+  await sleep(300);
+  const home = await page.evaluate(() => {
+    const rows = [...document.querySelectorAll('.atr-signals .wire .dk-feed li')];
+    const notices = rows.filter((li) => /NOTICE|CLOSING|सूचना|बन्द हुँदै/.test(li.querySelector('.dk-kind')?.textContent || ''));
+    return {
+      rows: rows.length,
+      notices: notices.length,
+      routes: notices.map((li) => li.querySelector('a')?.getAttribute('href') || ''),
+      legacy: document.querySelectorAll('.deck .nb, .dsc .nb').length,
+    };
+  });
+  check('homepage atrium LiveWire hydrates four latest signals', home.rows === 4, `rows=${home.rows}`);
+  check('homepage Latest Signals includes real notices', home.notices > 0, `notices=${home.notices}`);
+  check('homepage notice signals link real destinations', home.routes.every((href) => /^(\/|https?:\/\/)/.test(href)), JSON.stringify(home.routes));
+  check('homepage notices render in atrium, not legacy deck/descent', home.legacy === 0, `legacy=${home.legacy}`);
+  await page.screenshot({ path: OUT + '/notice-home-atrium.png' });
 
   /* ── LOKSEWA FULL BOARD (Nepali-first) ─────────────────────────── */
   console.log('\nNOTICES · LOKSEWA FULL BOARD');

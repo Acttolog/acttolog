@@ -20,6 +20,7 @@ import * as THREE from 'three';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { TIER_CONFIG, prefersReducedMotion, type QualityTier } from './tier';
 import { TileSphere, type TileLayer } from './TileGlobe';
+import { PortalArchitecture } from './PortalArchitecture';
 import { DEFAULT_SCENE, type SceneConfig } from '@/lib/world/config';
 import { useScenePreview } from '@/lib/world/useScenePreview';
 
@@ -756,7 +757,7 @@ function makeLabelTexture(name: string, color: string): THREE.Texture {
   c.height = 96;
   const x = c.getContext('2d')!;
   x.clearRect(0, 0, 512, 96);
-  x.font = '600 34px "Space Grotesk", sans-serif';
+  x.font = '600 34px Cambria, Georgia, serif';
   x.textAlign = 'center';
   x.textBaseline = 'middle';
   x.shadowColor = color;
@@ -1006,35 +1007,68 @@ function Starfield({ count }: { count: number }) {
   );
 }
 
-/** Camera rig: pointer parallax + scroll-linked dolly (spec §23). */
+/** Camera rig: pointer parallax + scroll-linked dolly + portal journey. */
 function Rig({
   scrollRef,
   distTargetRef,
   distRef,
+  journeyRef,
 }: {
   scrollRef: React.RefObject<number>;
   distTargetRef: React.RefObject<number>;
   distRef: React.RefObject<number>;
+  journeyRef?: React.RefObject<number>;
 }) {
   const { camera } = useThree();
   const cur = useRef(3.15);
-  const target = useRef(new THREE.Vector3(0, 0.12, 3.15));
+  const earthTarget = useRef(new THREE.Vector3(0, 0.12, 3.15));
+  const desired = useMemo(() => new THREE.Vector3(), []);
+  const look = useMemo(() => new THREE.Vector3(), []);
+  const keys = useMemo(
+    () => [
+      { p: 0, pos: new THREE.Vector3(0, 0.12, 3.15), at: new THREE.Vector3(0, 0.1, 0) },
+      { p: 0.3, pos: new THREE.Vector3(0, 0.18, 2.55), at: new THREE.Vector3(0, 0.12, 0) },
+      { p: 0.48, pos: new THREE.Vector3(0, 0.35, 6.4), at: new THREE.Vector3(0, 0.2, 0) },
+      { p: 0.66, pos: new THREE.Vector3(0, 0.35, 5.6), at: new THREE.Vector3(0, 0.2, 0) },
+      { p: 0.82, pos: new THREE.Vector3(0, 0.3, 2.4), at: new THREE.Vector3(0, 0.2, -5) },
+      { p: 1, pos: new THREE.Vector3(0, 0.25, 1.4), at: new THREE.Vector3(0, 0.2, -7) },
+    ],
+    [],
+  );
   useFrame((state, dt) => {
-    const p = scrollRef.current ?? 0;
+    const p = Math.min(1, Math.max(0, journeyRef?.current ?? 0));
     const k = Math.min(1, dt * 3.2);
-    const desired = (distTargetRef.current ?? 3.15) * (1 - p * 0.22);
-    cur.current += (desired - cur.current) * Math.min(1, dt * 4.5);
-    distRef.current = cur.current;
-    // hero composition offsets fade out on surface approach so the view
-    // centre is exactly the geocoded point at street level
-    const surf = THREE.MathUtils.clamp((cur.current - 1.0) / 1.5, 0, 1);
-    target.current.set(
-      state.pointer.x * 0.16 * surf + p * 0.25 * surf,
-      0.12 * surf + state.pointer.y * 0.1 * surf + p * 0.42 * surf,
-      cur.current,
-    );
-    camera.position.lerp(target.current, k);
-    camera.lookAt(0, p * 0.1 * surf, 0);
+    if (p <= 0.001) {
+      const s = scrollRef.current ?? 0;
+      const wanted = (distTargetRef.current ?? 3.15) * (1 - s * 0.22);
+      cur.current += (wanted - cur.current) * Math.min(1, dt * 4.5);
+      distRef.current = cur.current;
+      const surf = THREE.MathUtils.clamp((cur.current - 1.0) / 1.5, 0, 1);
+      earthTarget.current.set(
+        state.pointer.x * 0.16 * surf + s * 0.25 * surf,
+        0.12 * surf + state.pointer.y * 0.1 * surf + s * 0.42 * surf,
+        cur.current,
+      );
+      camera.position.lerp(earthTarget.current, k);
+      camera.lookAt(0, s * 0.1 * surf, 0);
+      return;
+    }
+    let a = keys[0];
+    let b = keys[keys.length - 1];
+    for (let i = 0; i < keys.length - 1; i++) {
+      if (p >= keys[i].p && p <= keys[i + 1].p) {
+        a = keys[i];
+        b = keys[i + 1];
+        break;
+      }
+    }
+    const raw = (p - a.p) / Math.max(0.0001, b.p - a.p);
+    const t = raw * raw * (3 - 2 * raw);
+    desired.lerpVectors(a.pos, b.pos, t);
+    look.lerpVectors(a.at, b.at, t);
+    camera.position.lerp(desired, Math.min(1, dt * 4.2));
+    camera.lookAt(look);
+    distRef.current = camera.position.z;
   });
   return null;
 }
@@ -1091,6 +1125,7 @@ function WorldGroup({
   dragRef,
   tier,
   scrollRef,
+  journeyRef,
   flyRef,
   distRef,
   spin,
@@ -1102,6 +1137,7 @@ function WorldGroup({
   dragRef: React.RefObject<{ dx: number; vel: number; dragging: boolean }>;
   tier: QualityTier;
   scrollRef: React.RefObject<number>;
+  journeyRef?: React.RefObject<number>;
   flyRef: React.RefObject<{ lat: number; lon: number; token: number } | null>;
   distRef: React.RefObject<number>;
   spin: number;
@@ -1113,6 +1149,12 @@ function WorldGroup({
   const flyState = useRef({ token: -1, quat: new THREE.Quaternion(), active: false });
   useFrame((state, dt) => {
     if (!group.current) return;
+    const journey = Math.min(1, Math.max(0, journeyRef?.current ?? 0));
+    const retreatRaw = THREE.MathUtils.clamp((journey - 0.18) / 0.3, 0, 1);
+    const retreat = retreatRaw * retreatRaw * (3 - 2 * retreatRaw);
+    group.current.position.z = -retreat * 10;
+    group.current.scale.setScalar(1 - retreat * 0.45);
+    group.current.visible = retreat < 0.995;
     const fly = flyRef.current;
     if (fly && fly.token !== flyState.current.token) {
       flyState.current.token = fly.token;
@@ -1133,7 +1175,7 @@ function WorldGroup({
     const surface = (distRef.current ?? 3) < 1.25;
     if (!reduced) {
       const drag = dragRef.current;
-      if (drag && dragEnabled) {
+      if (drag && dragEnabled && journey < 0.03) {
         if (drag.dragging) {
           drag.vel = drag.dx * 0.006;
           drag.dx = 0;
@@ -1232,6 +1274,7 @@ function CameraFov({ fov }: { fov: number }) {
 function Scene({
   tier,
   scrollRef,
+  journeyRef,
   distTargetRef,
   distRef,
   flyRef,
@@ -1246,6 +1289,7 @@ function Scene({
 }: {
   tier: QualityTier;
   scrollRef: React.RefObject<number>;
+  journeyRef?: React.RefObject<number>;
   distTargetRef: React.RefObject<number>;
   distRef: React.RefObject<number>;
   flyRef: React.RefObject<{ lat: number; lon: number; token: number } | null>;
@@ -1312,13 +1356,14 @@ function Scene({
   return (
     <>
       <CameraFov fov={preview?.camera.fov ?? DEFAULT_SCENE.camera.fov} />
-      <Rig scrollRef={scrollRef} distTargetRef={distTargetRef} distRef={distRef} />
+      <Rig scrollRef={scrollRef} distTargetRef={distTargetRef} distRef={distRef} journeyRef={journeyRef} />
       {showStars && <Starfield count={cfg.stars} />}
       <WorldGroup
         reduced={reduced}
         dragRef={dragRef}
         tier={tier}
         scrollRef={scrollRef}
+        journeyRef={journeyRef}
         flyRef={flyRef}
         distRef={distRef}
         spin={spin}
@@ -1339,6 +1384,7 @@ function Scene({
           {showDust && particles > 0 && <Dust count={particles} reduced={reduced} />}
         </DecorCull>
       </WorldGroup>
+      {journeyRef && <PortalArchitecture journeyRef={journeyRef} tier={tier} reduced={reduced} />}
       {cfg.bloom && !reduced && <BloomPass />}
     </>
   );
@@ -1348,6 +1394,7 @@ export function EarthScene({
   tier,
   frameloop,
   scrollRef,
+  journeyRef,
   distTargetRef,
   distRef,
   flyRef,
@@ -1362,6 +1409,7 @@ export function EarthScene({
   tier: QualityTier;
   frameloop: 'always' | 'demand' | 'never';
   scrollRef: React.RefObject<number>;
+  journeyRef?: React.RefObject<number>;
   distTargetRef: React.RefObject<number>;
   distRef: React.RefObject<number>;
   flyRef: React.RefObject<{ lat: number; lon: number; token: number } | null>;
@@ -1394,6 +1442,7 @@ export function EarthScene({
         logarithmicDepthBuffer: true,
       }}
       onWheel={(e) => {
+        if ((journeyRef?.current ?? 0) > 0.03) return;
         if (preview && !preview.interaction.wheelZoom) return;
         const next = (distTargetRef.current ?? 3.15) * Math.exp(e.deltaY * 0.0011);
         distTargetRef.current = Math.min(3.6, Math.max(1.0025, next));
@@ -1402,6 +1451,7 @@ export function EarthScene({
       <Scene
         tier={tier}
         scrollRef={scrollRef}
+        journeyRef={journeyRef}
         distTargetRef={distTargetRef}
         distRef={distRef}
         flyRef={flyRef}

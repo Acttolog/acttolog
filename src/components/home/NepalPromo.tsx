@@ -134,7 +134,7 @@ export function NepalPromo({ section, locale = 'en' }: { section: HomeSection; l
         .npromo-ridge-2 { opacity: .55; }
         .npromo-inner { position: relative; z-index: 2; padding: clamp(32px,4.4vw,56px) 0; max-width: 780px; }
         .npromo-kicker { color: var(--gold); }
-        .npromo-h { font-family: var(--font-display); font-weight: 700; margin: 16px 0 0;
+        .npromo-h { font-family: var(--font-display); font-weight: 600; margin: 16px 0 0;
           font-size: clamp(1.75rem, 4.4vw, 3.1rem); line-height: 1.04; letter-spacing: -.032em; color: var(--txt);
           max-width: 21ch; text-wrap: balance; }
         .npromo-lead { margin-top: 16px; color: var(--mut); font-size: clamp(.98rem, 1.25vw, 1.1rem); line-height: 1.75; max-width: 60ch; }

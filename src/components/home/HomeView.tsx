@@ -1,24 +1,26 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { Hero } from '@/components/home/Hero';
-import { Descent } from '@/components/home/Descent';
 import { NepalPromo } from '@/components/home/NepalPromo';
 import { FxScene } from '@/components/fx/Motion';
 import { RadialMenu } from '@/components/fx/RadialMenu';
 import {
-  HomeSignal,
-  HomeIndex,
-  HomeStudio,
   HomeClose,
   type HomeData,
 } from '@/components/home/HomeSections';
+import { AtriumDashboard } from '@/components/home/AtriumDashboard';
+import { DivisionPortals } from '@/components/home/DivisionPortals';
+import { FeaturedGames } from '@/components/home/FeaturedGames';
+import { FeaturedLearning } from '@/components/home/FeaturedLearning';
+import { FounderGuide } from '@/components/home/FounderGuide';
 import { getDB, pub, homeSection, divisions as getDivisions } from '@/lib/content';
 import { nepalGuide } from '@/lib/content/nepal';
 import { loksewaCounts } from '@/lib/content/loksewa';
+import { gameRegistry } from '@/lib/content/games';
 import { allNotices, noticeFeatured, noticeCategoriesOf, noticeMeta } from '@/lib/content/notices';
 import { allSources, sourceMeta, reachByHost, wireEvents, type WireRelease } from '@/lib/content/sources';
 import { urlHost } from '@/lib/content/source-utils';
-import { HomeDeck, type DeckData } from '@/components/home/HomeDeck';
+import type { DeckData } from '@/components/home/HomeDeck';
 import type { Bi } from '@/lib/content/types';
 
 /**
@@ -41,7 +43,8 @@ export function HomeView({
   const ents = pub(db.entertainment);
   const drs = pub(db.dr);
   const courses = pub(db.academy.courses);
-  const games = pub(db.games);
+  const registry = gameRegistry();
+  const games = registry.catalogue;
   const offers = pub(db.offers);
 
   const mediaDir = path.join(process.cwd(), 'public', 'media');
@@ -272,14 +275,25 @@ export function HomeView({
         altLang={altLang}
         verified={{ count: srcMeta.reachable, total: srcMeta.checked, date: srcMeta.compiledAt }}
       />
-      <HomeDeck data={deck} />
-      <Descent divisions={dvs} />
-      <HomeSignal data={data} />
-      <HomeIndex data={data} />
+      <AtriumDashboard data={data} deck={deck} />
+      <DivisionPortals
+        divisions={dvs}
+        locale={locale}
+        shots={data.shots}
+        counts={{
+          research: data.counts.research,
+          academy: data.counts.academy,
+          games: data.counts.games,
+          darkroom: data.counts.darkroom,
+          entertainment: data.counts.entertainment,
+        }}
+      />
       <FxScene>
         <NepalPromo section={data.sections.nepal} locale={locale} />
       </FxScene>
-      <HomeStudio data={data} />
+      <FeaturedGames quick={quick} counts={registry.counts} locale={locale} />
+      <FeaturedLearning data={data} locale={locale} />
+      <FounderGuide locale={locale} />
       <HomeClose data={data} />
       <RadialMenu divisions={dvs} />
     </>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { prefersReduced } from './Motion';
 
 const VERT = `#version 300 es
@@ -76,10 +76,19 @@ void main() {
  */
 export function AuroraGL({ className = '' }: { className?: string }) {
   const ref = useRef<HTMLCanvasElement | null>(null);
+  const [supported, setSupported] = useState(false);
+
+  useEffect(() => {
+    const probe = document.createElement('canvas');
+    const gl = probe.getContext('webgl2');
+    if (!gl) return;
+    gl.getExtension('WEBGL_lose_context')?.loseContext();
+    setSupported(true);
+  }, []);
 
   useEffect(() => {
     const canvas = ref.current;
-    if (!canvas || prefersReduced()) return;
+    if (!canvas || !supported || prefersReduced()) return;
     const gl = canvas.getContext('webgl2', { alpha: true, antialias: false, depth: false, powerPreference: 'low-power' });
     if (!gl) return;
 
@@ -174,7 +183,8 @@ export function AuroraGL({ className = '' }: { className?: string }) {
       const ext = gl.getExtension('WEBGL_lose_context');
       ext?.loseContext();
     };
-  }, []);
+  }, [supported]);
 
+  if (!supported) return null;
   return <canvas ref={ref} className={`aurora-gl ${className}`} aria-hidden="true" />;
 }

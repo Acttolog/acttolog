@@ -5,7 +5,8 @@ import { Reveal } from '@/components/ui/Reveal';
 import { Icon } from '@/components/ui/Icon';
 import { GamesClient } from './GamesClient';
 import { GamesExtraGrid } from '@/components/content/Extensions';
-import { getDB, pub, seoFor } from '@/lib/content';
+import { getDB, seoFor } from '@/lib/content';
+import { gameRegistry } from '@/lib/content/games';
 import { WorldPortal } from '@/components/world/WorldPortal';
 import { NoticeSection } from '@/components/notices/NoticeSection';
 
@@ -19,7 +20,7 @@ export const metadata: Metadata = {
 
 export default function GamesPage() {
   const d = db.divisions.find((x) => x.id === 'games');
-  const games = pub(db.games)
+  const games = gameRegistry().catalogue
     .slice()
     .sort((a, b) => String(b.release).localeCompare(String(a.release)));
 

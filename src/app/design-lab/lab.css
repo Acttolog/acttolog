@@ -1,5 +1,5 @@
 /* Hallmark · component: page · genre: editorial · theme: formwork · formwork: cast · surface: tinted · states: 8 · contrast: pass */
-/* Hallmark · waive 37 · Space Grotesk and Inter are already self-hosted by the root layout · the theme's Oswald and Archivo are not loaded, so same-build faces stand in and the page says so */
+/* Hallmark · waive 37 · Inter is self-hosted by the root layout · the classic display token supplies the fallback, so same-build faces stand in and the page says so */
 /* Critique before emit: 4/5. Type and surface carry the page; no photographs were supplied, so no picture slot is faked. */
 
 /* Formwork, cast pour. Tokens sit in :root and every rule below reads them, so
@@ -39,8 +39,8 @@
 
 /* ── Type ─────────────────────────────────────────────────────────────── */
 .lab-display {
-  font-family: 'Oswald', var(--font-space-grotesk), ui-sans-serif, sans-serif;
-  font-weight: 700;
+  font-family: 'Oswald', var(--font-display), ui-sans-serif, sans-serif;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: -0.005em;
   line-height: 1.02;
@@ -280,8 +280,122 @@ html[lang='ne'] .lab-figure {
   gap: 20px;
 }
 
+/* ── Relocated working instruments ─────────────────────────────────────── */
+.lab-utilities {
+  background: var(--paper-2);
+  border-block-start: var(--bar) solid var(--ink);
+  padding: 56px 0 64px;
+}
+.lab-utilities-head {
+  display: grid;
+  gap: 16px;
+  align-items: end;
+  margin-bottom: 32px;
+}
+.lab-utilities-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(2rem, 4.8vw, 3.8rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-transform: none;
+  margin-top: 8px;
+}
+.lab-utilities-head .lab-lede {
+  max-width: 52ch;
+}
+.lab-utility-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 32px 24px;
+  align-items: stretch;
+}
+.lab-utility {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+.lab-utility--narrow {
+  grid-column: span 5;
+}
+.lab-utility--wide {
+  grid-column: span 7;
+}
+.lab-utility-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+  border-block-start: var(--bar) solid var(--ink);
+  padding-top: 16px;
+}
+.lab-utility-no {
+  font-family: 'Archivo Narrow', var(--font-inter), sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.4;
+  color: var(--orange-deep);
+}
+.lab-utility-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 2.6vw, 2.15rem);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  margin: 0;
+}
+.lab-utility-head .lab-body {
+  max-width: 58ch;
+  margin-top: 8px;
+  font-size: 15px;
+}
+.lab-utility-panel {
+  flex: 1;
+  min-width: 0;
+  padding: clamp(16px, 2.4vw, 24px);
+  background: var(--panel);
+  color: var(--txt);
+  border: var(--bar) solid var(--ink);
+  box-shadow: var(--cast);
+}
+/* The section heading owns the label; avoid printing it again in the widget. */
+.lab-utility-panel .dk-kicker {
+  display: none;
+}
+
 @media (min-width: 900px) {
   .lab-board {
     grid-template-columns: 1.5fr 1fr;
+  }
+  .lab-utilities-head {
+    grid-template-columns: 1.2fr 1fr;
+  }
+}
+
+@media (max-width: 899px) {
+  .lab-utilities {
+    padding: 40px 0 48px;
+  }
+  .lab-utilities-head {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .lab-utility-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+  }
+  .lab-utility--narrow,
+  .lab-utility--wide {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 480px) {
+  .lab-utility-head {
+    gap: 12px;
+  }
+  .lab-utility-panel {
+    padding: 14px;
   }
 }

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Space_Grotesk, Inter, JetBrains_Mono, Noto_Sans_Devanagari } from 'next/font/google';
+import { Caladea, Inter, JetBrains_Mono, Noto_Sans_Devanagari } from 'next/font/google';
 import './globals.css';
 import './pointer.css';
 import { Providers } from '@/components/providers';
@@ -15,11 +15,13 @@ import { MagneticPointer } from '@/components/fx/MagneticPointer';
 import { spatialGallery } from '@/lib/spatial';
 import { getDB, navItems, divisions } from '@/lib/content';
 
-const spaceGrotesk = Space_Grotesk({
+// Caladea is the open Cambria-compatible fallback for non-Windows devices.
+const caladea = Caladea({
   subsets: ['latin'],
-  weight: ['500', '600', '700'],
-  variable: '--font-space-grotesk',
+  weight: ['400', '700'],
+  variable: '--font-caladea',
   display: 'swap',
+  fallback: ['Cambria', 'Georgia', 'serif'],
 });
 const inter = Inter({
   subsets: ['latin'],
@@ -100,7 +102,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="en"
       data-theme="dark"
       suppressHydrationWarning
-      className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrains.variable} ${notoDevanagari.variable}`}
+      className={`${caladea.variable} ${inter.variable} ${jetbrains.variable} ${notoDevanagari.variable}`}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />

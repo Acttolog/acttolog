@@ -1,9 +1,8 @@
 /**
  * Mobile overflow sweep — every route at 390 and 320 px.
  * Usage: node tools/mobile-sweep.js [base-url]
- * The homepage deck is a horizontal snap rail at <=700px, so elements inside a
- * horizontally scrollable rail are legitimate off-viewport content, not
- * overflow offenders. The '/' run also asserts the rail contract itself.
+ * The homepage dashboard sidebar is a horizontal scroll region at <=700px,
+ * so its off-viewport links are reachable content, not page overflow.
  */
 const puppeteer = require('puppeteer');
 const BASE = process.argv[2] || 'https://acttolog.github.io';
@@ -90,44 +89,40 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
           return { over, offenders };
         });
         let ok = r.over <= 1;
-        let railNote = '';
+        let homeNote = '';
         if (route === '/') {
-          // Rail contract: at 390/320 the deck must be a snap rail with its
-          // console nav, and all 15 cards must stay mounted.
-          const rail = await p.evaluate(() => {
-            const g = document.querySelector('.deck-grid');
-            const nav = document.querySelector('.deck-rail-nav');
-            if (!g) return { present: false };
-            const cs = getComputedStyle(g);
-            const nr = nav ? nav.getBoundingClientRect() : null;
+          const home = await p.evaluate(() => {
+            const shell = document.querySelector('.atr-shell');
+            const sideNav = document.querySelector('.atr-side nav');
+            const mobileNav = document.querySelector('.mobile-cmd');
+            if (!shell || !sideNav || !mobileNav) return { present: false };
+            const navBox = mobileNav.getBoundingClientRect();
             return {
               present: true,
-              ox: cs.overflowX,
-              snap: cs.scrollSnapType,
-              navVisible: Boolean(nr && nr.width > 0 && nr.height > 0),
-              arrows: document.querySelectorAll('.drn-arrow').length,
-              dots: document.querySelectorAll('.drn-dot').length,
-              count: document.querySelector('.drn-count')?.textContent.trim() || '',
-              cards: document.querySelectorAll('.deck-card').length,
+              shellOverflow: shell.scrollWidth - shell.clientWidth,
+              navOverflowX: getComputedStyle(sideNav).overflowX,
+              mobileNavVisible: navBox.width > 0 && navBox.height > 0,
+              metrics: document.querySelectorAll('.atr-metric').length,
+              portals: document.querySelectorAll('.world-portal').length,
+              quick: document.querySelectorAll('.atr-quick a').length,
             };
           });
-          const railOk =
-            rail.present &&
-            /auto|scroll/.test(rail.ox) &&
-            /x/.test(rail.snap) &&
-            rail.navVisible &&
-            rail.arrows === 2 &&
-            rail.dots === 15 &&
-            /\d{2}\s*\/\s*15/.test(rail.count) &&
-            rail.cards === 15;
-          ok = ok && railOk;
-          railNote = rail.present
-            ? `  rail[${railOk ? 'ok' : 'BAD'} ox=${rail.ox} snap=${rail.snap} nav=${rail.navVisible} arrows=${rail.arrows} dots=${rail.dots} cards=${rail.cards}]`
-            : '  rail[missing .deck-grid]';
+          const homeOk =
+            home.present &&
+            home.shellOverflow <= 1 &&
+            /auto|scroll/.test(home.navOverflowX) &&
+            home.mobileNavVisible &&
+            home.metrics === 6 &&
+            home.portals === 5 &&
+            home.quick === 7;
+          ok = ok && homeOk;
+          homeNote = home.present
+            ? `  home[${homeOk ? 'ok' : 'BAD'} shellOver=${home.shellOverflow} nav=${home.navOverflowX} bottom=${home.mobileNavVisible} metrics=${home.metrics} portals=${home.portals} quick=${home.quick}]`
+            : '  home[missing dashboard]';
         }
         if (!ok) bad++;
         console.log(
-          `${ok ? 'PASS' : 'FAIL'}  ${width}px ${route}  over=${r.over}${r.offenders.length ? '  ' + r.offenders.join(' | ') : ''}${railNote}`,
+          `${ok ? 'PASS' : 'FAIL'}  ${width}px ${route}  over=${r.over}${r.offenders.length ? '  ' + r.offenders.join(' | ') : ''}${homeNote}`,
         );
       } catch (e) {
         bad++;

@@ -113,10 +113,10 @@ export function Logo({
       <text
         x={variant === 'horizontal' ? 76 : 66}
         y={variant === 'horizontal' ? 40 : 39}
-        fontFamily="'Space Grotesk',sans-serif"
+        style={{ fontFamily: 'var(--font-display)' }}
         fontSize={variant === 'horizontal' ? 25 : 22}
-        fontWeight={700}
-        letterSpacing="4"
+        fontWeight={600}
+        letterSpacing="3"
         fill={mono ? '#ffffff' : 'currentColor'}
       >
         ACTTOLOG

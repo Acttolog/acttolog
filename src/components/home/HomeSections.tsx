@@ -436,7 +436,9 @@ export function HomeClose({ data }: { data: HomeData }) {
   if (sec.cta.visible === false) return null;
   // A route roll-call, not a second copy of the hero tagline: the marquee names
   // destinations the reader can actually go to, which no other block lists.
-  const words = ['/academy', '/darkroom', '/games', '/nepal', '/research', '/loksewa'];
+  const words = locale === 'ne'
+    ? ['एकेडेमी', 'डार्करूम', 'खेलहरू', 'नेपाल', 'अनुसन्धान', 'लोकसेवा घर']
+    : ['Academy', 'Darkroom', 'Games', 'Nepal', 'Research', 'Loksewa Ghar'];
   return (
     <section className="sec hsec hsec-last" id="cta" ref={root}>
       <div className="wrap">

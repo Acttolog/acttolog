@@ -82,8 +82,8 @@ export function GamesClient({ games }: { games: Game[] }) {
       )}
       <p className="dim text-[12px] sm:col-span-2 lg:col-span-3">
         {locale === 'ne'
-          ? 'नेपाल सिरिज आर्केड र CUBE/26 खाता बिनै तुरुन्तै खेल्न सकिन्छ — छ ब्राउजर खेल, कुनै डाउनलोड छैन। सदस्य खेलहरू Google बाट जारी राखेपछि खुल्छन् — कुनै पासवर्ड वा दर्ता फारम छैन।'
-          : 'The Nepal Series arcade and CUBE/26 play instantly with no account — six browser games, no downloads. Member games open with Continue with Google — no passwords, no registration forms.'}
+          ? 'नेपाल सिरिज आर्केड र CUBE/26 खाता बिनै तुरुन्तै खेल्न सकिन्छ — दस आर्केड खेल र CUBE/26, कुनै डाउनलोड छैन। सदस्य खेलहरू Google बाट जारी राखेपछि खुल्छन् — कुनै पासवर्ड वा दर्ता फारम छैन।'
+          : 'The Nepal Series arcade and CUBE/26 play instantly with no account — ten arcade games plus CUBE/26, no downloads. Member games open with Continue with Google — no passwords, no registration forms.'}
       </p>
     </div>
   );
